@@ -16,9 +16,9 @@ URL: https://github.com/bbuchsbaum/openneuroR
 BugReports: https://github.com/bbuchsbaum/openneuroR/issues
 Imports:
     cli (>= 3.6.0),
+    dplyr (>= 1.1.0),
     fs (>= 1.6.6),
     httr2 (>= 1.2.1),
-    jsonlite (>= 1.8.9),
     rlang (>= 1.1.0),
     tibble (>= 3.2.0)
 Suggests:
