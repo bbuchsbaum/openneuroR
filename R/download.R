@@ -24,6 +24,10 @@
 #'   progress. Default FALSE.
 #' @param force If TRUE, re-download files even if they exist with correct
 #'   size. Default FALSE.
+#' @param backend Backend to use for downloading: "datalad", "s3", or "https".
+#'   If NULL (default), auto-selects best available backend with priority:
+#'   DataLad > S3 > HTTPS. DataLad provides git-annex integrity verification,
+#'   S3 uses AWS CLI for fast parallel sync, HTTPS is the universal fallback.
 #' @param client An openneuro_client object. If NULL, creates default client.
 #'
 #' @return Invisibly returns a list with:
@@ -33,6 +37,7 @@
 #'     \item{failed}{Character vector of failed file names}
 #'     \item{total_bytes}{Total bytes downloaded}
 #'     \item{dest_dir}{Path to destination directory}
+#'     \item{backend}{Backend used for download (if S3 or DataLad)}
 #'   }
 #'
 #' @details
@@ -47,10 +52,21 @@
 #' file tracks downloaded files, enabling automatic skip of already-cached
 #' files on repeat downloads.
 #'
+#' Backend selection:
+#' \itemize{
+#'   \item \strong{DataLad}: Clones from OpenNeuroDatasets GitHub with git-annex.
+#'     Provides cryptographic integrity verification. Requires `datalad` and
+#'     `git-annex` CLI tools.
+#'   \item \strong{S3}: Uses AWS CLI `s3 sync` for fast parallel downloads.
+#'     Requires `aws` CLI tool.
+#'   \item \strong{HTTPS}: Direct file downloads via httr2. Always available,
+#'     no external dependencies.
+#' }
+#'
 #' @export
 #' @examples
 #' \dontrun{
-#' # Download to cache (default)
+#' # Download to cache (default - auto-selects best backend)
 #' on_download("ds000001", files = "participants.tsv")
 #'
 #' # Repeat download skips cached files
@@ -65,10 +81,14 @@
 #'
 #' # Force re-download of cached files
 #' on_download("ds000001", force = TRUE)
+#'
+#' # Use specific backend
+#' on_download("ds000001", backend = "s3")
+#' on_download("ds000001", backend = "https")  # Force HTTPS
 #' }
 on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
                         use_cache = TRUE, quiet = FALSE, verbose = FALSE,
-                        force = FALSE, client = NULL) {
+                        force = FALSE, backend = NULL, client = NULL) {
   # Validate id
   if (missing(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
     rlang::abort(
@@ -159,7 +179,51 @@ on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
     dest_dir <- .ensure_dest_dir(dest_dir, id)
   }
 
-  # Download with progress (manifest tracking handled inside)
+  # Try backend dispatch (S3 or DataLad)
+  # Returns NULL if HTTPS should be used (fallback or explicit)
+  backend_result <- .download_with_backend(
+    dataset_id = id,
+    dest_dir = dest_dir,
+    files = if (is.null(files)) NULL else filtered_files$full_path,
+    backend = backend,
+    quiet = quiet
+  )
+
+  if (!is.null(backend_result) && isTRUE(backend_result$success)) {
+    # S3 or DataLad succeeded - update manifest for each file
+    if (caching) {
+      for (i in seq_len(nrow(filtered_files))) {
+        .update_manifest(
+          dataset_dir = dest_dir,
+          new_file_info = list(
+            path = filtered_files$full_path[i],
+            size = filtered_files$size[i]
+          ),
+          dataset_id = id,
+          snapshot_tag = tag,
+          backend = backend_result$backend
+        )
+      }
+    }
+
+    # Build result - S3/DataLad don't track individual skipped files
+    total_bytes <- sum(filtered_files$size, na.rm = TRUE)
+    result <- list(
+      downloaded = nrow(filtered_files),
+      skipped = 0L,
+      failed = character(),
+      total_bytes = total_bytes,
+      dest_dir = dest_dir,
+      backend = backend_result$backend
+    )
+
+    # Print summary
+    .print_completion_summary(result, quiet)
+
+    return(invisible(result))
+  }
+
+  # HTTPS fallback - use existing progress-based download
   result <- .download_with_progress(
     files_df = filtered_files,
     dest_dir = dest_dir,
@@ -170,6 +234,9 @@ on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
     force = force,
     use_cache = caching
   )
+
+  # Add backend to result
+  result$backend <- "https"
 
   invisible(result)
 }

@@ -13,6 +13,7 @@ on_download(
   quiet = FALSE,
   verbose = FALSE,
   force = FALSE,
+  backend = NULL,
   client = NULL
 )
 }
@@ -41,6 +42,11 @@ progress. Default FALSE.}
 \item{force}{If TRUE, re-download files even if they exist with correct
 size. Default FALSE.}
 
+\item{backend}{Backend to use for downloading: "datalad", "s3", or "https".
+If NULL (default), auto-selects best available backend with priority:
+DataLad > S3 > HTTPS. DataLad provides git-annex integrity verification,
+S3 uses AWS CLI for fast parallel sync, HTTPS is the universal fallback.}
+
 \item{client}{An openneuro_client object. If NULL, creates default client.}
 }
 \value{
@@ -51,6 +57,7 @@ Invisibly returns a list with:
 \item{failed}{Character vector of failed file names}
 \item{total_bytes}{Total bytes downloaded}
 \item{dest_dir}{Path to destination directory}
+\item{backend}{Backend used for download (if S3 or DataLad)}
 }
 }
 \description{
@@ -73,10 +80,21 @@ Cache locations by platform:
 Each dataset is stored in a subdirectory by dataset ID. A manifest.json
 file tracks downloaded files, enabling automatic skip of already-cached
 files on repeat downloads.
+
+Backend selection:
+\itemize{
+\item \strong{DataLad}: Clones from OpenNeuroDatasets GitHub with git-annex.
+Provides cryptographic integrity verification. Requires \code{datalad} and
+\code{git-annex} CLI tools.
+\item \strong{S3}: Uses AWS CLI \verb{s3 sync} for fast parallel downloads.
+Requires \code{aws} CLI tool.
+\item \strong{HTTPS}: Direct file downloads via httr2. Always available,
+no external dependencies.
+}
 }
 \examples{
 \dontrun{
-# Download to cache (default)
+# Download to cache (default - auto-selects best backend)
 on_download("ds000001", files = "participants.tsv")
 
 # Repeat download skips cached files
@@ -91,5 +109,9 @@ on_download("ds000001", use_cache = FALSE)
 
 # Force re-download of cached files
 on_download("ds000001", force = TRUE)
+
+# Use specific backend
+on_download("ds000001", backend = "s3")
+on_download("ds000001", backend = "https")  # Force HTTPS
 }
 }
