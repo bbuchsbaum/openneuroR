@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 3 - Caching Layer
+**Current focus:** Phase 4 - Backends + Handle
 
 ## Current Position
 
-Phase: 3 of 5 (Caching Layer)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-21 - Completed 03-02-PLAN.md
+Phase: 4 of 5 (Backends + Handle)
+Plan: 2 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-21 - Completed 04-02-PLAN.md
 
-Progress: [######----] 60%
+Progress: [#######---] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: ~6m
-- Total execution time: ~39 min
+- Total execution time: ~40 min
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [######----] 60%
 | 1 | 2/2 | 11m 23s | 5m 42s |
 | 2 | 2/2 | ~23m | ~12m |
 | 3 | 2/2 | 6m | 3m |
+| 4 | 1/4 | 1m 15s | 1m 15s |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (8m), 02-02 (~15m), 03-01 (2m), 03-02 (4m)
-- Trend: Fast execution for infrastructure setup tasks
+- Last 5 plans: 02-02 (~15m), 03-01 (2m), 03-02 (4m), 04-02 (1m 15s)
+- Trend: Fast execution for backend implementations
 
 *Updated after each plan completion*
 
@@ -65,6 +66,9 @@ Recent decisions affecting current work:
 | Dual validation for cache skip | 03-02 | Manifest entry AND file existence check |
 | use_cache=TRUE default | 03-02 | Cache is opt-out, most users want caching |
 | Interactive confirm for clear | 03-02 | Safety for destructive operations |
+| Clone timeout 300s | 04-02 | 5 min sufficient for metadata clone |
+| Get timeout 1800s default | 04-02 | 30 min default, configurable for large datasets |
+| openneuro_backend_error class | 04-02 | Enables fallback chain in dispatcher |
 
 ### Pending Todos
 
@@ -77,7 +81,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 03-02-PLAN.md (Phase 3 complete)
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
 
 ## Deliverables Index
@@ -90,11 +94,12 @@ Resume file: None
 | 02-02 | .planning/phases/02-download-engine/02-02-SUMMARY.md | on_download() |
 | 03-01 | .planning/phases/03-caching-layer/03-01-SUMMARY.md | .on_cache_root(), .on_dataset_cache_path(), .on_file_cache_path(), .read_manifest(), .write_manifest() |
 | 03-02 | .planning/phases/03-caching-layer/03-02-SUMMARY.md | on_cache_list(), on_cache_info(), on_cache_clear() |
+| 04-02 | .planning/phases/04-backends-handle/04-02-SUMMARY.md | .datalad_action(), .download_datalad() |
 
 ## Phase Completion Status
 
 - [x] Phase 1: Foundation + Discovery (2 plans)
 - [x] Phase 2: Download Engine (2 plans)
 - [x] Phase 3: Caching Layer (2 plans)
-- [ ] Phase 4: Backends + Handle (TBD plans)
+- [ ] Phase 4: Backends + Handle (1/4 plans)
 - [ ] Phase 5: Infrastructure (TBD plans)
