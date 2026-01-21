@@ -2,4 +2,8 @@
 
 S3method(print,openneuro_client)
 export(on_client)
+export(on_dataset)
+export(on_files)
 export(on_request)
+export(on_search)
+export(on_snapshots)
