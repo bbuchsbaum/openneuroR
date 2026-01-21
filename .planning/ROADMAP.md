@@ -10,7 +10,7 @@ This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation + Discovery** - Package skeleton and GraphQL-based dataset discovery
+- [x] **Phase 1: Foundation + Discovery** - Package skeleton and GraphQL-based dataset discovery
 - [ ] **Phase 2: Download Engine** - Core download mechanics with HTTPS backend
 - [ ] **Phase 3: Caching Layer** - CRAN-compliant cache with manifest tracking
 - [ ] **Phase 4: Backends + Handle** - S3/DataLad backends, auto-select, and lazy handle pattern
@@ -30,8 +30,8 @@ This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md - Package skeleton and GraphQL infrastructure
-- [ ] 01-02-PLAN.md - Discovery API functions (on_search, on_dataset, on_snapshots, on_files)
+- [x] 01-01-PLAN.md - Package skeleton and GraphQL infrastructure
+- [x] 01-02-PLAN.md - Discovery API functions (on_search, on_dataset, on_snapshots, on_files)
 
 ### Phase 2: Download Engine
 **Goal**: Researchers can download datasets via HTTPS with progress and reliability
@@ -99,7 +99,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Discovery | 0/2 | Planned | - |
+| 1. Foundation + Discovery | 2/2 | Complete | 2026-01-21 |
 | 2. Download Engine | 0/2 | Not started | - |
 | 3. Caching Layer | 0/1 | Not started | - |
 | 4. Backends + Handle | 0/2 | Not started | - |

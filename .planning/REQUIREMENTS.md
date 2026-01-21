@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Discovery
 
-- [ ] **DISC-01**: User can search datasets by text query, returning tibble of results
-- [ ] **DISC-02**: User can get dataset metadata (name, created, updated, public status)
-- [ ] **DISC-03**: User can list snapshots for a dataset with tags and timestamps
-- [ ] **DISC-04**: User can list files within a snapshot (filename, size, annexed status)
+- [x] **DISC-01**: User can search datasets by text query, returning tibble of results
+- [x] **DISC-02**: User can get dataset metadata (name, created, updated, public status)
+- [x] **DISC-03**: User can list snapshots for a dataset with tags and timestamps
+- [x] **DISC-04**: User can list files within a snapshot (filename, size, annexed status)
 
 ### Downloads
 
@@ -87,10 +87,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 1 | Pending |
-| DISC-02 | Phase 1 | Pending |
-| DISC-03 | Phase 1 | Pending |
-| DISC-04 | Phase 1 | Pending |
+| DISC-01 | Phase 1 | Complete |
+| DISC-02 | Phase 1 | Complete |
+| DISC-03 | Phase 1 | Complete |
+| DISC-04 | Phase 1 | Complete |
 | DOWN-01 | Phase 2 | Pending |
 | DOWN-02 | Phase 2 | Pending |
 | DOWN-03 | Phase 2 | Pending |
