@@ -58,10 +58,11 @@ Plans:
   2. Cache location is CRAN-compliant (tools::R_user_dir)
   3. Manifest tracks what was downloaded, when, and via which backend
   4. User can list cached datasets, get sizes, and clear cache
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md - Cache infrastructure (path resolution, manifest read/write)
+- [ ] 03-02-PLAN.md - Cache integration and management functions (on_cache_list, on_cache_info, on_cache_clear)
 
 ### Phase 4: Backends + Handle
 **Goal**: Researchers get best-available backend and pipeline-friendly lazy handles
@@ -101,6 +102,6 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 |-------|----------------|--------|-----------|
 | 1. Foundation + Discovery | 2/2 | Complete | 2026-01-21 |
 | 2. Download Engine | 2/2 | Complete | 2026-01-21 |
-| 3. Caching Layer | 0/1 | Not started | - |
+| 3. Caching Layer | 0/2 | Not started | - |
 | 4. Backends + Handle | 0/2 | Not started | - |
 | 5. Infrastructure | 0/1 | Not started | - |
