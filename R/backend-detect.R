@@ -7,6 +7,21 @@
 NULL
 
 
+#' Wrapper for Sys.which
+#'
+#' Wraps Sys.which to enable mocking in tests.
+#'
+#' @param names Character vector of command names to find.
+#'
+#' @return Named character vector with paths (or empty strings).
+#'
+#' @keywords internal
+.sys_which <- function(names) {
+
+  Sys.which(names)
+}
+
+
 #' Check if Specific Backend is Available
 #'
 #' Checks if the required CLI tools for a backend are installed
@@ -20,7 +35,7 @@ NULL
 .backend_available <- function(backend) {
   switch(backend,
     "s3" = nzchar(.find_aws_cli()),
-    "datalad" = nzchar(Sys.which("datalad")) && nzchar(Sys.which("git-annex")),
+    "datalad" = nzchar(.sys_which("datalad")) && nzchar(.sys_which("git-annex")),
     "https" = TRUE,  # Always available
     FALSE  # Unknown backend
 

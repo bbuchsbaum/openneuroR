@@ -9,11 +9,18 @@
 #' - Linux: ~/.cache/R/openneuroR
 #' - Windows: ~/AppData/Local/R/cache/openneuroR
 #'
+#' @section Options:
+#' The cache root can be overridden by setting the `openneuro.cache_root` option:
+#' \preformatted{
+#' options(openneuro.cache_root = "/custom/path")
+#' }
+#'
 #' @return Path to the cache root directory.
 #'
 #' @keywords internal
 .on_cache_root <- function() {
-  cache_root <- tools::R_user_dir("openneuroR", "cache")
+  cache_root <- getOption("openneuro.cache_root",
+                          default = tools::R_user_dir("openneuroR", "cache"))
   fs::dir_create(cache_root, recurse = TRUE)
   cache_root
 }
