@@ -27,11 +27,11 @@ This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases
   2. User can call on_dataset("ds000001") and get metadata (name, dates, public status)
   3. User can list snapshots for a dataset and see tags/timestamps
   4. User can list files in a snapshot with filename, size, and annexed status
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md - Package skeleton and GraphQL infrastructure
+- [ ] 01-02-PLAN.md - Discovery API functions (on_search, on_dataset, on_snapshots, on_files)
 
 ### Phase 2: Download Engine
 **Goal**: Researchers can download datasets via HTTPS with progress and reliability
@@ -99,7 +99,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Discovery | 0/2 | Not started | - |
+| 1. Foundation + Discovery | 0/2 | Planned | - |
 | 2. Download Engine | 0/2 | Not started | - |
 | 3. Caching Layer | 0/1 | Not started | - |
 | 4. Backends + Handle | 0/2 | Not started | - |
