@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 5 - Infrastructure
+**Current focus:** PROJECT COMPLETE
 
 ## Current Position
 
 Phase: 5 of 5 (Infrastructure)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-21 - Completed 05-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: COMPLETE
+Last activity: 2026-01-21 - Completed 05-03-PLAN.md
 
-Progress: [############] 100% (12/12 plans complete)
+Progress: [#############] 100% (13/13 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: ~5m
-- Total execution time: ~61 min
+- Total execution time: ~63 min
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: [############] 100% (12/12 plans complete)
 | 2 | 2/2 | ~23m | ~12m |
 | 3 | 2/2 | 6m | 3m |
 | 4 | 4/4 | ~10m | ~2m 30s |
-| 5 | 2/3 | 12m | 6m |
+| 5 | 3/3 | 14m | ~5m |
 
 **Recent Trend:**
-- Last 5 plans: 04-04 (~3m), 05-01 (7m), 05-02 (5m)
-- Trend: Testing setup consistent at 5-7 min
+- Last 5 plans: 04-04 (~3m), 05-01 (7m), 05-02 (5m), 05-03 (2m)
+- Trend: Final infrastructure plans completed quickly
 
 *Updated after each plan completion*
 
@@ -82,10 +82,11 @@ Recent decisions affecting current work:
 | with_mock_dir pattern | 05-01 | Auto-record if missing, replay if present |
 | .sys_which() wrapper | 05-02 | Enables mocking Sys.which in tests |
 | .on_cache_root() option | 05-02 | Respects openneuro.cache_root for test isolation |
+| NEWS.md standard format | 05-03 | CRAN changelog conventions |
 
 ### Pending Todos
 
-None yet.
+None - project complete.
 
 ### Blockers/Concerns
 
@@ -94,7 +95,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 05-02-PLAN.md
+Stopped at: PROJECT COMPLETE
 Resume file: None
 
 ## Deliverables Index
@@ -113,6 +114,7 @@ Resume file: None
 | 04-04 | .planning/phases/04-backends-handle/04-04-SUMMARY.md | on_handle(), on_fetch(), on_path() |
 | 05-01 | .planning/phases/05-infrastructure/05-01-SUMMARY.md | test infrastructure, httptest2 mocks |
 | 05-02 | .planning/phases/05-infrastructure/05-02-SUMMARY.md | on_doctor(), test-backends, test-handle, test-cache, test-doctor |
+| 05-03 | .planning/phases/05-infrastructure/05-03-SUMMARY.md | R CMD check compliance, NEWS.md |
 
 ## Phase Completion Status
 
@@ -120,4 +122,17 @@ Resume file: None
 - [x] Phase 2: Download Engine (2 plans)
 - [x] Phase 3: Caching Layer (2 plans)
 - [x] Phase 4: Backends + Handle (4/4 plans)
-- [ ] Phase 5: Infrastructure (2/3 plans)
+- [x] Phase 5: Infrastructure (3/3 plans)
+
+## Final Package Status
+
+**R CMD check:** 0 errors, 0 warnings, 0 notes
+**Tests:** 142 passing
+**Exports:** 13 public functions
+
+**Public API:**
+- Discovery: `on_client()`, `on_search()`, `on_dataset()`, `on_snapshots()`, `on_files()`
+- Download: `on_download()`
+- Cache: `on_cache_list()`, `on_cache_info()`, `on_cache_clear()`
+- Handle: `on_handle()`, `on_fetch()`, `on_path()`
+- Utility: `on_doctor()`
