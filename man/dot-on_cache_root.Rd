@@ -22,4 +22,12 @@ Platform-appropriate paths:
 \item Windows: ~/AppData/Local/R/cache/openneuroR
 }
 }
+\section{Options}{
+
+The cache root can be overridden by setting the \code{openneuro.cache_root} option:
+\preformatted{
+options(openneuro.cache_root = "/custom/path")
+}
+}
+
 \keyword{internal}
