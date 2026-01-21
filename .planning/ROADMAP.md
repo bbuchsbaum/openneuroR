@@ -74,11 +74,13 @@ Plans:
   3. Auto-select picks best available backend (DataLad > S3 > HTTPS)
   4. User can create lazy handle without triggering download
   5. User can fetch handle to materialize download and get filesystem path
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Backend detection utilities and S3 backend (AWS CLI)
+- [ ] 04-02-PLAN.md — DataLad backend (clone + get with integrity)
+- [ ] 04-03-PLAN.md — Auto-select dispatch and on_download backend integration
+- [ ] 04-04-PLAN.md — Lazy handle pattern (on_handle, on_fetch, on_path)
 
 ### Phase 5: Infrastructure
 **Goal**: Package is CRAN-ready with comprehensive mocked tests
@@ -103,5 +105,5 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 | 1. Foundation + Discovery | 2/2 | Complete | 2026-01-21 |
 | 2. Download Engine | 2/2 | Complete | 2026-01-21 |
 | 3. Caching Layer | 2/2 | Complete | 2026-01-21 |
-| 4. Backends + Handle | 0/2 | Not started | - |
+| 4. Backends + Handle | 0/4 | Planned | - |
 | 5. Infrastructure | 0/1 | Not started | - |
