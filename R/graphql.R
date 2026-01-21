@@ -107,7 +107,6 @@ on_request <- function(query, variables = NULL, client = NULL) {
 .on_read_gql <- function(name) {
   path <- system.file("graphql", paste0(name, ".gql"), package = "openneuro")
   if (path == "") {
-    rlang
     rlang::abort(
       c("Query file not found",
         "x" = paste0("No file found for query: ", name)),
