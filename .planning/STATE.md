@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 Phase: 4 of 5 (Backends + Handle)
 Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-21 - Completed 04-02-PLAN.md
+Last activity: 2026-01-21 - Completed 04-01-PLAN.md
 
-Progress: [#######---] 70%
+Progress: [########--] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~6m
-- Total execution time: ~40 min
+- Total plans completed: 8
+- Average duration: ~5m
+- Total execution time: ~43 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [#######---] 70%
 | 1 | 2/2 | 11m 23s | 5m 42s |
 | 2 | 2/2 | ~23m | ~12m |
 | 3 | 2/2 | 6m | 3m |
-| 4 | 1/4 | 1m 15s | 1m 15s |
+| 4 | 2/4 | ~4m | ~2m |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~15m), 03-01 (2m), 03-02 (4m), 04-02 (1m 15s)
+- Last 5 plans: 03-01 (2m), 03-02 (4m), 04-02 (1m 15s), 04-01 (3m)
 - Trend: Fast execution for backend implementations
 
 *Updated after each plan completion*
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 | Clone timeout 300s | 04-02 | 5 min sufficient for metadata clone |
 | Get timeout 1800s default | 04-02 | 30 min default, configurable for large datasets |
 | openneuro_backend_error class | 04-02 | Enables fallback chain in dispatcher |
+| processx for CLI execution | 04-01 | Robust timeout, error handling, no shell |
+| Session-cached detection | 04-01 | Avoid repeated Sys.which() calls |
+| AWS CLI path fallback | 04-01 | Check common paths if not in PATH |
 
 ### Pending Todos
 
@@ -81,7 +84,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 04-02-PLAN.md
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
 
 ## Deliverables Index
@@ -94,6 +97,7 @@ Resume file: None
 | 02-02 | .planning/phases/02-download-engine/02-02-SUMMARY.md | on_download() |
 | 03-01 | .planning/phases/03-caching-layer/03-01-SUMMARY.md | .on_cache_root(), .on_dataset_cache_path(), .on_file_cache_path(), .read_manifest(), .write_manifest() |
 | 03-02 | .planning/phases/03-caching-layer/03-02-SUMMARY.md | on_cache_list(), on_cache_info(), on_cache_clear() |
+| 04-01 | .planning/phases/04-backends-handle/04-01-SUMMARY.md | .backend_available(), .backend_status(), .find_aws_cli(), .download_s3() |
 | 04-02 | .planning/phases/04-backends-handle/04-02-SUMMARY.md | .datalad_action(), .download_datalad() |
 
 ## Phase Completion Status
@@ -101,5 +105,5 @@ Resume file: None
 - [x] Phase 1: Foundation + Discovery (2 plans)
 - [x] Phase 2: Download Engine (2 plans)
 - [x] Phase 3: Caching Layer (2 plans)
-- [ ] Phase 4: Backends + Handle (1/4 plans)
+- [ ] Phase 4: Backends + Handle (2/4 plans)
 - [ ] Phase 5: Infrastructure (TBD plans)
