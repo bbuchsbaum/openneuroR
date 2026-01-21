@@ -1,0 +1,181 @@
+{
+    "data": {
+        "snapshot": {
+            "files": [
+                {
+                    "id": "df3d057515596003a50cbe94c4839ff2d7dd6a44",
+                    "key": "ad0c239c2ff4fa3eca9d0c628b51893d66735581",
+                    "filename": "CHANGES",
+                    "size": 291,
+                    "directory": false,
+                    "annexed": false
+                },
+                {
+                    "id": "a30b9276ab287632a253c03973ef15420eaa17ff",
+                    "key": "c1e1d965b7b096f19febb84861ba8c0c7120e3cc",
+                    "filename": "README",
+                    "size": 1172,
+                    "directory": false,
+                    "annexed": false
+                },
+                {
+                    "id": "5dfe4d33f3e3e0bf55a7ff243d8bbc3250ded63e",
+                    "key": "8b339341951f79915e860e5e8a218d1658f4c243",
+                    "filename": "dataset_description.json",
+                    "size": 937,
+                    "directory": false,
+                    "annexed": false
+                },
+                {
+                    "id": "3cab7d195557c89b5acf4e3598dbc2182e331097",
+                    "key": "436793806e0a4cb21cbb144f9f0ceb1e192fac73",
+                    "filename": "participants.tsv",
+                    "size": 216,
+                    "directory": false,
+                    "annexed": false
+                },
+                {
+                    "id": "c984c9e790eabfdc719599fc772940303b0977e5",
+                    "key": "0c391b0452710ddef0f67d66902a5ff4d40eb65a",
+                    "filename": "task-balloonanalogrisktask_bold.json",
+                    "size": 73,
+                    "directory": false,
+                    "annexed": false
+                },
+                {
+                    "id": "1882d325538b14729e3c715d8ccf1aede77a6143",
+                    "key": "db72baeb3665a309db35d6ef649e117eb45a8a87",
+                    "filename": "sub-01",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "e0ef2556e85f1615965c530d96f75850dd1f141e",
+                    "key": "20cbce95d4f25b10ba26ad35959d38bf97a2c26b",
+                    "filename": "sub-02",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "b9b4d13ed3bfc34407b7e8067f54e7e281024fcb",
+                    "key": "1940204a85419da00f5c94637e31c97cd334e2e1",
+                    "filename": "sub-03",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "3412f5db58988579371540975fe97087c146013a",
+                    "key": "c02c7c32ee4cdab8b8c13809d092293345948f6d",
+                    "filename": "sub-04",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "d5c9505b2b7e361a72dcd766c5613db4f812c05c",
+                    "key": "9133220ac3bb49312eac6c62037ebb71005c32d7",
+                    "filename": "sub-05",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "80cc5dc672b39f3c351d4b4103b0d93e9cc829db",
+                    "key": "690e23be25810243384bf0b8d56dafae39a7e62d",
+                    "filename": "sub-06",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "bd5c6f1fca2b15dd13285451d20185d6eb46d8fd",
+                    "key": "6e4d4d6977227080e83efb362baacd18dc781d0f",
+                    "filename": "sub-07",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "0c003880885610493ba3da7cbe50f7982f32ffff",
+                    "key": "578af459e7f098d33aba4cdfb883f552ab1d3b01",
+                    "filename": "sub-08",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "29b91301285091786b725d502ac506d8f2ff1e10",
+                    "key": "26497b3b9dc65b56b51ba27b627946ee8ba31b7a",
+                    "filename": "sub-09",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "5702384456bb51127399178638ff926f6645bcad",
+                    "key": "cfdf2b01e446278b6c68ec64cd8087f848dd8626",
+                    "filename": "sub-10",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "4cb18a703137ac018cdfd5686761132902c1d04c",
+                    "key": "f1e8a00f15c7b0dca9fa145996a25cdf11af1d22",
+                    "filename": "sub-11",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "c4e339bb063c1e39a8ccfe7931281ccd20972d06",
+                    "key": "714a2d734dd6ccd87052811bcd6776026d730043",
+                    "filename": "sub-12",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "346a67eb786f72c48a171fe3151f0b412484d671",
+                    "key": "028222d2a0139d05185fa07cb00d4d1a5f131ecd",
+                    "filename": "sub-13",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "00655ee0dee1ecbe036883f24d5aa4dbc47cbb58",
+                    "key": "679e2296747dd162e58be83754548402806bdf25",
+                    "filename": "sub-14",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "f719f09dee923525214d87e311351e6698b1e56e",
+                    "key": "f5b131172d17ab27093a266a45e308049118c787",
+                    "filename": "sub-15",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                },
+                {
+                    "id": "db8b96ff861694149cdd77461befe204ef240095",
+                    "key": "b4a2c25786c1c2975cf2561aa3ec6cb7fe4c206f",
+                    "filename": "sub-16",
+                    "size": 0,
+                    "directory": true,
+                    "annexed": false
+                }
+            ]
+        }
+    },
+    "extensions": {
+        "openneuro": {
+            "version": "4.43.1"
+        }
+    }
+}

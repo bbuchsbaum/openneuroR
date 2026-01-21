@@ -1,0 +1,38 @@
+{
+    "data": {
+        "dataset": {
+            "snapshots": [
+                {
+                    "tag": "57fecb0ccce88d000ac17538",
+                    "created": "2018-07-14T01:16:37.000Z",
+                    "size": null
+                },
+                {
+                    "tag": "57fecb41cce88d000dc1753b",
+                    "created": "2018-07-14T01:18:30.000Z",
+                    "size": null
+                },
+                {
+                    "tag": "5817d0dacce88d0009594205",
+                    "created": "2018-07-14T01:19:24.000Z",
+                    "size": null
+                },
+                {
+                    "tag": "00006",
+                    "created": "2018-07-14T01:20:18.000Z",
+                    "size": null
+                },
+                {
+                    "tag": "1.0.0",
+                    "created": "2020-05-14T14:56:55.000Z",
+                    "size": null
+                }
+            ]
+        }
+    },
+    "extensions": {
+        "openneuro": {
+            "version": "4.43.1"
+        }
+    }
+}
