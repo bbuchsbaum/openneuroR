@@ -24,9 +24,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Backends
 
 - [x] **BACK-01**: HTTPS backend works with no external dependencies
-- [ ] **BACK-02**: S3 backend uses AWS CLI for fast bulk downloads
-- [ ] **BACK-03**: DataLad backend uses DataLad CLI for integrity + partial retrieval
-- [ ] **BACK-04**: Auto-select chooses best available backend automatically
+- [x] **BACK-02**: S3 backend uses AWS CLI for fast bulk downloads
+- [x] **BACK-03**: DataLad backend uses DataLad CLI for integrity + partial retrieval
+- [x] **BACK-04**: Auto-select chooses best available backend automatically
 
 ### Caching
 
@@ -37,9 +37,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Handle/Pipeline
 
-- [ ] **HAND-01**: User can create lazy handle to dataset (no immediate download)
-- [ ] **HAND-02**: User can fetch handle to materialize download
-- [ ] **HAND-03**: User can get filesystem path from fetched handle
+- [x] **HAND-01**: User can create lazy handle to dataset (no immediate download)
+- [x] **HAND-02**: User can fetch handle to materialize download
+- [x] **HAND-03**: User can get filesystem path from fetched handle
 
 ### Infrastructure
 
@@ -96,16 +96,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOWN-03 | Phase 2 | Complete |
 | DOWN-04 | Phase 2 | Complete |
 | BACK-01 | Phase 2 | Complete |
-| BACK-02 | Phase 4 | Pending |
-| BACK-03 | Phase 4 | Pending |
-| BACK-04 | Phase 4 | Pending |
+| BACK-02 | Phase 4 | Complete |
+| BACK-03 | Phase 4 | Complete |
+| BACK-04 | Phase 4 | Complete |
 | CACH-01 | Phase 3 | Complete |
 | CACH-02 | Phase 3 | Complete |
 | CACH-03 | Phase 3 | Complete |
 | CACH-04 | Phase 3 | Complete |
-| HAND-01 | Phase 4 | Pending |
-| HAND-02 | Phase 4 | Pending |
-| HAND-03 | Phase 4 | Pending |
+| HAND-01 | Phase 4 | Complete |
+| HAND-02 | Phase 4 | Complete |
+| HAND-03 | Phase 4 | Complete |
 | INFR-01 | Phase 5 | Pending |
 | INFR-02 | Phase 5 | Pending |
 | INFR-03 | Phase 5 | Pending |
@@ -117,4 +117,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after roadmap creation*
+*Last updated: 2026-01-21 after Phase 4 completion*

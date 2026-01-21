@@ -13,7 +13,7 @@ This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases
 - [x] **Phase 1: Foundation + Discovery** - Package skeleton and GraphQL-based dataset discovery
 - [x] **Phase 2: Download Engine** - Core download mechanics with HTTPS backend
 - [x] **Phase 3: Caching Layer** - CRAN-compliant cache with manifest tracking
-- [ ] **Phase 4: Backends + Handle** - S3/DataLad backends, auto-select, and lazy handle pattern
+- [x] **Phase 4: Backends + Handle** - S3/DataLad backends, auto-select, and lazy handle pattern
 - [ ] **Phase 5: Infrastructure** - Tests, R CMD check, diagnostics
 
 ## Phase Details
@@ -77,10 +77,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Backend detection utilities and S3 backend (AWS CLI)
-- [ ] 04-02-PLAN.md — DataLad backend (clone + get with integrity)
-- [ ] 04-03-PLAN.md — Auto-select dispatch and on_download backend integration
-- [ ] 04-04-PLAN.md — Lazy handle pattern (on_handle, on_fetch, on_path)
+- [x] 04-01-PLAN.md — Backend detection utilities and S3 backend (AWS CLI)
+- [x] 04-02-PLAN.md — DataLad backend (clone + get with integrity)
+- [x] 04-03-PLAN.md — Auto-select dispatch and on_download backend integration
+- [x] 04-04-PLAN.md — Lazy handle pattern (on_handle, on_fetch, on_path)
 
 ### Phase 5: Infrastructure
 **Goal**: Package is CRAN-ready with comprehensive mocked tests
@@ -105,5 +105,5 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 | 1. Foundation + Discovery | 2/2 | Complete | 2026-01-21 |
 | 2. Download Engine | 2/2 | Complete | 2026-01-21 |
 | 3. Caching Layer | 2/2 | Complete | 2026-01-21 |
-| 4. Backends + Handle | 0/4 | Planned | - |
+| 4. Backends + Handle | 4/4 | Complete | 2026-01-21 |
 | 5. Infrastructure | 0/1 | Not started | - |
