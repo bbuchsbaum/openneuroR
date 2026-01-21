@@ -87,34 +87,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | TBD | Pending |
-| DISC-02 | TBD | Pending |
-| DISC-03 | TBD | Pending |
-| DISC-04 | TBD | Pending |
-| DOWN-01 | TBD | Pending |
-| DOWN-02 | TBD | Pending |
-| DOWN-03 | TBD | Pending |
-| DOWN-04 | TBD | Pending |
-| BACK-01 | TBD | Pending |
-| BACK-02 | TBD | Pending |
-| BACK-03 | TBD | Pending |
-| BACK-04 | TBD | Pending |
-| CACH-01 | TBD | Pending |
-| CACH-02 | TBD | Pending |
-| CACH-03 | TBD | Pending |
-| CACH-04 | TBD | Pending |
-| HAND-01 | TBD | Pending |
-| HAND-02 | TBD | Pending |
-| HAND-03 | TBD | Pending |
-| INFR-01 | TBD | Pending |
-| INFR-02 | TBD | Pending |
-| INFR-03 | TBD | Pending |
+| DISC-01 | Phase 1 | Pending |
+| DISC-02 | Phase 1 | Pending |
+| DISC-03 | Phase 1 | Pending |
+| DISC-04 | Phase 1 | Pending |
+| DOWN-01 | Phase 2 | Pending |
+| DOWN-02 | Phase 2 | Pending |
+| DOWN-03 | Phase 2 | Pending |
+| DOWN-04 | Phase 2 | Pending |
+| BACK-01 | Phase 2 | Pending |
+| BACK-02 | Phase 4 | Pending |
+| BACK-03 | Phase 4 | Pending |
+| BACK-04 | Phase 4 | Pending |
+| CACH-01 | Phase 3 | Pending |
+| CACH-02 | Phase 3 | Pending |
+| CACH-03 | Phase 3 | Pending |
+| CACH-04 | Phase 3 | Pending |
+| HAND-01 | Phase 4 | Pending |
+| HAND-02 | Phase 4 | Pending |
+| HAND-03 | Phase 4 | Pending |
+| INFR-01 | Phase 5 | Pending |
+| INFR-02 | Phase 5 | Pending |
+| INFR-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 (pending roadmap)
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-20 after initial definition*
+*Last updated: 2026-01-20 after roadmap creation*
