@@ -1,0 +1,24 @@
+query listDatasets($first: Int, $after: String, $modality: String) {
+  datasets(first: $first, after: $after, modality: $modality) {
+    edges {
+      node {
+        id
+        name
+        created
+        public
+        latestSnapshot {
+          tag
+          summary {
+            modalities
+            subjects
+            tasks
+          }
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

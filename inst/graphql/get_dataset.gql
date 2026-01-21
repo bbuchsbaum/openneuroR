@@ -1,0 +1,11 @@
+query getDataset($id: ID!) {
+  dataset(id: $id) {
+    id
+    name
+    created
+    public
+    latestSnapshot {
+      tag
+    }
+  }
+}

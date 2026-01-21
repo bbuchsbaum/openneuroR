@@ -1,0 +1,9 @@
+query getSnapshots($id: ID!) {
+  dataset(id: $id) {
+    snapshots {
+      tag
+      created
+      size
+    }
+  }
+}

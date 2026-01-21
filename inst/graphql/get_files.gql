@@ -1,0 +1,12 @@
+query getFiles($datasetId: ID!, $tag: String!, $tree: String) {
+  snapshot(datasetId: $datasetId, tag: $tag) {
+    files(tree: $tree) {
+      id
+      key
+      filename
+      size
+      directory
+      annexed
+    }
+  }
+}
