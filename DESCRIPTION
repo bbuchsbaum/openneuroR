@@ -1,0 +1,28 @@
+Package: openneuro
+Title: Programmatic Access to OpenNeuro Datasets
+Version: 0.1.0
+Authors@R: c(
+    person("Bradley", "Buchsbaum", email = "brad.buchsbaum@gmail.com", role = c("aut", "cre"))
+  )
+Description: Search, explore, and download datasets from OpenNeuro, the largest
+    open neuroimaging repository. Provides GraphQL-based discovery,
+    multi-backend downloads (HTTPS/S3/DataLad), and smart caching.
+License: MIT + file LICENSE
+URL: https://github.com/bbuchsbaum/openneuroR
+BugReports: https://github.com/bbuchsbaum/openneuroR/issues
+Imports:
+    cli (>= 3.6.0),
+    fs (>= 1.6.6),
+    httr2 (>= 1.2.1),
+    jsonlite (>= 1.8.9),
+    rlang (>= 1.1.0),
+    tibble (>= 3.2.0)
+Suggests:
+    testthat (>= 3.0.0),
+    vcr,
+    webmockr,
+    withr
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Config/testthat/edition: 3

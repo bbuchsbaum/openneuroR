@@ -1,0 +1,6 @@
+^\.planning$
+^\.claude$
+^DESIGN_NOTES.*\.md$
+^\.git$
+^\.gitignore$
+^LICENSE\.md$
