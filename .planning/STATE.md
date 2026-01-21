@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 4 - Backends + Handle
+**Current focus:** Phase 5 - Infrastructure
 
 ## Current Position
 
-Phase: 4 of 5 (Backends + Handle)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-01-21 - Completed 04-04-PLAN.md
+Phase: 5 of 5 (Infrastructure)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-21 - Completed 05-01-PLAN.md
 
-Progress: [##########] 100% (Phase 4 complete)
+Progress: [###########-] 92% (11/12 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: ~5m
-- Total execution time: ~49 min
+- Total execution time: ~56 min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [##########] 100% (Phase 4 complete)
 | 2 | 2/2 | ~23m | ~12m |
 | 3 | 2/2 | 6m | 3m |
 | 4 | 4/4 | ~10m | ~2m 30s |
+| 5 | 1/3 | 7m | 7m |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (1m 15s), 04-01 (3m), 04-03 (~3m), 04-04 (~3m)
-- Trend: Fast execution for backend implementations
+- Last 5 plans: 04-03 (~3m), 04-04 (~3m), 05-01 (7m)
+- Trend: Testing setup takes longer due to recording mocks
 
 *Updated after each plan completion*
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 | Recursive fallback chain | 04-03 | Simple, handles any fallback depth |
 | S3 class for handles | 04-04 | Follows tidyverse conventions |
 | Copy semantics documented | 04-04 | Prevents common pitfall |
+| httptest2 over vcr/webmockr | 05-01 | Better httr2 integration |
+| with_mock_dir pattern | 05-01 | Auto-record if missing, replay if present |
 
 ### Pending Todos
 
@@ -89,7 +92,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 04-04-PLAN.md (Phase 4 complete)
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
 
 ## Deliverables Index
@@ -106,6 +109,7 @@ Resume file: None
 | 04-02 | .planning/phases/04-backends-handle/04-02-SUMMARY.md | .datalad_action(), .download_datalad() |
 | 04-03 | .planning/phases/04-backends-handle/04-03-SUMMARY.md | .select_backend(), .download_with_backend(), on_download(backend=) |
 | 04-04 | .planning/phases/04-backends-handle/04-04-SUMMARY.md | on_handle(), on_fetch(), on_path() |
+| 05-01 | .planning/phases/05-infrastructure/05-01-SUMMARY.md | test infrastructure, httptest2 mocks |
 
 ## Phase Completion Status
 
@@ -113,4 +117,4 @@ Resume file: None
 - [x] Phase 2: Download Engine (2 plans)
 - [x] Phase 3: Caching Layer (2 plans)
 - [x] Phase 4: Backends + Handle (4/4 plans)
-- [ ] Phase 5: Infrastructure (TBD plans)
+- [ ] Phase 5: Infrastructure (1/3 plans)
