@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 2 Complete - Ready for Phase 3
+**Current focus:** Phase 3 - Caching Layer
 
 ## Current Position
 
-Phase: 2 of 5 (Download Engine) - COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-21 - Completed 02-02-PLAN.md
+Phase: 3 of 5 (Caching Layer)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-01-21 - Phase 2 verified complete
 
 Progress: [####------] 40%
 

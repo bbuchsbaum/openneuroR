@@ -16,14 +16,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Downloads
 
-- [ ] **DOWN-01**: User can download full dataset to local cache
-- [ ] **DOWN-02**: Download shows progress bar during transfer
-- [ ] **DOWN-03**: Download retries automatically with exponential backoff on failure
-- [ ] **DOWN-04**: Download resumes from where it stopped on interruption (large files)
+- [x] **DOWN-01**: User can download full dataset to local cache
+- [x] **DOWN-02**: Download shows progress bar during transfer
+- [x] **DOWN-03**: Download retries automatically with exponential backoff on failure
+- [x] **DOWN-04**: Download resumes from where it stopped on interruption (large files)
 
 ### Backends
 
-- [ ] **BACK-01**: HTTPS backend works with no external dependencies
+- [x] **BACK-01**: HTTPS backend works with no external dependencies
 - [ ] **BACK-02**: S3 backend uses AWS CLI for fast bulk downloads
 - [ ] **BACK-03**: DataLad backend uses DataLad CLI for integrity + partial retrieval
 - [ ] **BACK-04**: Auto-select chooses best available backend automatically
@@ -91,11 +91,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-02 | Phase 1 | Complete |
 | DISC-03 | Phase 1 | Complete |
 | DISC-04 | Phase 1 | Complete |
-| DOWN-01 | Phase 2 | Pending |
-| DOWN-02 | Phase 2 | Pending |
-| DOWN-03 | Phase 2 | Pending |
-| DOWN-04 | Phase 2 | Pending |
-| BACK-01 | Phase 2 | Pending |
+| DOWN-01 | Phase 2 | Complete |
+| DOWN-02 | Phase 2 | Complete |
+| DOWN-03 | Phase 2 | Complete |
+| DOWN-04 | Phase 2 | Complete |
+| BACK-01 | Phase 2 | Complete |
 | BACK-02 | Phase 4 | Pending |
 | BACK-03 | Phase 4 | Pending |
 | BACK-04 | Phase 4 | Pending |
