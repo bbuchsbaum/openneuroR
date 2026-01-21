@@ -30,10 +30,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Caching
 
-- [ ] **CACH-01**: Downloaded datasets are cached locally (no re-download on repeat access)
-- [ ] **CACH-02**: Cache uses CRAN-compliant location (tools::R_user_dir)
-- [ ] **CACH-03**: Manifest tracks what was downloaded, when, via which backend
-- [ ] **CACH-04**: User can list, clear, and manage cached datasets
+- [x] **CACH-01**: Downloaded datasets are cached locally (no re-download on repeat access)
+- [x] **CACH-02**: Cache uses CRAN-compliant location (tools::R_user_dir)
+- [x] **CACH-03**: Manifest tracks what was downloaded, when, via which backend
+- [x] **CACH-04**: User can list, clear, and manage cached datasets
 
 ### Handle/Pipeline
 
@@ -99,10 +99,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BACK-02 | Phase 4 | Pending |
 | BACK-03 | Phase 4 | Pending |
 | BACK-04 | Phase 4 | Pending |
-| CACH-01 | Phase 3 | Pending |
-| CACH-02 | Phase 3 | Pending |
-| CACH-03 | Phase 3 | Pending |
-| CACH-04 | Phase 3 | Pending |
+| CACH-01 | Phase 3 | Complete |
+| CACH-02 | Phase 3 | Complete |
+| CACH-03 | Phase 3 | Complete |
+| CACH-04 | Phase 3 | Complete |
 | HAND-01 | Phase 4 | Pending |
 | HAND-02 | Phase 4 | Pending |
 | HAND-03 | Phase 4 | Pending |
