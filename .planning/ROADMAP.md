@@ -43,11 +43,11 @@ Plans:
   3. Download retries automatically on transient failures (exponential backoff)
   4. Interrupted download resumes from where it stopped (for large files)
   5. HTTPS backend works with no external CLI dependencies
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md - Download infrastructure (URL construction, single-file download, recursive file listing)
+- [ ] 02-02-PLAN.md - User-facing on_download() with full/file/pattern modes and progress reporting
 
 ### Phase 3: Caching Layer
 **Goal**: Downloaded datasets persist locally and are not re-downloaded
