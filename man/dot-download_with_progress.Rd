@@ -11,7 +11,8 @@
   tag = NULL,
   quiet = FALSE,
   verbose = FALSE,
-  force = FALSE
+  force = FALSE,
+  use_cache = FALSE
 )
 }
 \arguments{
@@ -28,12 +29,14 @@
 \item{verbose}{If \code{TRUE}, show per-file progress in addition to overall progress.}
 
 \item{force}{If \code{TRUE}, re-download files even if they exist with correct size.}
+
+\item{use_cache}{If \code{TRUE}, use manifest for cache tracking and update after downloads.}
 }
 \value{
 A list with components:
 \describe{
 \item{downloaded}{Number of files downloaded}
-\item{skipped}{Number of files skipped (already existed)}
+\item{skipped}{Number of files skipped (already existed or cached)}
 \item{failed}{Character vector of failed file names}
 \item{total_bytes}{Total bytes downloaded}
 \item{dest_dir}{Path to destination directory}
@@ -41,5 +44,7 @@ A list with components:
 }
 \description{
 Batch downloads files with progress bar and completion summary.
+When using cache, checks manifest for already-cached files and
+updates manifest after successful downloads.
 }
 \keyword{internal}

@@ -1,6 +1,8 @@
 #' Download Files with Progress Reporting
 #'
 #' Batch downloads files with progress bar and completion summary.
+#' When using cache, checks manifest for already-cached files and
+#' updates manifest after successful downloads.
 #'
 #' @param files_df A tibble with columns `filename`, `full_path`, `size`, `annexed`.
 #' @param dest_dir Destination directory path.
@@ -9,11 +11,12 @@
 #' @param quiet If `TRUE`, suppress all output.
 #' @param verbose If `TRUE`, show per-file progress in addition to overall progress.
 #' @param force If `TRUE`, re-download files even if they exist with correct size.
+#' @param use_cache If `TRUE`, use manifest for cache tracking and update after downloads.
 #'
 #' @return A list with components:
 #'   \describe{
 #'     \item{downloaded}{Number of files downloaded}
-#'     \item{skipped}{Number of files skipped (already existed)}
+#'     \item{skipped}{Number of files skipped (already existed or cached)}
 #'     \item{failed}{Character vector of failed file names}
 #'     \item{total_bytes}{Total bytes downloaded}
 #'     \item{dest_dir}{Path to destination directory}
@@ -21,7 +24,8 @@
 #'
 #' @keywords internal
 .download_with_progress <- function(files_df, dest_dir, dataset_id, tag = NULL,
-                                     quiet = FALSE, verbose = FALSE, force = FALSE) {
+                                     quiet = FALSE, verbose = FALSE, force = FALSE,
+                                     use_cache = FALSE) {
   n_files <- nrow(files_df)
 
   # Initialize counters
@@ -29,6 +33,33 @@
   skipped_count <- 0L
   failed_files <- character()
   total_bytes <- 0
+
+  # Read manifest if using cache (for skip checking and snapshot version)
+  manifest <- NULL
+  cached_snapshot <- NULL
+  if (use_cache) {
+    manifest <- .read_manifest(dest_dir)
+    if (!is.null(manifest)) {
+      cached_snapshot <- manifest$snapshot_tag
+    }
+
+    # Check for snapshot version mismatch
+    if (!is.null(cached_snapshot) && !is.null(tag) && cached_snapshot != tag) {
+      if (!quiet) {
+        cli::cli_alert_info(
+          "Cache contains snapshot {.val {cached_snapshot}}, downloading {.val {tag}}"
+        )
+      }
+    }
+  }
+
+  # Build a lookup of cached files from manifest for fast checking
+  cached_files <- list()
+  if (!is.null(manifest) && length(manifest$files) > 0) {
+    for (f in manifest$files) {
+      cached_files[[f$path]] <- f
+    }
+  }
 
   # Determine if we should show progress
   show_progress <- interactive() && !quiet
@@ -49,7 +80,26 @@
     dest_path <- fs::path(dest_dir, file_info$full_path)
 
     # Check if file exists with correct size (skip unless force=TRUE)
-    if (!force && .validate_existing_file(dest_path, file_info$size)) {
+    # For cache: also check manifest entry exists with correct size
+    should_skip <- FALSE
+    if (!force) {
+      if (use_cache) {
+        # Check manifest AND file existence
+        cached_entry <- cached_files[[file_info$full_path]]
+        if (!is.null(cached_entry) &&
+            cached_entry$size == file_info$size &&
+            .validate_existing_file(dest_path, file_info$size)) {
+          should_skip <- TRUE
+        }
+      } else {
+        # Non-cache: just check file existence
+        if (.validate_existing_file(dest_path, file_info$size)) {
+          should_skip <- TRUE
+        }
+      }
+    }
+
+    if (should_skip) {
       skipped_count <- skipped_count + 1L
       if (show_progress) {
         cli::cli_progress_update()
@@ -83,6 +133,17 @@
 
         downloaded_count <- downloaded_count + 1L
         total_bytes <- total_bytes + file_info$size
+
+        # Update manifest after successful download (if caching)
+        if (use_cache) {
+          .update_manifest(
+            dataset_dir = dest_dir,
+            new_file_info = list(path = file_info$full_path, size = file_info$size),
+            dataset_id = dataset_id,
+            snapshot_tag = tag,
+            backend = "https"
+          )
+        }
 
         if (verbose && !quiet) {
           cli::cli_alert_success("Downloaded {file_info$full_path}")
@@ -168,7 +229,7 @@
 
   # Skipped files info
   if (result$skipped > 0) {
-    cli::cli_alert_info("Skipped {result$skipped} existing file{?s}")
+    cli::cli_alert_info("Skipped {result$skipped} cached/existing file{?s}")
   }
 
   # Failed files warning

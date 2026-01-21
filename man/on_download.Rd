@@ -9,6 +9,7 @@ on_download(
   tag = NULL,
   files = NULL,
   dest_dir = NULL,
+  use_cache = TRUE,
   quiet = FALSE,
   verbose = FALSE,
   force = FALSE,
@@ -24,8 +25,13 @@ on_download(
 regex pattern (detected by presence of regex metacharacters). If NULL
 (default), downloads all files.}
 
-\item{dest_dir}{Destination directory. If NULL (default), creates
-\verb{./dataset_id/} in the current working directory.}
+\item{dest_dir}{Destination directory. If NULL (default) and \code{use_cache}
+is TRUE, downloads to cache location. If NULL and \code{use_cache} is FALSE,
+creates \verb{./dataset_id/} in the current working directory.}
+
+\item{use_cache}{If TRUE (default) and dest_dir is NULL, downloads to
+CRAN-compliant cache location. Set FALSE to use current working directory.
+Ignored when dest_dir is explicitly provided.}
 
 \item{quiet}{If TRUE, suppress all progress output. Default FALSE.}
 
@@ -41,7 +47,7 @@ size. Default FALSE.}
 Invisibly returns a list with:
 \describe{
 \item{downloaded}{Number of files downloaded}
-\item{skipped}{Number of files skipped (already existed)}
+\item{skipped}{Number of files skipped (already cached or existed)}
 \item{failed}{Character vector of failed file names}
 \item{total_bytes}{Total bytes downloaded}
 \item{dest_dir}{Path to destination directory}
@@ -52,21 +58,38 @@ Downloads files from an OpenNeuro dataset to local disk. Supports
 downloading the full dataset, specific files, or files matching a
 regex pattern.
 }
+\details{
+By default, files are downloaded to a CRAN-compliant cache location
+(platform-specific, see Details). Repeat downloads of the same files
+are skipped automatically based on manifest tracking.
+
+Cache locations by platform:
+\itemize{
+\item Mac: ~/Library/Caches/R/openneuroR
+\item Linux: ~/.cache/R/openneuroR
+\item Windows: ~/AppData/Local/R/cache/openneuroR
+}
+
+Each dataset is stored in a subdirectory by dataset ID. A manifest.json
+file tracks downloaded files, enabling automatic skip of already-cached
+files on repeat downloads.
+}
 \examples{
 \dontrun{
-# Download full dataset
-on_download("ds000001")
-
-# Download specific file
+# Download to cache (default)
 on_download("ds000001", files = "participants.tsv")
 
-# Download files matching pattern (first 3 subjects)
-on_download("ds000001", files = "sub-0[1-3].*")
+# Repeat download skips cached files
+result <- on_download("ds000001", files = "participants.tsv")
+result$skipped  # >= 1 (files already in cache)
 
-# Download to specific directory
+# Download to specific directory (bypasses cache)
 on_download("ds000001", dest_dir = "~/data/openneuro")
 
-# Force re-download of existing files
+# Download to current working directory
+on_download("ds000001", use_cache = FALSE)
+
+# Force re-download of cached files
 on_download("ds000001", force = TRUE)
 }
 }
