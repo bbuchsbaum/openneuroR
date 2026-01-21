@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 3 of 5 (Caching Layer)
-Plan: 1 of ? in current phase
-Status: In progress
-Last activity: 2026-01-21 - Completed 03-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-01-21 - Completed 03-02-PLAN.md
 
-Progress: [#####-----] 50%
+Progress: [######----] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~7m
-- Total execution time: ~35 min
+- Total plans completed: 6
+- Average duration: ~6m
+- Total execution time: ~39 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [#####-----] 50%
 |-------|-------|-------|----------|
 | 1 | 2/2 | 11m 23s | 5m 42s |
 | 2 | 2/2 | ~23m | ~12m |
-| 3 | 1/? | 2m | 2m |
+| 3 | 2/2 | 6m | 3m |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (7m 8s), 02-01 (8m), 02-02 (~15m), 03-01 (2m)
+- Last 5 plans: 02-01 (8m), 02-02 (~15m), 03-01 (2m), 03-02 (4m)
 - Trend: Fast execution for infrastructure setup tasks
 
 *Updated after each plan completion*
@@ -62,6 +62,9 @@ Recent decisions affecting current work:
 | tools::R_user_dir for cache | 03-01 | CRAN-compliant, platform-appropriate |
 | Atomic manifest writes | 03-01 | Prevent partial/corrupt manifests |
 | Pretty JSON manifests | 03-01 | Human-readable for debugging |
+| Dual validation for cache skip | 03-02 | Manifest entry AND file existence check |
+| use_cache=TRUE default | 03-02 | Cache is opt-out, most users want caching |
+| Interactive confirm for clear | 03-02 | Safety for destructive operations |
 
 ### Pending Todos
 
@@ -74,7 +77,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 03-01-PLAN.md
+Stopped at: Completed 03-02-PLAN.md (Phase 3 complete)
 Resume file: None
 
 ## Deliverables Index
@@ -86,11 +89,12 @@ Resume file: None
 | 02-01 | .planning/phases/02-download-engine/02-01-SUMMARY.md | .construct_download_url(), .download_single_file(), .list_all_files() |
 | 02-02 | .planning/phases/02-download-engine/02-02-SUMMARY.md | on_download() |
 | 03-01 | .planning/phases/03-caching-layer/03-01-SUMMARY.md | .on_cache_root(), .on_dataset_cache_path(), .on_file_cache_path(), .read_manifest(), .write_manifest() |
+| 03-02 | .planning/phases/03-caching-layer/03-02-SUMMARY.md | on_cache_list(), on_cache_info(), on_cache_clear() |
 
 ## Phase Completion Status
 
 - [x] Phase 1: Foundation + Discovery (2 plans)
 - [x] Phase 2: Download Engine (2 plans)
-- [ ] Phase 3: Caching Layer (in progress, 1/? plans)
+- [x] Phase 3: Caching Layer (2 plans)
 - [ ] Phase 4: Backends + Handle (TBD plans)
 - [ ] Phase 5: Infrastructure (TBD plans)
