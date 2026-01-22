@@ -112,7 +112,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md - GraphQL query, on_subjects() function, and tests
+- [x] 06-01-PLAN.md - GraphQL query, on_subjects() function, and tests
 
 ### Phase 7: Subject Filtering
 **Goal**: Users can download only specific subjects instead of entire datasets
@@ -155,6 +155,6 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 3. Caching Layer | v1.0 | 2/2 | Complete | 2026-01-21 |
 | 4. Backends + Handle | v1.0 | 4/4 | Complete | 2026-01-21 |
 | 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
-| 6. Subject Querying | v1.1 | 0/1 | Planned | - |
+| 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 7. Subject Filtering | v1.1 | 0/1 | Not started | - |
 | 8. BIDS Bridge | v1.1 | 0/1 | Not started | - |

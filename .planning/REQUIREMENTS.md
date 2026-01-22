@@ -9,8 +9,8 @@ Requirements for BIDS integration milestone. Each maps to roadmap phases.
 
 ### Subject Discovery
 
-- [ ] **SUBJ-01**: User can query subjects in a dataset without downloading (returns tibble with subject IDs)
-- [ ] **SUBJ-02**: User can see subject count from on_subjects() output
+- [x] **SUBJ-01**: User can query subjects in a dataset without downloading (returns tibble with subject IDs)
+- [x] **SUBJ-02**: User can see subject count from on_subjects() output
 
 ### Download Filtering
 
@@ -67,8 +67,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBJ-01 | Phase 6 | Pending |
-| SUBJ-02 | Phase 6 | Pending |
+| SUBJ-01 | Phase 6 | Complete |
+| SUBJ-02 | Phase 6 | Complete |
 | FILT-01 | Phase 7 | Pending |
 | FILT-02 | Phase 7 | Pending |
 | FILT-03 | Phase 7 | Pending |
