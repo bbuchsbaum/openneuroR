@@ -419,3 +419,168 @@ Suggests:
 - [rOpenSci System Commands Guide](https://ropensci.org/blog/2021/09/13/system-calls-r-package/)
 - [pins Package Documentation](https://pins.rstudio.com/)
 - [R-hub Caching Blog](https://blog.r-hub.io/2021/07/30/cache/)
+
+---
+
+# Addendum: bidser Integration (v1.1 Milestone)
+
+**Researched:** 2026-01-22
+**Confidence:** HIGH
+
+## Stack Changes for bidser Integration
+
+### Single Change: Add bidser to Suggests
+
+```
+Suggests:
+    testthat (>= 3.0.0),
+    httptest2,
+    withr,
+    bidser
+```
+
+**No version constraint** - bidser is at 0.0.0.9000 (development version).
+
+### Why Suggests (Not Imports)
+
+| Reason | Explanation |
+|--------|-------------|
+| **Optional functionality** | Core openneuroR download/search works without BIDS awareness |
+| **Heavy dependency chain** | bidser pulls in neuroim2, data.tree, stringdist - not needed for basic use |
+| **GitHub-only** | bidser is not on CRAN; Imports would block openneuroR CRAN submission |
+| **No circular dependency** | bidser does not depend on openneuroR |
+
+### No Additional Dependencies Needed
+
+Shared dependencies already in openneuroR Imports:
+- `rlang` - for `check_installed()` / `is_installed()`
+- `fs` - filesystem operations
+- `tibble`, `dplyr` - data frame manipulation
+- `jsonlite` - JSON parsing
+
+bidser-specific heavy deps (neuroim2, data.tree) stay isolated in bidser.
+
+---
+
+## CRAN-Compliant Integration Pattern
+
+### Pattern 1: Functions Requiring bidser
+
+Use `rlang::check_installed()` - already available since rlang is in Imports:
+
+```r
+#' Convert fetched handle to bids_project
+#'
+#' @param handle A fetched openneuro_handle
+#' @return A bids_project object from bidser
+#' @export
+as_bids_project <- function(handle) {
+  rlang::check_installed("bidser", reason = "to create BIDS projects")
+
+  path <- on_path(handle)
+  bidser::bids_project(path)
+}
+```
+
+**Why rlang::check_installed() over base requireNamespace():**
+- Already in Imports (no new dependency)
+- Interactive install prompt in RStudio
+- Better error message with `reason` parameter
+- Returns invisibly on success (cleaner code flow)
+
+### Pattern 2: Optional Enhancement Functions
+
+For functions that work with or without bidser:
+
+```r
+#' Check if bidser is available
+#' @return Logical
+#' @keywords internal
+has_bidser <- function() {
+  rlang::is_installed("bidser")
+}
+
+#' Get participants from handle (enhanced with bidser if available)
+#' @export
+on_participants <- function(handle) {
+  path <- on_path(handle)
+
+  if (has_bidser()) {
+    proj <- bidser::bids_project(path)
+    bidser::participants(proj)
+  } else {
+    # Fallback: read participants.tsv directly
+    pfile <- fs::path(path, "participants.tsv")
+    if (fs::file_exists(pfile)) {
+      readr::read_tsv(pfile, show_col_types = FALSE)
+    } else {
+      cli::cli_warn("No participants.tsv found; install bidser for BIDS parsing")
+      NULL
+    }
+  }
+}
+```
+
+### Pattern 3: For Tests
+
+```r
+test_that("as_bids_project creates valid bids_project", {
+  testthat::skip_if_not_installed("bidser")
+
+  # Test code using bidser
+})
+```
+
+---
+
+## Updated DESCRIPTION Suggests Section
+
+```
+Suggests:
+    testthat (>= 3.0.0),
+    httptest2,
+    withr,
+    bidser
+```
+
+**Note:** No version constraint on bidser since it is development-only (0.0.0.9000).
+
+---
+
+## User Documentation
+
+Add to README or vignette:
+
+```markdown
+## BIDS Integration (Optional)
+
+For BIDS-aware features, install bidser:
+
+\`\`\`r
+# Install bidser from GitHub
+remotes::install_github("bbuchsbaum/bidser")
+
+# Now BIDS functions are available
+handle <- on_handle("ds000001") |> on_fetch()
+proj <- as_bids_project(handle)
+bidser::participants(proj)
+\`\`\`
+```
+
+---
+
+## Quality Gate Checklist
+
+- [x] **CRAN-compliant**: bidser in Suggests, not Imports
+- [x] **Rationale documented**: Suggests because optional, heavy deps, GitHub-only
+- [x] **No circular dependency**: bidser does not depend on openneuroR
+- [x] **Pattern uses existing deps**: rlang::check_installed() already available
+- [x] **Test pattern**: testthat::skip_if_not_installed()
+
+---
+
+## Sources
+
+- [R Packages (2e) - Dependencies in Practice](https://r-pkgs.org/dependencies-in-practice.html)
+- [bidser GitHub](https://github.com/bbuchsbaum/bidser) - version 0.0.0.9000
+- [rlang check_installed documentation](https://rlang.r-lib.org/reference/is_installed.html)

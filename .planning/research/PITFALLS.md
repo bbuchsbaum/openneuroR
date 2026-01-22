@@ -647,6 +647,175 @@ SystemRequirements: DataLad (optional, https://www.datalad.org/),
 
 ---
 
+## Optional Dependency (Suggests) Pitfalls
+
+**Context:** Adding bidser as Suggests dependency for BIDS integration
+**Updated:** 2026-01-22
+
+### Critical: Unconditional Use in Examples
+
+**What goes wrong:** Examples call bidser functions without checking availability. R CMD check fails on systems without bidser installed.
+
+**Why it happens:** CRAN policy requires Suggests packages be "used conditionally." During CRAN checks, `_R_CHECK_FORCE_SUGGESTS_` may be FALSE.
+
+**Warning signs:**
+- `R CMD check` errors mentioning "package 'bidser' required"
+- Examples work locally but fail on CRAN
+
+**Prevention:**
+```r
+\dontrun{
+  # For examples that truly need bidser
+}
+# OR wrap with requireNamespace check:
+if (requireNamespace("bidser", quietly = TRUE)) {
+  # example code
+}
+```
+
+**Source:** [CRAN Repository Policy](https://cran.r-project.org/web/packages/policies.html)
+
+**Phase:** Any phase adding bidser-dependent examples
+
+---
+
+### Critical: Missing requireNamespace Guard in Functions
+
+**What goes wrong:** Functions using bidser fail cryptically when bidser is not installed instead of giving a helpful error.
+
+**Why it happens:** Users don't install Suggests packages automatically. Functions must handle their absence gracefully.
+
+**Warning signs:**
+- User reports "object not found" or namespace errors
+- Functions fail with internal errors instead of clear messages
+
+**Prevention:**
+```r
+my_bidser_function <- function(...) {
+  if (!requireNamespace("bidser", quietly = TRUE)) {
+    stop("Package 'bidser' required. Install with: install.packages('bidser')",
+         call. = FALSE)
+  }
+  # proceed with bidser::function()
+}
+```
+
+**Source:** [R Packages (2e) - Dependencies in Practice](https://r-pkgs.org/dependencies-in-practice.html)
+
+**Phase:** All phases adding bidser-dependent functions
+
+---
+
+### Critical: Tests Fail Without bidser Installed
+
+**What goes wrong:** Tests assume bidser is available. Fails during `R CMD check --as-cran` when `_R_CHECK_FORCE_SUGGESTS_=FALSE`.
+
+**Why it happens:** Tests work locally where bidser is installed. CRAN may run checks without Suggests installed.
+
+**Warning signs:**
+- CI failures when bidser not in test environment
+- Local tests pass but CRAN checks fail
+
+**Prevention:**
+```r
+test_that("bidser integration works", {
+  skip_if_not_installed("bidser")
+  # test code using bidser
+})
+```
+
+**Source:** [testthat - Skipping Tests](https://testthat.r-lib.org/articles/skipping.html)
+
+**Phase:** All phases adding bidser-related tests
+
+---
+
+### Moderate: Using require() Instead of requireNamespace()
+
+**What goes wrong:** `require()` attaches the package to the search path, polluting the namespace. CRAN check issues NOTE about library/require in package code.
+
+**Why it happens:** `require()` seems simpler, but it's meant for interactive use, not package code.
+
+**Prevention:**
+- Always use `requireNamespace("bidser", quietly = TRUE)`
+- Call functions via `bidser::fun()`, never unqualified after require()
+- Exception: examples may use `require()` per Writing R Extensions
+
+**Source:** [R Packages (2e)](https://r-pkgs.org/dependencies-in-practice.html)
+
+**Phase:** Code review checkpoint
+
+---
+
+### Moderate: Forgetting to Add bidser to DESCRIPTION Suggests
+
+**What goes wrong:** `R CMD check` NOTE: "Namespace in Imports field not imported" or similar inconsistency warnings.
+
+**Why it happens:** Code uses bidser but DESCRIPTION doesn't list it.
+
+**Prevention:**
+```r
+usethis::use_package("bidser", type = "Suggests")
+```
+
+Run this first before writing any bidser-dependent code.
+
+**Phase:** First task in bidser integration milestone
+
+---
+
+### Minor: Inconsistent User Messaging
+
+**What goes wrong:** Different functions give different error messages about missing bidser, confusing users.
+
+**Prevention:** Create internal helper used by all bidser-dependent functions:
+```r
+.check_bidser <- function() {
+  if (!requireNamespace("bidser", quietly = TRUE)) {
+    stop("Package 'bidser' required for this function. ",
+         "Install with: install.packages('bidser')", call. = FALSE)
+  }
+}
+```
+
+**Phase:** Create once in first bidser integration phase, reuse
+
+---
+
+### Minor: Vignettes That Require bidser
+
+**What goes wrong:** Vignette fails to build on CRAN check infrastructure where bidser may not be installed.
+
+**Why it happens:** Vignettes are rebuilt during R CMD check. If they call bidser unconditionally, they fail.
+
+**Prevention:**
+- Use `eval = requireNamespace("bidser", quietly = TRUE)` in code chunks
+- Or document bidser as optional with example output pre-rendered
+- Consider pkgdown articles instead of CRAN vignettes for heavy bidser examples
+
+**Phase:** If adding vignettes that use bidser
+
+---
+
+### Suggests Dependency Checklist
+
+| Phase | Pitfall Check |
+|-------|---------------|
+| Setup | bidser added to Suggests field in DESCRIPTION |
+| Functions | All bidser-using functions have requireNamespace guard |
+| Tests | All bidser tests use skip_if_not_installed("bidser") |
+| Examples | All bidser examples conditional or in \dontrun{} |
+| Final | R CMD check --as-cran passes with bidser uninstalled |
+
+**Validation command:**
+```bash
+# Uninstall bidser, then run check
+R CMD INSTALL --no-test-load .
+_R_CHECK_FORCE_SUGGESTS_=FALSE R CMD check --as-cran openneuro_*.tar.gz
+```
+
+---
+
 ## Prevention Strategies Summary
 
 ### Phase 1: Foundation Setup
@@ -690,6 +859,16 @@ SystemRequirements: DataLad (optional, https://www.datalad.org/),
 | Cache unbounded | Provide cache management functions |
 | No progress feedback | cli package integration |
 
+### Optional Dependency Integration (bidser)
+
+| Pitfall | Prevention |
+|---------|------------|
+| Unconditional examples | Wrap in \dontrun{} or requireNamespace check |
+| Missing function guards | requireNamespace() at function start |
+| Tests fail without package | skip_if_not_installed() in all tests |
+| Using require() | Use requireNamespace() + pkg::fun() |
+| DESCRIPTION not updated | usethis::use_package("bidser", "Suggests") first |
+
 ---
 
 ## Phase Mapping
@@ -700,6 +879,7 @@ SystemRequirements: DataLad (optional, https://www.datalad.org/),
 | **Phase 2: API Core** | Error handling, authentication, CLI integration, test mocking |
 | **Phase 3: Downloads** | Timeout, resume, checksums, file limits, rate limiting |
 | **Phase 4: Polish** | Examples, vignettes, progress, cache management |
+| **bidser Integration** | requireNamespace guards, skip_if_not_installed, conditional examples |
 
 ---
 
@@ -709,6 +889,7 @@ SystemRequirements: DataLad (optional, https://www.datalad.org/),
 - [CRAN Repository Policy](https://cran.r-project.org/web/packages/policies.html)
 - [httr2 Wrapping APIs](https://httr2.r-lib.org/articles/wrapping-apis.html)
 - [R Packages (2e) - CRAN Chapter](https://r-pkgs.org/release.html)
+- [R Packages (2e) - Dependencies in Practice](https://r-pkgs.org/dependencies-in-practice.html)
 - [processx documentation](https://processx.r-lib.org/)
 - [testthat skipping](https://testthat.r-lib.org/articles/skipping.html)
 
