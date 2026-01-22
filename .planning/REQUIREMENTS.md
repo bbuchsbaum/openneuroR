@@ -20,16 +20,16 @@ Requirements for BIDS integration milestone. Each maps to roadmap phases.
 
 ### BIDS Bridge
 
-- [ ] **BIDS-01**: User can get bidser bids_project object from fetched handle via on_bids()
-- [ ] **BIDS-02**: on_bids() checks for bidser and provides helpful installation message if not installed
-- [ ] **BIDS-03**: on_bids() accepts fmriprep= parameter to include fMRIPrep derivatives
-- [ ] **BIDS-04**: on_bids() accepts prep_dir= parameter to specify custom derivatives path
+- [x] **BIDS-01**: User can get bidser bids_project object from fetched handle via on_bids()
+- [x] **BIDS-02**: on_bids() checks for bidser and provides helpful installation message if not installed
+- [x] **BIDS-03**: on_bids() accepts fmriprep= parameter to include fMRIPrep derivatives
+- [x] **BIDS-04**: on_bids() accepts prep_dir= parameter to specify custom derivatives path
 
 ### Infrastructure
 
-- [ ] **INF1-01**: bidser listed in Suggests (not Imports) for optional dependency
-- [ ] **INF1-02**: All new functions have mocked tests (no real API/downloads in tests)
-- [ ] **INF1-03**: Package passes R CMD check with no errors/warnings
+- [x] **INF1-01**: bidser listed in Suggests (not Imports) for optional dependency
+- [x] **INF1-02**: All new functions have mocked tests (no real API/downloads in tests)
+- [x] **INF1-03**: Package passes R CMD check with no errors/warnings
 
 ## v1.0 Requirements (Complete)
 
@@ -72,13 +72,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILT-01 | Phase 7 | Complete |
 | FILT-02 | Phase 7 | Complete |
 | FILT-03 | Phase 7 | Complete |
-| BIDS-01 | Phase 8 | Pending |
-| BIDS-02 | Phase 8 | Pending |
-| BIDS-03 | Phase 8 | Pending |
-| BIDS-04 | Phase 8 | Pending |
-| INF1-01 | Phase 8 | Pending |
-| INF1-02 | Phase 8 | Pending |
-| INF1-03 | Phase 8 | Pending |
+| BIDS-01 | Phase 8 | Complete |
+| BIDS-02 | Phase 8 | Complete |
+| BIDS-03 | Phase 8 | Complete |
+| BIDS-04 | Phase 8 | Complete |
+| INF1-01 | Phase 8 | Complete |
+| INF1-02 | Phase 8 | Complete |
+| INF1-03 | Phase 8 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 12 total
@@ -87,4 +87,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 - v1.1 roadmap created with phase mappings*
+*Last updated: 2026-01-22 - v1.1 milestone complete*

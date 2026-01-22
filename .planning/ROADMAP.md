@@ -3,7 +3,7 @@
 ## Milestones
 
 - **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22)
-- **v1.1 BIDS Integration** - Phases 6-8 (in progress)
+- **v1.1 BIDS Integration** - Phases 6-8 (shipped 2026-01-22)
 
 ## Phases
 
@@ -91,13 +91,13 @@ Plans:
 
 </details>
 
-### v1.1 BIDS Integration (In Progress)
+### v1.1 BIDS Integration (Complete)
 
 **Milestone Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access. Users can discover subjects before downloading, selectively download subsets, and convert fetched datasets into bids_project objects.
 
 - [x] **Phase 6: Subject Querying** - Query subjects in a dataset without downloading
 - [x] **Phase 7: Subject Filtering** - Download specific subjects via subjects= parameter
-- [ ] **Phase 8: BIDS Bridge** - Bridge to bidser for BIDS-aware project objects
+- [x] **Phase 8: BIDS Bridge** - Bridge to bidser for BIDS-aware project objects
 
 ## Phase Details
 
@@ -141,7 +141,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 08-01-PLAN.md - BIDS bridge with on_bids() function and bidser integration
+- [x] 08-01-PLAN.md - BIDS bridge with on_bids() function and bidser integration
 
 ## Progress
 
@@ -157,4 +157,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
 | 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
-| 8. BIDS Bridge | v1.1 | 0/1 | Planned | - |
+| 8. BIDS Bridge | v1.1 | 1/1 | Complete | 2026-01-22 |
