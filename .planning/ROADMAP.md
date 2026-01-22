@@ -109,10 +109,10 @@ Plans:
   1. User can call on_subjects("ds000001") and get a tibble with subject IDs
   2. User can see how many subjects exist in the dataset from the output
   3. Function works without downloading any data (metadata-only query)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 06-01: Subject querying implementation
+- [ ] 06-01-PLAN.md - GraphQL query, on_subjects() function, and tests
 
 ### Phase 7: Subject Filtering
 **Goal**: Users can download only specific subjects instead of entire datasets
@@ -155,6 +155,6 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 3. Caching Layer | v1.0 | 2/2 | Complete | 2026-01-21 |
 | 4. Backends + Handle | v1.0 | 4/4 | Complete | 2026-01-21 |
 | 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
-| 6. Subject Querying | v1.1 | 0/1 | Not started | - |
+| 6. Subject Querying | v1.1 | 0/1 | Planned | - |
 | 7. Subject Filtering | v1.1 | 0/1 | Not started | - |
 | 8. BIDS Bridge | v1.1 | 0/1 | Not started | - |
