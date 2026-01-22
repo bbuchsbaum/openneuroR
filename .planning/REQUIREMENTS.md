@@ -3,70 +3,49 @@
 **Defined:** 2026-01-20
 **Core Value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
 
-## v1 Requirements
+## v1.1 Requirements (Current Milestone)
 
-Requirements for initial release. Each maps to roadmap phases.
+Requirements for BIDS integration milestone. Each maps to roadmap phases.
 
-### Discovery
+### Subject Discovery
 
-- [x] **DISC-01**: User can search datasets by text query, returning tibble of results
-- [x] **DISC-02**: User can get dataset metadata (name, created, updated, public status)
-- [x] **DISC-03**: User can list snapshots for a dataset with tags and timestamps
-- [x] **DISC-04**: User can list files within a snapshot (filename, size, annexed status)
+- [ ] **SUBJ-01**: User can query subjects in a dataset without downloading (returns tibble with subject IDs)
+- [ ] **SUBJ-02**: User can see subject count from on_subjects() output
 
-### Downloads
+### Download Filtering
 
-- [x] **DOWN-01**: User can download full dataset to local cache
-- [x] **DOWN-02**: Download shows progress bar during transfer
-- [x] **DOWN-03**: Download retries automatically with exponential backoff on failure
-- [x] **DOWN-04**: Download resumes from where it stopped on interruption (large files)
+- [ ] **FILT-01**: User can download specific subjects only via subjects= parameter in on_download()
+- [ ] **FILT-02**: subjects= parameter accepts character vector of subject IDs (e.g., c("sub-01", "sub-02"))
+- [ ] **FILT-03**: subjects= parameter supports regex patterns for flexible matching (e.g., "sub-0[1-5]")
 
-### Backends
+### BIDS Bridge
 
-- [x] **BACK-01**: HTTPS backend works with no external dependencies
-- [x] **BACK-02**: S3 backend uses AWS CLI for fast bulk downloads
-- [x] **BACK-03**: DataLad backend uses DataLad CLI for integrity + partial retrieval
-- [x] **BACK-04**: Auto-select chooses best available backend automatically
-
-### Caching
-
-- [x] **CACH-01**: Downloaded datasets are cached locally (no re-download on repeat access)
-- [x] **CACH-02**: Cache uses CRAN-compliant location (tools::R_user_dir)
-- [x] **CACH-03**: Manifest tracks what was downloaded, when, via which backend
-- [x] **CACH-04**: User can list, clear, and manage cached datasets
-
-### Handle/Pipeline
-
-- [x] **HAND-01**: User can create lazy handle to dataset (no immediate download)
-- [x] **HAND-02**: User can fetch handle to materialize download
-- [x] **HAND-03**: User can get filesystem path from fetched handle
+- [ ] **BIDS-01**: User can get bidser bids_project object from fetched handle via on_bids()
+- [ ] **BIDS-02**: on_bids() checks for bidser and provides helpful installation message if not installed
+- [ ] **BIDS-03**: on_bids() accepts fmriprep= parameter to include fMRIPrep derivatives
+- [ ] **BIDS-04**: on_bids() accepts prep_dir= parameter to specify custom derivatives path
 
 ### Infrastructure
 
-- [x] **INFR-01**: Package passes R CMD check with no errors/warnings
-- [x] **INFR-02**: Tests use mocking (httptest2), no real API calls
-- [x] **INFR-03**: on_doctor() reports backend dependency status
+- [ ] **INF1-01**: bidser listed in Suggests (not Imports) for optional dependency
+- [ ] **INF1-02**: All new functions have mocked tests (no real API/downloads in tests)
+- [ ] **INF1-03**: Package passes R CMD check with no errors/warnings
 
-## v2 Requirements
+## v1.0 Requirements (Complete)
 
-Deferred to future release. Tracked but not in current roadmap.
+All v1.0 requirements shipped. See `.planning/milestones/v1.0-REQUIREMENTS.md` for full archive.
 
-### Enhanced Discovery
+**Summary:** 22 requirements across Discovery (4), Downloads (4), Backends (4), Caching (4), Handle/Pipeline (3), Infrastructure (3).
 
-- **DISC-05**: Search filtered by modality (MRI, EEG, etc.)
-- **DISC-06**: Search filtered by species
-- **DISC-07**: Paginated search results with cursor
+## Future Requirements
 
-### Enhanced Downloads
+Deferred to later milestones:
 
-- **DOWN-05**: Concurrent multi-file downloads for large datasets
-- **DOWN-06**: Checksum verification after download
-- **DOWN-07**: Subset downloads (specific files/subjects only)
-
-### Pipeline Integration
-
-- **PIPE-01**: tar_openneuro() targets helper
-- **PIPE-02**: on_bids() returns BIDS descriptor object
+- Session-level filtering in on_download() — v1.2+
+- Task-level filtering in on_download() — v1.2+
+- Derivative discovery from OpenNeuro API — v1.2+
+- Concurrent multi-subject downloads — v2+
+- tar_openneuro() targets helper — v2+
 
 ## Out of Scope
 
@@ -74,11 +53,12 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 |---------|--------|
-| Upload/write operations | Read-only access for v1; OpenNeuro upload has separate workflow |
+| Upload/write operations | Read-only access for v1.x; OpenNeuro upload has separate workflow |
 | OAuth/social login | API key + bearer token sufficient; OpenNeuro uses simple auth |
-| BIDS validation | Separate concern; integrate with existing BIDS packages |
+| BIDS validation | Separate concern; compose with bids-validator or other tools |
+| Derivative processing | openneuroR fetches data, bidser/other tools process it |
 | Real-time notifications | Not needed for data access patterns |
-| GUI/RStudio integration | CLI/programmatic access only for v1 |
+| GUI/RStudio integration | CLI/programmatic access only |
 | Offline search index | High complexity, defer indefinitely |
 
 ## Traceability
@@ -87,34 +67,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 1 | Complete |
-| DISC-02 | Phase 1 | Complete |
-| DISC-03 | Phase 1 | Complete |
-| DISC-04 | Phase 1 | Complete |
-| DOWN-01 | Phase 2 | Complete |
-| DOWN-02 | Phase 2 | Complete |
-| DOWN-03 | Phase 2 | Complete |
-| DOWN-04 | Phase 2 | Complete |
-| BACK-01 | Phase 2 | Complete |
-| BACK-02 | Phase 4 | Complete |
-| BACK-03 | Phase 4 | Complete |
-| BACK-04 | Phase 4 | Complete |
-| CACH-01 | Phase 3 | Complete |
-| CACH-02 | Phase 3 | Complete |
-| CACH-03 | Phase 3 | Complete |
-| CACH-04 | Phase 3 | Complete |
-| HAND-01 | Phase 4 | Complete |
-| HAND-02 | Phase 4 | Complete |
-| HAND-03 | Phase 4 | Complete |
-| INFR-01 | Phase 5 | Complete |
-| INFR-02 | Phase 5 | Complete |
-| INFR-03 | Phase 5 | Complete |
+| SUBJ-01 | — | Pending |
+| SUBJ-02 | — | Pending |
+| FILT-01 | — | Pending |
+| FILT-02 | — | Pending |
+| FILT-03 | — | Pending |
+| BIDS-01 | — | Pending |
+| BIDS-02 | — | Pending |
+| BIDS-03 | — | Pending |
+| BIDS-04 | — | Pending |
+| INF1-01 | — | Pending |
+| INF1-02 | — | Pending |
+| INF1-03 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 22 total
-- Mapped to phases: 22
-- Unmapped: 0
+- v1.1 requirements: 12 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 12
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 after Phase 5 completion (milestone complete)*
+*Last updated: 2026-01-22 — v1.1 BIDS Integration milestone*
