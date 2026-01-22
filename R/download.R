@@ -253,5 +253,8 @@ on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
 #'
 #' @keywords internal
 .is_regex <- function(x) {
-  length(x) == 1 && grepl("[\\[\\]\\*\\+\\?\\^\\$\\{\\|\\(\\)]", x)
+  # Character class with regex metacharacters
+
+  # Note: ] must be first in character class to be literal
+  length(x) == 1 && grepl("[][()*+?^${}|]", x)
 }

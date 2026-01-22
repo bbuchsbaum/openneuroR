@@ -1,0 +1,235 @@
+# Tests for download.R - on_download() and helper functions
+# Uses local_mocked_bindings() to mock dependencies
+
+# --- .is_regex tests ---
+
+test_that(".is_regex returns TRUE for asterisk pattern", {
+  expect_true(.is_regex("*.nii.gz"))
+})
+
+test_that(".is_regex returns TRUE for plus pattern", {
+  expect_true(.is_regex("sub-0[1-9]+"))
+})
+
+test_that(".is_regex returns TRUE for question mark pattern", {
+  expect_true(.is_regex("file?.txt"))
+})
+
+test_that(".is_regex returns TRUE for brackets pattern", {
+  expect_true(.is_regex("sub-[0-9]"))
+})
+
+test_that(".is_regex returns TRUE for caret pattern", {
+  expect_true(.is_regex("^participants"))
+})
+
+test_that(".is_regex returns TRUE for dollar pattern", {
+  expect_true(.is_regex("README$"))
+})
+
+test_that(".is_regex returns TRUE for pipe pattern", {
+  expect_true(.is_regex("anat|func"))
+})
+
+test_that(".is_regex returns TRUE for parentheses pattern", {
+
+  expect_true(.is_regex("(sub-01|sub-02)"))
+})
+
+test_that(".is_regex returns FALSE for plain filename", {
+  expect_false(.is_regex("participants.tsv"))
+})
+
+test_that(".is_regex returns FALSE for path with slashes", {
+  expect_false(.is_regex("sub-01/anat/T1w.nii.gz"))
+})
+
+test_that(".is_regex returns FALSE for multi-element vector", {
+  expect_false(.is_regex(c("file1.txt", "file2.txt")))
+})
+
+
+# --- on_download tests ---
+
+test_that("on_download validates id parameter - empty string", {
+  expect_error(
+    on_download(""),
+    class = "openneuro_validation_error"
+  )
+})
+
+test_that("on_download validates id parameter - NULL", {
+  expect_error(
+    on_download(NULL),
+    class = "openneuro_validation_error"
+  )
+})
+
+test_that("on_download validates id parameter - non-character", {
+  expect_error(
+    on_download(123),
+    class = "openneuro_validation_error"
+  )
+})
+
+test_that("on_download validates id parameter - vector", {
+  expect_error(
+    on_download(c("ds000001", "ds000002")),
+    class = "openneuro_validation_error"
+  )
+})
+
+test_that("on_download returns early with zeros when no files found", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = character(),
+      full_path = character(),
+      size = numeric(),
+      annexed = logical()
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id)
+  )
+
+  # cli_alert_warning is used, not base warning(), so test the result
+  result <- on_download("ds000001", quiet = TRUE)
+
+  expect_equal(result$downloaded, 0L)
+  expect_equal(result$skipped, 0L)
+  expect_equal(result$failed, character())
+})
+
+test_that("on_download filters by exact file paths", {
+  # Create a mock that tracks what files are passed to backend
+  files_passed <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = c("README.md", "participants.tsv", "CHANGES"),
+      full_path = c("README.md", "participants.tsv", "CHANGES"),
+      size = c(100, 200, 50),
+      annexed = c(FALSE, FALSE, FALSE)
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet) {
+      files_passed <<- files
+      list(success = TRUE, backend = "https")
+    },
+    .update_manifest = function(...) invisible(NULL),
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  withr::local_tempdir()
+  on_download("ds000001", files = c("README.md", "CHANGES"), quiet = TRUE)
+
+  # Should only include the requested files
+  expect_equal(sort(files_passed), sort(c("README.md", "CHANGES")))
+})
+
+test_that("on_download filters by regex pattern", {
+  files_passed <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = c("README.md", "participants.tsv", "README.txt"),
+      full_path = c("README.md", "participants.tsv", "README.txt"),
+      size = c(100, 200, 50),
+      annexed = c(FALSE, FALSE, FALSE)
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet) {
+      files_passed <<- files
+      list(success = TRUE, backend = "https")
+    },
+    .update_manifest = function(...) invisible(NULL),
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  withr::local_tempdir()
+  on_download("ds000001", files = "^README", quiet = TRUE)
+
+  # Should match both README files
+  expect_equal(sort(files_passed), sort(c("README.md", "README.txt")))
+})
+
+test_that("on_download returns early with zeros when regex matches nothing", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = c("README.md", "participants.tsv"),
+      full_path = c("README.md", "participants.tsv"),
+      size = c(100, 200),
+      annexed = c(FALSE, FALSE)
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id)
+  )
+
+  # cli_alert_warning is used, not base warning(), so test the result
+  result <- on_download("ds000001", files = "^nonexistent", quiet = TRUE)
+
+  expect_equal(result$downloaded, 0L)
+  expect_equal(result$skipped, 0L)
+  expect_equal(result$failed, character())
+})
+
+test_that("on_download falls back to HTTPS when backend returns NULL", {
+  backend_used <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = c("README.md"),
+      full_path = c("README.md"),
+      size = c(100),
+      annexed = c(FALSE)
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet) {
+      NULL  # Backend not available
+    },
+    .download_with_progress = function(files_df, dest_dir, dataset_id, tag,
+                                        quiet, verbose, force, use_cache) {
+      list(
+        downloaded = 1L,
+        skipped = 0L,
+        failed = character(),
+        total_bytes = 100,
+        dest_dir = dest_dir
+      )
+    }
+  )
+
+  withr::local_tempdir()
+  result <- on_download("ds000001", quiet = TRUE)
+
+  # Should use HTTPS fallback
+
+  expect_equal(result$backend, "https")
+  expect_equal(result$downloaded, 1L)
+})
+
+test_that("on_download returns backend info on S3/DataLad success", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    .list_all_files = function(...) tibble::tibble(
+      filename = c("README.md"),
+      full_path = c("README.md"),
+      size = c(100),
+      annexed = c(FALSE)
+    ),
+    .on_dataset_cache_path = function(id) file.path(tempdir(), id),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet) {
+      list(success = TRUE, backend = "s3")
+    },
+    .update_manifest = function(...) invisible(NULL),
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  withr::local_tempdir()
+  result <- on_download("ds000001", quiet = TRUE)
+
+  expect_true("backend" %in% names(result))
+  expect_equal(result$backend, "s3")
+})
