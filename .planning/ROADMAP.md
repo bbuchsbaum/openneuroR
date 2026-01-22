@@ -138,10 +138,10 @@ Plans:
   3. User can include fMRIPrep derivatives via on_bids(handle, fmriprep = TRUE)
   4. User can specify custom derivatives path via on_bids(handle, prep_dir = "derivatives/custom")
   5. R CMD check passes with bidser as Suggests (not Imports)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 08-01: BIDS bridge and bidser integration
+- [ ] 08-01-PLAN.md - BIDS bridge with on_bids() function and bidser integration
 
 ## Progress
 
@@ -157,4 +157,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
 | 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
-| 8. BIDS Bridge | v1.1 | 0/1 | Not started | - |
+| 8. BIDS Bridge | v1.1 | 0/1 | Planned | - |
