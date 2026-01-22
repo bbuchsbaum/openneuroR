@@ -108,3 +108,111 @@ test_that(".ensure_dest_dir handles existing directory", {
   expect_true(dir.exists(result))
   expect_true(file.exists(test_file))  # Original content preserved
 })
+
+# --- .download_atomic tests ---
+
+test_that(".download_atomic downloads file to final path on success", {
+  tmp <- withr::local_tempdir()
+  final_path <- file.path(tmp, "downloaded.txt")
+
+  # Mock download function that just creates the file
+  mock_download <- function(url, dest_path, ...) {
+    writeLines("test content", dest_path)
+  }
+
+  result <- .download_atomic(
+    url = "https://example.com/file.txt",
+    final_path = final_path,
+    download_fn = mock_download
+  )
+
+  expect_true(file.exists(final_path))
+  expect_equal(readLines(final_path), "test content")
+})
+
+test_that(".download_atomic creates destination directory if missing", {
+  tmp <- withr::local_tempdir()
+  final_path <- file.path(tmp, "subdir", "nested", "downloaded.txt")
+
+  mock_download <- function(url, dest_path, ...) {
+    writeLines("content", dest_path)
+  }
+
+  result <- .download_atomic(
+    url = "https://example.com/file.txt",
+    final_path = final_path,
+    download_fn = mock_download
+  )
+
+  expect_true(file.exists(final_path))
+  expect_true(dir.exists(dirname(final_path)))
+})
+
+test_that(".download_atomic cleans up temp file on failure", {
+  tmp <- withr::local_tempdir()
+  final_path <- file.path(tmp, "will_fail.txt")
+
+  # Mock download function that fails
+  mock_download <- function(url, dest_path, ...) {
+    stop("Download failed")
+  }
+
+  expect_error(
+    .download_atomic(
+      url = "https://example.com/file.txt",
+      final_path = final_path,
+      download_fn = mock_download
+    ),
+    class = "openneuro_download_error"
+  )
+
+  # Temp file should be cleaned up
+  expect_false(file.exists(final_path))
+})
+
+test_that(".download_atomic handles cross-filesystem fallback", {
+  tmp <- withr::local_tempdir()
+  final_path <- file.path(tmp, "fallback.txt")
+
+  mock_download <- function(url, dest_path, ...) {
+    writeLines("content", dest_path)
+  }
+
+  # Mock file_move to fail, forcing copy fallback
+  local_mocked_bindings(
+    file_move = function(...) {
+      stop("cross-filesystem move not supported")
+    },
+    .package = "fs"
+  )
+
+  result <- .download_atomic(
+    url = "https://example.com/file.txt",
+    final_path = final_path,
+    download_fn = mock_download
+  )
+
+  expect_true(file.exists(final_path))
+  expect_equal(readLines(final_path), "content")
+})
+
+test_that(".download_atomic preserves file extension in temp file", {
+  tmp <- withr::local_tempdir()
+  final_path <- file.path(tmp, "data.nii.gz")
+
+  # Mock download to capture temp path
+  temp_path_captured <- NULL
+  mock_download <- function(url, dest_path, ...) {
+    temp_path_captured <<- dest_path
+    writeLines("data", dest_path)
+  }
+
+  result <- .download_atomic(
+    url = "https://example.com/data.nii.gz",
+    final_path = final_path,
+    download_fn = mock_download
+  )
+
+  # Temp file should have had the same extension
+  expect_true(grepl("\\.gz$", temp_path_captured))
+})
