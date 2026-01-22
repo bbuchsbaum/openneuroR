@@ -41,11 +41,11 @@ All v1.0 requirements shipped. See `.planning/milestones/v1.0-REQUIREMENTS.md` f
 
 Deferred to later milestones:
 
-- Session-level filtering in on_download() — v1.2+
-- Task-level filtering in on_download() — v1.2+
-- Derivative discovery from OpenNeuro API — v1.2+
-- Concurrent multi-subject downloads — v2+
-- tar_openneuro() targets helper — v2+
+- Session-level filtering in on_download() - v1.2+
+- Task-level filtering in on_download() - v1.2+
+- Derivative discovery from OpenNeuro API - v1.2+
+- Concurrent multi-subject downloads - v2+
+- tar_openneuro() targets helper - v2+
 
 ## Out of Scope
 
@@ -67,24 +67,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBJ-01 | — | Pending |
-| SUBJ-02 | — | Pending |
-| FILT-01 | — | Pending |
-| FILT-02 | — | Pending |
-| FILT-03 | — | Pending |
-| BIDS-01 | — | Pending |
-| BIDS-02 | — | Pending |
-| BIDS-03 | — | Pending |
-| BIDS-04 | — | Pending |
-| INF1-01 | — | Pending |
-| INF1-02 | — | Pending |
-| INF1-03 | — | Pending |
+| SUBJ-01 | Phase 6 | Pending |
+| SUBJ-02 | Phase 6 | Pending |
+| FILT-01 | Phase 7 | Pending |
+| FILT-02 | Phase 7 | Pending |
+| FILT-03 | Phase 7 | Pending |
+| BIDS-01 | Phase 8 | Pending |
+| BIDS-02 | Phase 8 | Pending |
+| BIDS-03 | Phase 8 | Pending |
+| BIDS-04 | Phase 8 | Pending |
+| INF1-01 | Phase 8 | Pending |
+| INF1-02 | Phase 8 | Pending |
+| INF1-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 12 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 12
+- Mapped to phases: 12
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 — v1.1 BIDS Integration milestone*
+*Last updated: 2026-01-22 - v1.1 roadmap created with phase mappings*

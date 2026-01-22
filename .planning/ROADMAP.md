@@ -1,22 +1,14 @@
 # Roadmap: openneuro
 
-## Overview
+## Milestones
 
-This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases. We start with package foundation and GraphQL-based discovery, then build the download engine with HTTPS backend, add caching for persistence, layer in alternative backends (S3, DataLad) with the lazy handle pattern, and finish with testing infrastructure and polish. Each phase delivers a coherent, testable capability.
+- **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22)
+- **v1.1 BIDS Integration** - Phases 6-8 (in progress)
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-- [x] **Phase 1: Foundation + Discovery** - Package skeleton and GraphQL-based dataset discovery
-- [x] **Phase 2: Download Engine** - Core download mechanics with HTTPS backend
-- [x] **Phase 3: Caching Layer** - CRAN-compliant cache with manifest tracking
-- [x] **Phase 4: Backends + Handle** - S3/DataLad backends, auto-select, and lazy handle pattern
-- [x] **Phase 5: Infrastructure** - Tests, R CMD check, diagnostics
-
-## Phase Details
+<details>
+<summary>v1.0 MVP (Phases 1-5) - SHIPPED 2026-01-22</summary>
 
 ### Phase 1: Foundation + Discovery
 **Goal**: Researchers can search and explore OpenNeuro datasets from R
@@ -77,10 +69,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [x] 04-01-PLAN.md — Backend detection utilities and S3 backend (AWS CLI)
-- [x] 04-02-PLAN.md — DataLad backend (clone + get with integrity)
-- [x] 04-03-PLAN.md — Auto-select dispatch and on_download backend integration
-- [x] 04-04-PLAN.md — Lazy handle pattern (on_handle, on_fetch, on_path)
+- [x] 04-01-PLAN.md - Backend detection utilities and S3 backend (AWS CLI)
+- [x] 04-02-PLAN.md - DataLad backend (clone + get with integrity)
+- [x] 04-03-PLAN.md - Auto-select dispatch and on_download backend integration
+- [x] 04-04-PLAN.md - Lazy handle pattern (on_handle, on_fetch, on_path)
 
 ### Phase 5: Infrastructure
 **Goal**: Package is CRAN-ready with comprehensive mocked tests
@@ -93,19 +85,76 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [x] 05-01-PLAN.md — Test infrastructure setup with httptest2 and API discovery function tests
-- [x] 05-02-PLAN.md — Backend/handle/cache tests and on_doctor() implementation
-- [x] 05-03-PLAN.md — R CMD check compliance and final verification
+- [x] 05-01-PLAN.md - Test infrastructure setup with httptest2 and API discovery function tests
+- [x] 05-02-PLAN.md - Backend/handle/cache tests and on_doctor() implementation
+- [x] 05-03-PLAN.md - R CMD check compliance and final verification
+
+</details>
+
+### v1.1 BIDS Integration (In Progress)
+
+**Milestone Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access. Users can discover subjects before downloading, selectively download subsets, and convert fetched datasets into bids_project objects.
+
+- [ ] **Phase 6: Subject Querying** - Query subjects in a dataset without downloading
+- [ ] **Phase 7: Subject Filtering** - Download specific subjects via subjects= parameter
+- [ ] **Phase 8: BIDS Bridge** - Bridge to bidser for BIDS-aware project objects
+
+## Phase Details
+
+### Phase 6: Subject Querying
+**Goal**: Users can discover subjects in a dataset before downloading
+**Depends on**: Phase 5 (uses existing GraphQL infrastructure)
+**Requirements**: SUBJ-01, SUBJ-02
+**Success Criteria** (what must be TRUE):
+  1. User can call on_subjects("ds000001") and get a tibble with subject IDs
+  2. User can see how many subjects exist in the dataset from the output
+  3. Function works without downloading any data (metadata-only query)
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: Subject querying implementation
+
+### Phase 7: Subject Filtering
+**Goal**: Users can download only specific subjects instead of entire datasets
+**Depends on**: Phase 6 (uses on_subjects() for validation)
+**Requirements**: FILT-01, FILT-02, FILT-03
+**Success Criteria** (what must be TRUE):
+  1. User can call on_download(..., subjects = c("sub-01", "sub-02")) to download specific subjects
+  2. User can use regex patterns (subjects = "sub-0[1-5]") for flexible matching
+  3. Download respects subject filter and only retrieves matching files
+  4. Invalid subject IDs produce helpful error messages
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: Subject filtering implementation
+
+### Phase 8: BIDS Bridge
+**Goal**: Users can get BIDS-aware project objects from fetched datasets
+**Depends on**: Phase 7 (requires download functionality)
+**Requirements**: BIDS-01, BIDS-02, BIDS-03, BIDS-04, INF1-01, INF1-02, INF1-03
+**Success Criteria** (what must be TRUE):
+  1. User can call on_bids(handle) and get a bidser bids_project object
+  2. on_bids() provides helpful message if bidser is not installed
+  3. User can include fMRIPrep derivatives via on_bids(handle, fmriprep = TRUE)
+  4. User can specify custom derivatives path via on_bids(handle, prep_dir = "derivatives/custom")
+  5. R CMD check passes with bidser as Suggests (not Imports)
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: BIDS bridge and bidser integration
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
+Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation + Discovery | 2/2 | Complete | 2026-01-21 |
-| 2. Download Engine | 2/2 | Complete | 2026-01-21 |
-| 3. Caching Layer | 2/2 | Complete | 2026-01-21 |
-| 4. Backends + Handle | 4/4 | Complete | 2026-01-21 |
-| 5. Infrastructure | 3/3 | Complete | 2026-01-22 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation + Discovery | v1.0 | 2/2 | Complete | 2026-01-21 |
+| 2. Download Engine | v1.0 | 2/2 | Complete | 2026-01-21 |
+| 3. Caching Layer | v1.0 | 2/2 | Complete | 2026-01-21 |
+| 4. Backends + Handle | v1.0 | 4/4 | Complete | 2026-01-21 |
+| 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
+| 6. Subject Querying | v1.1 | 0/1 | Not started | - |
+| 7. Subject Filtering | v1.1 | 0/1 | Not started | - |
+| 8. BIDS Bridge | v1.1 | 0/1 | Not started | - |

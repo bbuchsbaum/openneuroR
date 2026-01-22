@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** v1.1 BIDS Integration
+**Current focus:** v1.1 BIDS Integration - Phase 6: Subject Querying
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-01-22 — Milestone v1.1 started
+Phase: 6 of 8 (Subject Querying)
+Plan: Ready to plan
+Status: Ready to plan
+Last activity: 2026-01-22 - Created v1.1 roadmap (phases 6-8)
 
-Progress: Milestone v1.1 initialized. Defining requirements.
+Progress: [=============.......] 81% (13/16 plans, v1.0 complete)
 
 ## Performance Metrics
 
@@ -26,11 +26,21 @@ Progress: Milestone v1.1 initialized. Defining requirements.
 - Exports: 13 public functions
 - Test coverage: 75.76%
 
+**v1.1 Scope:**
+- Phases: 3 (phases 6-8)
+- Requirements: 12
+- Estimated plans: 3
+
 ## Accumulated Context
 
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table.
+
+Recent for v1.1:
+- bidser as Suggests (not Imports) - Optional dependency for BIDS integration
+- on_subjects() returns tibble - Consistent with existing API patterns
+- subjects= parameter in on_download() - Filter at download time, not handle creation
 
 ### Pending Todos
 
@@ -43,7 +53,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Starting milestone v1.1
+Stopped at: Created v1.1 roadmap
 Resume file: None
 
 ## Deliverables Index
@@ -57,11 +67,16 @@ See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
 - Handle: `on_handle()`, `on_fetch()`, `on_path()`
 - Utility: `on_doctor()`
 
+**v1.1 Planned API:**
+- Subject Discovery: `on_subjects()`
+- Download Filtering: `on_download(..., subjects=)`
+- BIDS Bridge: `on_bids()`
+
 ## Milestone History
 
-- v1.0 MVP — Shipped 2026-01-22 (5 phases, 13 plans)
-- v1.1 BIDS Integration — In progress
+- v1.0 MVP - Shipped 2026-01-22 (5 phases, 13 plans)
+- v1.1 BIDS Integration - In progress (phases 6-8)
 
 ## Next Steps
 
-Define requirements, then create roadmap.
+Plan phase 6: `/gsd:plan-phase 6`
