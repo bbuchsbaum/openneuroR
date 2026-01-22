@@ -14,9 +14,9 @@ Requirements for BIDS integration milestone. Each maps to roadmap phases.
 
 ### Download Filtering
 
-- [ ] **FILT-01**: User can download specific subjects only via subjects= parameter in on_download()
-- [ ] **FILT-02**: subjects= parameter accepts character vector of subject IDs (e.g., c("sub-01", "sub-02"))
-- [ ] **FILT-03**: subjects= parameter supports regex patterns for flexible matching (e.g., "sub-0[1-5]")
+- [x] **FILT-01**: User can download specific subjects only via subjects= parameter in on_download()
+- [x] **FILT-02**: subjects= parameter accepts character vector of subject IDs (e.g., c("sub-01", "sub-02"))
+- [x] **FILT-03**: subjects= parameter supports regex patterns for flexible matching (e.g., "sub-0[1-5]")
 
 ### BIDS Bridge
 
@@ -69,9 +69,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | SUBJ-01 | Phase 6 | Complete |
 | SUBJ-02 | Phase 6 | Complete |
-| FILT-01 | Phase 7 | Pending |
-| FILT-02 | Phase 7 | Pending |
-| FILT-03 | Phase 7 | Pending |
+| FILT-01 | Phase 7 | Complete |
+| FILT-02 | Phase 7 | Complete |
+| FILT-03 | Phase 7 | Complete |
 | BIDS-01 | Phase 8 | Pending |
 | BIDS-02 | Phase 8 | Pending |
 | BIDS-03 | Phase 8 | Pending |

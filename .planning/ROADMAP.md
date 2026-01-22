@@ -96,7 +96,7 @@ Plans:
 **Milestone Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access. Users can discover subjects before downloading, selectively download subsets, and convert fetched datasets into bids_project objects.
 
 - [x] **Phase 6: Subject Querying** - Query subjects in a dataset without downloading
-- [ ] **Phase 7: Subject Filtering** - Download specific subjects via subjects= parameter
+- [x] **Phase 7: Subject Filtering** - Download specific subjects via subjects= parameter
 - [ ] **Phase 8: BIDS Bridge** - Bridge to bidser for BIDS-aware project objects
 
 ## Phase Details
@@ -126,7 +126,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 07-01-PLAN.md - Subject filtering infrastructure and on_download() integration
+- [x] 07-01-PLAN.md - Subject filtering infrastructure and on_download() integration
 
 ### Phase 8: BIDS Bridge
 **Goal**: Users can get BIDS-aware project objects from fetched datasets
@@ -156,5 +156,5 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 4. Backends + Handle | v1.0 | 4/4 | Complete | 2026-01-21 |
 | 5. Infrastructure | v1.0 | 3/3 | Complete | 2026-01-22 |
 | 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
-| 7. Subject Filtering | v1.1 | 0/1 | Planned | - |
+| 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 8. BIDS Bridge | v1.1 | 0/1 | Not started | - |
