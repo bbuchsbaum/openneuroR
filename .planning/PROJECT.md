@@ -27,7 +27,20 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 
 ### Active
 
-(None — v1.0 complete, v2 requirements will be defined in next milestone)
+- [ ] Bridge to bidser: `on_bids(handle)` returns `bids_project` object
+- [ ] Query subjects pre-download: `on_subjects(dataset_id)` from OpenNeuro API
+- [ ] Subject subsetting: `on_download(..., subjects=)` for partial downloads
+- [ ] bidser as optional Suggests dependency with graceful fallback
+
+## Current Milestone: v1.1 BIDS Integration
+
+**Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access.
+
+**Target features:**
+- `on_bids(handle)` — Fetch dataset and return bidser's `bids_project` object
+- `on_subjects(dataset_id)` — List subjects from OpenNeuro metadata without downloading
+- Subject subsetting in `on_download()` — Download only specific subjects
+- Optional bidser dependency — Works without bidser, enhanced with it
 
 ### Out of Scope
 
@@ -45,7 +58,9 @@ Tech stack: httr2, tibble, dplyr, rlang, cli, fs, processx.
 Backend CLIs: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available.
 
 R CMD check: 0 errors, 0 warnings, 0 notes.
-Test suite: 142 tests passing with httptest2 mocking.
+Test suite: 375 tests passing with httptest2 mocking (75.76% coverage).
+
+**v1.1 Integration target:** bidser package (github.com/bbuchsbaum/bidser) for BIDS-aware data access.
 
 **Known issues:**
 - Search API unavailable: OpenNeuro search endpoint returns null for all queries. Modality filter works as alternative.
@@ -75,4 +90,4 @@ Test suite: 142 tests passing with httptest2 mocking.
 | DataLad > S3 > HTTPS priority | DataLad has integrity, S3 is fast, HTTPS fallback | ✓ Good |
 
 ---
-*Last updated: 2026-01-22 after v1.0 milestone*
+*Last updated: 2026-01-22 after v1.1 milestone start*

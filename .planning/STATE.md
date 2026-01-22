@@ -5,27 +5,26 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Planning next milestone
+**Current focus:** v1.1 BIDS Integration
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
-Plan: N/A
-Status: Ready for v2 planning
-Last activity: 2026-01-22 — v1.0 milestone shipped
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-22 — Milestone v1.1 started
 
-Progress: Milestone v1.0 complete. Run `/gsd:new-milestone` to start v2.
+Progress: Milestone v1.1 initialized. Defining requirements.
 
 ## Performance Metrics
 
 **v1.0 Summary:**
 - Total plans completed: 13
 - Total phases: 5
-- Total execution time: ~63 min
 - R CMD check: 0 errors, 0 warnings, 0 notes
-- Tests: 375 passing (updated after quick-003)
+- Tests: 375 passing
 - Exports: 13 public functions
-- Test coverage: 75.76% (improved from 55.3%)
+- Test coverage: 75.76%
 
 ## Accumulated Context
 
@@ -35,7 +34,7 @@ All decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
-None - milestone complete.
+None.
 
 ### Blockers/Concerns
 
@@ -44,12 +43,12 @@ None - milestone complete.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed quick-003 (test coverage 75%+)
+Stopped at: Starting milestone v1.1
 Resume file: None
 
 ## Deliverables Index
 
-See `.planning/milestones/v1.0-ROADMAP.md` for full v1.0 deliverables.
+See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
 
 **v1.0 Public API:**
 - Discovery: `on_client()`, `on_search()`, `on_dataset()`, `on_snapshots()`, `on_files()`
@@ -61,7 +60,8 @@ See `.planning/milestones/v1.0-ROADMAP.md` for full v1.0 deliverables.
 ## Milestone History
 
 - v1.0 MVP — Shipped 2026-01-22 (5 phases, 13 plans)
+- v1.1 BIDS Integration — In progress
 
 ## Next Steps
 
-Run `/gsd:new-milestone` to start planning v2 (questioning → research → requirements → roadmap).
+Define requirements, then create roadmap.
