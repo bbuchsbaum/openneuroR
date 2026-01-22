@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** v1.1 BIDS Integration - Phase 8: BIDS Bridge
+**Current focus:** v1.1 BIDS Integration - COMPLETE
 
 ## Current Position
 
-Phase: 7 of 8 (Subject Filtering) - COMPLETE
+Phase: 8 of 8 (BIDS Bridge) - COMPLETE
 Plan: 1/1 complete
-Status: Phase complete
-Last activity: 2026-01-22 - Completed 07-01-PLAN.md
+Status: v1.1 COMPLETE
+Last activity: 2026-01-22 - Completed 08-01-PLAN.md
 
-Progress: [===============.....] 94% (15/16 plans)
+Progress: [====================] 100% (16/16 plans)
 
 ## Performance Metrics
 
@@ -26,12 +26,12 @@ Progress: [===============.....] 94% (15/16 plans)
 - Exports: 13 public functions
 - Test coverage: 75.76%
 
-**v1.1 Progress:**
+**v1.1 Summary:**
 - Phases: 3 (phases 6-8)
-- Plans completed: 2 (06-01, 07-01)
+- Plans completed: 3 (06-01, 07-01, 08-01)
 - R CMD check: 0 errors, 0 warnings, 0 notes
-- Tests: 471 passing (+80 new from v1.0)
-- Exports: 15 public functions (+2: on_subjects, regex)
+- Tests: 495 passing (+120 new from v1.0)
+- Exports: 17 public functions (+4: on_subjects, regex, on_bids, include_derivatives param)
 
 ## Accumulated Context
 
@@ -48,6 +48,8 @@ Recent for v1.1:
 - regex() returns S3 class (on_regex) - Explicit type detection vs metacharacter inference
 - Auto-anchor regex patterns - Full match semantics for subject filtering
 - Root files always included - dataset_description.json, README, etc. bypass subject filter
+- on_bids() returns bids_project directly - Let bidser's API shine through
+- Auto-fetch pending handles - Reduces friction for users
 
 ### Pending Todos
 
@@ -60,7 +62,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 07-01-PLAN.md
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
 
 ## Deliverables Index
@@ -74,19 +76,21 @@ See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
 - Handle: `on_handle()`, `on_fetch()`, `on_path()`
 - Utility: `on_doctor()`
 
-**v1.1 Delivered API:**
+**v1.1 Public API (NEW):**
 - Subject Discovery: `on_subjects()` - SHIPPED in 06-01
 - Download Filtering: `on_download(..., subjects=, include_derivatives=)` - SHIPPED in 07-01
 - Pattern Matching: `regex()` - SHIPPED in 07-01
-
-**v1.1 Remaining:**
-- BIDS Bridge: `on_bids()`
+- BIDS Bridge: `on_bids()` - SHIPPED in 08-01
 
 ## Milestone History
 
 - v1.0 MVP - Shipped 2026-01-22 (5 phases, 13 plans)
-- v1.1 BIDS Integration - In progress (phases 6-8)
+- v1.1 BIDS Integration - Shipped 2026-01-22 (3 phases, 3 plans)
 
 ## Next Steps
 
-Plan phase 8: BIDS bridge with on_bids() function
+v1.1 BIDS Integration milestone is complete. Consider:
+- CRAN submission preparation
+- Documentation improvements
+- Additional convenience functions
+- Performance optimizations
