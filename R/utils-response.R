@@ -277,3 +277,65 @@ transform_timestamps <- function(df) {
     key = vapply(files, function(x) .null_to_na(x$key), character(1))
   )
 }
+
+#' Sort Subject IDs Naturally
+#'
+#' Sorts subject IDs so that numeric portions are ordered numerically
+#' (e.g., sub-01, sub-02, ..., sub-10 instead of sub-01, sub-10, sub-02).
+#'
+#' @param subjects Character vector of subject IDs.
+#'
+#' @return Character vector sorted in natural order.
+#'
+#' @keywords internal
+.sort_subjects_natural <- function(subjects) {
+  if (length(subjects) == 0) return(subjects)
+  if (requireNamespace("stringi", quietly = TRUE)) {
+    stringi::stri_sort(subjects, numeric = TRUE)
+  } else {
+    # Fallback: extract numeric portion and sort
+    nums <- suppressWarnings(as.integer(gsub("^sub-0*", "", subjects)))
+    if (any(is.na(nums))) return(sort(subjects))
+    subjects[order(nums)]
+  }
+}
+
+#' Parse Subjects Response
+#'
+#' Converts the subjects query response to a tibble.
+#'
+#' @param response The parsed response from on_request().
+#' @param dataset_id The dataset identifier to include in output.
+#'
+#' @return A tibble with subject information.
+#'
+#' @keywords internal
+.parse_subjects <- function(response, dataset_id) {
+  summary <- response$snapshot$summary
+  subjects <- summary$subjects
+
+  if (length(subjects) == 0 || is.null(subjects)) {
+    return(tibble::tibble(
+      dataset_id = character(),
+      subject_id = character(),
+      n_sessions = integer(),
+      n_files = integer()
+    ))
+  }
+
+  # Sort subjects naturally
+  subjects <- .sort_subjects_natural(subjects)
+
+  # Calculate dataset-level stats
+  n_sessions <- as.integer(length(summary$sessions %||% list()))
+  total_files <- summary$totalFiles %||% 0L
+  n_files <- as.integer(floor(total_files / length(subjects)))
+
+
+  tibble::tibble(
+    dataset_id = rep(dataset_id, length(subjects)),
+    subject_id = subjects,
+    n_sessions = rep(n_sessions, length(subjects)),
+    n_files = rep(n_files, length(subjects))
+  )
+}

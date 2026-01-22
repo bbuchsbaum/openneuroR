@@ -1,0 +1,10 @@
+query getSubjects($datasetId: ID!, $tag: String!) {
+  snapshot(datasetId: $datasetId, tag: $tag) {
+    tag
+    summary {
+      subjects
+      sessions
+      totalFiles
+    }
+  }
+}
