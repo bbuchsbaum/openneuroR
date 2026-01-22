@@ -12,22 +12,22 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Search datasets by text query, returning tidy tibbles — v1.0
+- ✓ Query dataset metadata (name, created, updated, public status) — v1.0
+- ✓ List snapshots for a dataset with tags and timestamps — v1.0
+- ✓ List files within a snapshot (filename, size, annexed status) — v1.0
+- ✓ Create lazy handles to dataset snapshots — v1.0
+- ✓ Fetch data with automatic backend selection (DataLad → S3 → HTTPS) — v1.0
+- ✓ Cache downloads locally with manifest tracking — v1.0
+- ✓ Support DataLad/git-annex backend for correctness + partial retrieval — v1.0
+- ✓ Support S3 backend for bulk speed (anonymous, --no-sign-request) — v1.0
+- ✓ Support HTTPS backend as universal fallback — v1.0
+- ✓ Resolve URLs from GraphQL schema before probing (metadata-first) — v1.0
+- ✓ Return local filesystem path for fetched datasets — v1.0
 
 ### Active
 
-- [ ] Search datasets by text query, returning tidy tibbles
-- [ ] Query dataset metadata (name, created, updated, public status)
-- [ ] List snapshots for a dataset with tags and timestamps
-- [ ] List files within a snapshot (filename, size, annexed status)
-- [ ] Create lazy handles to dataset snapshots
-- [ ] Fetch data with automatic backend selection (DataLad → S3 → HTTPS)
-- [ ] Cache downloads locally with manifest tracking
-- [ ] Support DataLad/git-annex backend for correctness + partial retrieval
-- [ ] Support S3 backend for bulk speed (anonymous, --no-sign-request)
-- [ ] Support HTTPS backend as universal fallback
-- [ ] Resolve URLs from GraphQL schema before probing (metadata-first)
-- [ ] Return local filesystem path for fetched datasets
+(None — v1.0 complete, v2 requirements will be defined in next milestone)
 
 ### Out of Scope
 
@@ -36,22 +36,24 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 - BIDS validation — separate concern, can compose with other packages
 - Real-time notifications — not needed for data access
 - Mobile/GUI — CLI/programmatic access only
+- Offline search index — high complexity, defer indefinitely
 
 ## Context
 
-OpenNeuro exposes three interaction surfaces:
-1. **GraphQL API** at `/crn/graphql` for search, metadata, file listings
-2. **DataLad/git-annex** workflow for robust, resumable downloads with integrity
-3. **Public S3 bucket** (`openneuro.org`, us-east-1) for fast bulk downloads
+Shipped v1.0 with 6,239 LOC R.
+Tech stack: httr2, tibble, dplyr, rlang, cli, fs, processx.
+Backend CLIs: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available.
 
-The design uses external `.gql` documents for GraphQL queries (schema-resilient), pluggable download backends with automatic selection, and a lazy handle/fetch pattern that integrates well with targets pipelines.
+R CMD check: 0 errors, 0 warnings, 0 notes.
+Test suite: 142 tests passing with httptest2 mocking.
 
-Function naming uses `on_*` prefix for discoverability (type `on_` for autocomplete).
+**Known issues:**
+- Search API unavailable: OpenNeuro search endpoint returns null for all queries. Modality filter works as alternative.
 
 ## Constraints
 
 - **Tech stack**: R package, CRAN-compatible, tidyverse-aligned (tibbles, pipes)
-- **Dependencies**: httr2, jsonlite, tibble, dplyr, tidyr, rlang, cli, fs, rappdirs
+- **Dependencies**: httr2, tibble, dplyr, tidyr, rlang, cli, fs, processx
 - **Backend CLIs**: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available
 - **Target audience**: R neuroimaging community
 
@@ -59,11 +61,18 @@ Function naming uses `on_*` prefix for discoverability (type `on_` for autocompl
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| `on_*` function prefix | Discoverability via autocomplete, brevity vs `openneuro_*` | — Pending |
-| DataLad-first backend | OpenNeuro recommends DataLad for correctness + provenance | — Pending |
-| GraphQL in `.gql` files | Schema changes only require updating query docs, not R code | — Pending |
-| Metadata-first URL resolution | Introspect schema for URL fields before blind probing | — Pending |
-| Manifest-tracked cache | Know what was downloaded, when, how — reproducibility | — Pending |
+| `on_*` function prefix | Discoverability via autocomplete, brevity vs `openneuro_*` | ✓ Good |
+| DataLad-first backend | OpenNeuro recommends DataLad for correctness + provenance | ✓ Good |
+| GraphQL in `.gql` files | Schema changes only require updating query docs, not R code | ✓ Good |
+| Metadata-first URL resolution | Introspect schema for URL fields before blind probing | ✓ Good |
+| Manifest-tracked cache | Know what was downloaded, when, how — reproducibility | ✓ Good |
+| httr2 direct (not ghql) | Simpler, fewer dependencies | ✓ Good |
+| S3 class (not R6) for handles | Follows tidyverse patterns | ✓ Good |
+| httptest2 for test mocking | Better httr2 integration than vcr/webmockr | ✓ Good |
+| 10 MB resume threshold | Avoid overhead for small files | ✓ Good |
+| tools::R_user_dir for cache | CRAN-compliant, platform-appropriate | ✓ Good |
+| processx for CLI execution | Robust timeout, error handling, no shell | ✓ Good |
+| DataLad > S3 > HTTPS priority | DataLad has integrity, S3 is fast, HTTPS fallback | ✓ Good |
 
 ---
-*Last updated: 2026-01-20 after initialization*
+*Last updated: 2026-01-22 after v1.0 milestone*
