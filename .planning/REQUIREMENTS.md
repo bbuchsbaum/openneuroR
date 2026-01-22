@@ -43,9 +43,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Infrastructure
 
-- [ ] **INFR-01**: Package passes R CMD check with no errors/warnings
-- [ ] **INFR-02**: Tests use mocking (vcr/webmockr), no real API calls
-- [ ] **INFR-03**: on_doctor() reports backend dependency status
+- [x] **INFR-01**: Package passes R CMD check with no errors/warnings
+- [x] **INFR-02**: Tests use mocking (httptest2), no real API calls
+- [x] **INFR-03**: on_doctor() reports backend dependency status
 
 ## v2 Requirements
 
@@ -106,9 +106,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HAND-01 | Phase 4 | Complete |
 | HAND-02 | Phase 4 | Complete |
 | HAND-03 | Phase 4 | Complete |
-| INFR-01 | Phase 5 | Pending |
-| INFR-02 | Phase 5 | Pending |
-| INFR-03 | Phase 5 | Pending |
+| INFR-01 | Phase 5 | Complete |
+| INFR-02 | Phase 5 | Complete |
+| INFR-03 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 22 total
@@ -117,4 +117,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-21 after Phase 4 completion*
+*Last updated: 2026-01-22 after Phase 5 completion (milestone complete)*

@@ -14,7 +14,7 @@ This roadmap delivers an R package for programmatic OpenNeuro access in 5 phases
 - [x] **Phase 2: Download Engine** - Core download mechanics with HTTPS backend
 - [x] **Phase 3: Caching Layer** - CRAN-compliant cache with manifest tracking
 - [x] **Phase 4: Backends + Handle** - S3/DataLad backends, auto-select, and lazy handle pattern
-- [ ] **Phase 5: Infrastructure** - Tests, R CMD check, diagnostics
+- [x] **Phase 5: Infrastructure** - Tests, R CMD check, diagnostics
 
 ## Phase Details
 
@@ -88,12 +88,14 @@ Plans:
 **Requirements**: INFR-01, INFR-02, INFR-03
 **Success Criteria** (what must be TRUE):
   1. R CMD check passes with no errors or warnings
-  2. All tests use mocking (vcr/webmockr), no real API calls
+  2. All tests use mocking (httptest2), no real API calls
   3. on_doctor() reports status of all backends (installed, version, working)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [x] 05-01-PLAN.md — Test infrastructure setup with httptest2 and API discovery function tests
+- [x] 05-02-PLAN.md — Backend/handle/cache tests and on_doctor() implementation
+- [x] 05-03-PLAN.md — R CMD check compliance and final verification
 
 ## Progress
 
@@ -106,4 +108,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5
 | 2. Download Engine | 2/2 | Complete | 2026-01-21 |
 | 3. Caching Layer | 2/2 | Complete | 2026-01-21 |
 | 4. Backends + Handle | 4/4 | Complete | 2026-01-21 |
-| 5. Infrastructure | 0/1 | Not started | - |
+| 5. Infrastructure | 3/3 | Complete | 2026-01-22 |
