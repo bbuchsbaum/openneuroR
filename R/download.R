@@ -1,8 +1,8 @@
 #' Download OpenNeuro Dataset
 #'
 #' Downloads files from an OpenNeuro dataset to local disk. Supports
-#' downloading the full dataset, specific files, or files matching a
-#' regex pattern.
+#' downloading the full dataset, specific files, files matching a
+#' regex pattern, or specific subjects.
 #'
 #' By default, files are downloaded to a CRAN-compliant cache location
 #' (platform-specific, see Details). Repeat downloads of the same files
@@ -13,6 +13,13 @@
 #' @param files Character vector of specific files to download, or a single
 #'   regex pattern (detected by presence of regex metacharacters). If NULL
 #'   (default), downloads all files.
+#' @param subjects Character vector of subject IDs (e.g., `c("sub-01", "sub-02")`)
+#'   or a regex pattern wrapped in [regex()] (e.g., `regex("sub-0[1-5]")`).
+#'   Subject IDs can be specified with or without the "sub-" prefix.
+#'   If NULL (default), downloads all subjects.
+#' @param include_derivatives If TRUE (default) and `subjects` is specified,
+#'   also include derivative outputs for matching subjects from the
+#'   `derivatives/` directory.
 #' @param dest_dir Destination directory. If NULL (default) and `use_cache`
 #'   is TRUE, downloads to cache location. If NULL and `use_cache` is FALSE,
 #'   creates `./dataset_id/` in the current working directory.
@@ -63,6 +70,18 @@
 #'     no external dependencies.
 #' }
 #'
+#' Subject filtering:
+#'
+#' When `subjects` is specified, only files belonging to those subjects are
+#' downloaded, plus root-level files (e.g., `dataset_description.json`,
+#' `participants.tsv`). Subject IDs can be provided with or without the
+#' "sub-" prefix - both `"01"` and `"sub-01"` work.
+#'
+#' For pattern matching, wrap the pattern in [regex()]. Patterns are
+#' auto-anchored for full subject ID matching, so `regex("sub-01")` will
+
+#' match "sub-01" but not "sub-010".
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -85,8 +104,18 @@
 #' # Use specific backend
 #' on_download("ds000001", backend = "s3")
 #' on_download("ds000001", backend = "https")  # Force HTTPS
+#'
+#' # Download specific subjects
+#' on_download("ds000001", subjects = c("sub-01", "sub-02"))
+#'
+#' # Download subjects matching pattern
+#' on_download("ds000001", subjects = regex("sub-0[1-5]"))
+#'
+#' # Download subjects without derivatives
+#' on_download("ds000001", subjects = c("01", "02"), include_derivatives = FALSE)
 #' }
-on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
+on_download <- function(id, tag = NULL, files = NULL, subjects = NULL,
+                        include_derivatives = TRUE, dest_dir = NULL,
                         use_cache = TRUE, quiet = FALSE, verbose = FALSE,
                         force = FALSE, backend = NULL, client = NULL) {
   # Validate id
@@ -169,6 +198,59 @@ on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
     }
   }
 
+  # Filter by subjects if specified
+  if (!is.null(subjects)) {
+    # Get available subjects from API
+    available <- on_subjects(id, tag = tag, client = client)
+    available_ids <- available$subject_id
+
+    if (is_regex(subjects)) {
+      # Regex matching with auto-anchoring
+      pattern <- as.character(subjects)
+      # Match against normalized IDs (with sub- prefix)
+      available_normalized <- .normalize_subject_ids(available_ids)
+      matches <- .match_subjects_regex(available_normalized, pattern)
+      matching <- available_normalized[matches]
+
+      if (length(matching) == 0) {
+        available_display <- if (length(available_normalized) <= 10) {
+          paste(available_normalized, collapse = ", ")
+        } else {
+          paste(c(utils::head(available_normalized, 10), "..."), collapse = ", ")
+        }
+        rlang::abort(
+          c("No subjects match pattern",
+            "x" = paste0("Pattern '", pattern, "' matched 0 subjects"),
+            "i" = paste0("Available in ", id, ": ", available_display)),
+          class = "openneuro_validation_error"
+        )
+      }
+    } else {
+      # Literal IDs - validate and normalize
+      matching <- .validate_subjects(subjects, available_ids, id)
+    }
+
+    # Filter files to matching subjects + root files
+    filtered_files <- .filter_files_by_subjects(
+      filtered_files, matching, include_derivatives
+    )
+
+    if (nrow(filtered_files) == 0) {
+      if (!quiet) {
+        cli::cli_alert_warning(
+          "No files found for subjects {.val {matching}} in dataset {.val {id}}"
+        )
+      }
+      return(invisible(list(
+        downloaded = 0L,
+        skipped = 0L,
+        failed = character(),
+        total_bytes = 0,
+        dest_dir = dest_dir %||% default_dest
+      )))
+    }
+  }
+
   # Set up destination directory
   if (caching) {
     # Use cache location
@@ -181,10 +263,16 @@ on_download <- function(id, tag = NULL, files = NULL, dest_dir = NULL,
 
   # Try backend dispatch (S3 or DataLad)
   # Returns NULL if HTTPS should be used (fallback or explicit)
+  # Pass file list if filtering was applied (files or subjects specified)
+  files_for_backend <- if (is.null(files) && is.null(subjects)) {
+    NULL
+  } else {
+    filtered_files$full_path
+  }
   backend_result <- .download_with_backend(
     dataset_id = id,
     dest_dir = dest_dir,
-    files = if (is.null(files)) NULL else filtered_files$full_path,
+    files = files_for_backend,
     backend = backend,
     quiet = quiet
   )

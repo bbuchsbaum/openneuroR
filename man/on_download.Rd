@@ -8,6 +8,8 @@ on_download(
   id,
   tag = NULL,
   files = NULL,
+  subjects = NULL,
+  include_derivatives = TRUE,
   dest_dir = NULL,
   use_cache = TRUE,
   quiet = FALSE,
@@ -25,6 +27,15 @@ on_download(
 \item{files}{Character vector of specific files to download, or a single
 regex pattern (detected by presence of regex metacharacters). If NULL
 (default), downloads all files.}
+
+\item{subjects}{Character vector of subject IDs (e.g., \code{c("sub-01", "sub-02")})
+or a regex pattern wrapped in \code{\link[=regex]{regex()}} (e.g., \code{regex("sub-0[1-5]")}).
+Subject IDs can be specified with or without the "sub-" prefix.
+If NULL (default), downloads all subjects.}
+
+\item{include_derivatives}{If TRUE (default) and \code{subjects} is specified,
+also include derivative outputs for matching subjects from the
+\verb{derivatives/} directory.}
 
 \item{dest_dir}{Destination directory. If NULL (default) and \code{use_cache}
 is TRUE, downloads to cache location. If NULL and \code{use_cache} is FALSE,
@@ -62,8 +73,8 @@ Invisibly returns a list with:
 }
 \description{
 Downloads files from an OpenNeuro dataset to local disk. Supports
-downloading the full dataset, specific files, or files matching a
-regex pattern.
+downloading the full dataset, specific files, files matching a
+regex pattern, or specific subjects.
 }
 \details{
 By default, files are downloaded to a CRAN-compliant cache location
@@ -91,6 +102,17 @@ Requires \code{aws} CLI tool.
 \item \strong{HTTPS}: Direct file downloads via httr2. Always available,
 no external dependencies.
 }
+
+Subject filtering:
+
+When \code{subjects} is specified, only files belonging to those subjects are
+downloaded, plus root-level files (e.g., \code{dataset_description.json},
+\code{participants.tsv}). Subject IDs can be provided with or without the
+"sub-" prefix - both \code{"01"} and \code{"sub-01"} work.
+
+For pattern matching, wrap the pattern in \code{\link[=regex]{regex()}}. Patterns are
+auto-anchored for full subject ID matching, so \code{regex("sub-01")} will
+match "sub-01" but not "sub-010".
 }
 \examples{
 \dontrun{
@@ -113,5 +135,14 @@ on_download("ds000001", force = TRUE)
 # Use specific backend
 on_download("ds000001", backend = "s3")
 on_download("ds000001", backend = "https")  # Force HTTPS
+
+# Download specific subjects
+on_download("ds000001", subjects = c("sub-01", "sub-02"))
+
+# Download subjects matching pattern
+on_download("ds000001", subjects = regex("sub-0[1-5]"))
+
+# Download subjects without derivatives
+on_download("ds000001", subjects = c("01", "02"), include_derivatives = FALSE)
 }
 }
