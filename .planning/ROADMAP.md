@@ -128,10 +128,11 @@ Plans:
   1. User can call `on_spaces()` on a derivative to get available output spaces
   2. Space names returned as character vector (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
   3. S3 backend can download from `s3://openneuro-derivatives/` bucket (not just `s3://openneuro/`)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: TBD
+- [ ] 10-01-PLAN.md — on_spaces() function with BIDS space entity extraction
+- [ ] 10-02-PLAN.md — S3 backend parameterization for derivatives bucket
 
 #### Phase 11: Download Integration
 **Goal**: Users can download filtered derivative data with full test coverage
@@ -165,7 +166,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 | 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 8. BIDS Bridge | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 9. Discovery Foundation | v1.2 | 2/2 | Complete | 2026-01-23 |
-| 10. Spaces and S3 Backend | v1.2 | 0/TBD | Not started | - |
+| 10. Spaces and S3 Backend | v1.2 | 0/2 | Planned | - |
 | 11. Download Integration | v1.2 | 0/TBD | Not started | - |
 
 ---
@@ -173,3 +174,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 *v1.2 milestone added: 2026-01-23*
 *Phase 9 planned: 2026-01-23*
 *Phase 9 completed: 2026-01-23*
+*Phase 10 planned: 2026-01-23*
