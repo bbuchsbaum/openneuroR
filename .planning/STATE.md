@@ -5,80 +5,65 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** v1.2 fMRIPrep Derivative Discovery
+**Current focus:** Phase 9 - Discovery Foundation
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements for v1.2
-Last activity: 2026-01-22 — Milestone v1.2 started
+Phase: 9 of 11 (Discovery Foundation)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-01-23 — Roadmap created for v1.2 milestone
 
-Progress: [                    ] 0% (new milestone)
+Progress: [=========>..........] 45%
+(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 3 phases pending)
 
 ## Performance Metrics
 
-**v1.0 Summary:**
-- Total plans completed: 13
-- Total phases: 5
-- R CMD check: 0 errors, 0 warnings, 0 notes
-- Tests: 375 passing
-- Exports: 13 public functions
+**Velocity:**
+- Total plans completed: 16
+- Average duration: ~15 min (estimated from v1.0/v1.1)
+- Total execution time: ~4 hours (v1.0 + v1.1)
 
-**v1.1 Summary:**
-- Phases: 3 (phases 6-8)
-- Plans completed: 3 (06-01, 07-01, 08-01)
-- R CMD check: 0 errors, 0 warnings, 0 notes
-- Tests: 495 passing (+120 new from v1.0)
-- Exports: 17 public functions (+4: on_subjects, regex, on_bids)
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 1-5 (v1.0) | 13 | ~3h | ~14 min |
+| 6-8 (v1.1) | 3 | ~1h | ~20 min |
+| 9-11 (v1.2) | TBD | - | - |
+
+**Recent Trend:**
+- Last milestone (v1.1): 3 plans in single session
+- Trend: Stable (efficient single-plan phases)
+
+*Updated after each plan completion*
 
 ## Accumulated Context
 
 ### Decisions
 
-All decisions logged in PROJECT.md Key Decisions table.
+Decisions logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
+
+- [v1.1]: Subject IDs kept as-is from API (no "sub-" prefix transformation)
+- [v1.1]: on_bids() auto-fetches pending handles for reduced friction
+- [v1.2 research]: Separate code paths for embedded vs OpenNeuroDerivatives sources
 
 ### Pending Todos
 
-None.
+None yet.
 
 ### Blockers/Concerns
 
-- **Search API unavailable:** OpenNeuro search endpoint returns null for all queries. Modality filter works as alternative.
+- GitHub API rate limit: 60/hr unauthenticated. Session caching (DISC-04) mitigates this.
+- S3 bucket access: `s3://openneuro-derivatives/` may have ListObjectsV2 issues (per Neurostars). Need to test and implement fallback.
 
 ## Session Continuity
 
-Last session: 2026-01-22
-Stopped at: v1.1 milestone archived
+Last session: 2026-01-23
+Stopped at: Roadmap created for v1.2 milestone
 Resume file: None
 
-## Deliverables Index
-
-See archived milestones:
-- `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables
-- `.planning/milestones/v1.1-ROADMAP.md` for v1.1 deliverables
-
-**v1.0 Public API:**
-- Discovery: `on_client()`, `on_search()`, `on_dataset()`, `on_snapshots()`, `on_files()`
-- Download: `on_download()`
-- Cache: `on_cache_list()`, `on_cache_info()`, `on_cache_clear()`
-- Handle: `on_handle()`, `on_fetch()`, `on_path()`
-- Utility: `on_doctor()`
-
-**v1.1 Public API:**
-- Subject Discovery: `on_subjects()`
-- Download Filtering: `on_download(..., subjects=, include_derivatives=)`
-- Pattern Matching: `regex()`
-- BIDS Bridge: `on_bids()`
-
-## Milestone History
-
-- v1.0 MVP - Shipped 2026-01-22 (5 phases, 13 plans)
-- v1.1 BIDS Integration - Shipped 2026-01-22 (3 phases, 3 plans)
-
-## Next Steps
-
-Milestone v1.2 initialized. Continue with:
-- Define requirements
-- Create roadmap
-- `/gsd:plan-phase 9` — start execution after roadmap
+---
+*State initialized: 2026-01-22*
+*v1.2 roadmap added: 2026-01-23*

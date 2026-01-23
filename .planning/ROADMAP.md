@@ -4,6 +4,7 @@
 
 - **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22) — see `milestones/v1.0-ROADMAP.md`
 - **v1.1 BIDS Integration** - Phases 6-8 (shipped 2026-01-22) — see `milestones/v1.1-ROADMAP.md`
+- **v1.2 fMRIPrep Derivative Discovery** - Phases 9-11 (in progress)
 
 ## Phases
 
@@ -100,10 +101,57 @@ Plans:
 
 </details>
 
+### v1.2 fMRIPrep Derivative Discovery (In Progress)
+
+**Milestone Goal:** Enable researchers to discover and download fMRIPrep derivative datasets from OpenNeuro.
+
+#### Phase 9: Discovery Foundation
+**Goal**: Users can discover available derivative datasets for any OpenNeuro dataset
+**Depends on**: Phase 8 (v1.1 complete)
+**Requirements**: DISC-01, DISC-02, DISC-03, DISC-04
+**Success Criteria** (what must be TRUE):
+  1. User can call `on_derivatives("ds000001")` and get a tibble of available pipelines
+  2. Tibble includes pipeline name, source (embedded vs OpenNeuroDerivatives), and metadata
+  3. OpenNeuroDerivatives GitHub organization repos are discoverable (784+ datasets)
+  4. Discovery results are cached per-session (no repeated GitHub API calls within session)
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: TBD
+
+#### Phase 10: Spaces and S3 Backend
+**Goal**: Users can explore output spaces and S3 infrastructure supports derivative bucket access
+**Depends on**: Phase 9
+**Requirements**: SPAC-01, SPAC-02, INFR-03
+**Success Criteria** (what must be TRUE):
+  1. User can call `on_spaces()` on a derivative to get available output spaces
+  2. Space names returned as character vector (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
+  3. S3 backend can download from `s3://openneuro-derivatives/` bucket (not just `s3://openneuro/`)
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: TBD
+
+#### Phase 11: Download Integration
+**Goal**: Users can download filtered derivative data with full test coverage
+**Depends on**: Phase 10
+**Requirements**: DOWN-01, DOWN-02, DOWN-03, DOWN-04, INFR-01, INFR-02
+**Success Criteria** (what must be TRUE):
+  1. User can call `on_download_derivatives()` to download fMRIPrep derivatives
+  2. User can filter by subject via `subjects=` parameter (reuses v1.1 pattern)
+  3. User can filter by output space via `space=` parameter
+  4. Downloaded derivatives stored in BIDS-compliant path: `{dataset}/derivatives/{pipeline}/`
+  5. All new functions have mocked tests (no real API/downloads in test suite)
+  6. Package passes R CMD check with 0 errors, 0 warnings after changes
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
+Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -115,3 +163,10 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8
 | 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 8. BIDS Bridge | v1.1 | 1/1 | Complete | 2026-01-22 |
+| 9. Discovery Foundation | v1.2 | 0/TBD | Not started | - |
+| 10. Spaces and S3 Backend | v1.2 | 0/TBD | Not started | - |
+| 11. Download Integration | v1.2 | 0/TBD | Not started | - |
+
+---
+*Roadmap created: 2026-01-20*
+*v1.2 milestone added: 2026-01-23*
