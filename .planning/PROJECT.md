@@ -2,7 +2,7 @@
 
 ## What This Is
 
-An R package for programmatic access to OpenNeuro — the largest open repository of neuroimaging data. Provides search, metadata queries, and multi-backend downloading with smart caching. Designed to be the best way to access OpenNeuro from any language, beating Python alternatives in API ergonomics, download reliability, and cache intelligence.
+An R package for programmatic access to OpenNeuro — the largest open repository of neuroimaging data. Provides search, metadata queries, multi-backend downloading with smart caching, and BIDS-aware data access via bidser integration. Designed to be the best way to access OpenNeuro from any language, beating Python alternatives in API ergonomics, download reliability, and cache intelligence.
 
 ## Core Value
 
@@ -24,23 +24,15 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 - ✓ Support HTTPS backend as universal fallback — v1.0
 - ✓ Resolve URLs from GraphQL schema before probing (metadata-first) — v1.0
 - ✓ Return local filesystem path for fetched datasets — v1.0
+- ✓ Query subjects pre-download: `on_subjects(dataset_id)` from OpenNeuro API — v1.1
+- ✓ Subject subsetting: `on_download(..., subjects=)` for partial downloads — v1.1
+- ✓ Regex pattern matching for subject filtering via `regex()` helper — v1.1
+- ✓ Bridge to bidser: `on_bids(handle)` returns `bids_project` object — v1.1
+- ✓ bidser as optional Suggests dependency with graceful fallback — v1.1
 
 ### Active
 
-- [ ] Bridge to bidser: `on_bids(handle)` returns `bids_project` object
-- [ ] Query subjects pre-download: `on_subjects(dataset_id)` from OpenNeuro API
-- [ ] Subject subsetting: `on_download(..., subjects=)` for partial downloads
-- [ ] bidser as optional Suggests dependency with graceful fallback
-
-## Current Milestone: v1.1 BIDS Integration
-
-**Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access.
-
-**Target features:**
-- `on_bids(handle)` — Fetch dataset and return bidser's `bids_project` object
-- `on_subjects(dataset_id)` — List subjects from OpenNeuro metadata without downloading
-- Subject subsetting in `on_download()` — Download only specific subjects
-- Optional bidser dependency — Works without bidser, enhanced with it
+(None — ready for next milestone planning)
 
 ### Out of Scope
 
@@ -53,14 +45,16 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 
 ## Context
 
-Shipped v1.0 with 6,239 LOC R.
+Shipped v1.1 with 3,781 LOC R.
 Tech stack: httr2, tibble, dplyr, rlang, cli, fs, processx.
 Backend CLIs: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available.
 
 R CMD check: 0 errors, 0 warnings, 0 notes.
-Test suite: 375 tests passing with httptest2 mocking (75.76% coverage).
+Test suite: 495 tests passing with httptest2 mocking.
 
-**v1.1 Integration target:** bidser package (github.com/bbuchsbaum/bidser) for BIDS-aware data access.
+**Optional integrations:**
+- bidser package (github.com/bbuchsbaum/bidser) for BIDS-aware data access
+- stringi for natural sorting of subject IDs
 
 **Known issues:**
 - Search API unavailable: OpenNeuro search endpoint returns null for all queries. Modality filter works as alternative.
@@ -69,6 +63,7 @@ Test suite: 375 tests passing with httptest2 mocking (75.76% coverage).
 
 - **Tech stack**: R package, CRAN-compatible, tidyverse-aligned (tibbles, pipes)
 - **Dependencies**: httr2, tibble, dplyr, tidyr, rlang, cli, fs, processx
+- **Suggests**: bidser, stringi (optional enhancements)
 - **Backend CLIs**: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available
 - **Target audience**: R neuroimaging community
 
@@ -88,6 +83,13 @@ Test suite: 375 tests passing with httptest2 mocking (75.76% coverage).
 | tools::R_user_dir for cache | CRAN-compliant, platform-appropriate | ✓ Good |
 | processx for CLI execution | Robust timeout, error handling, no shell | ✓ Good |
 | DataLad > S3 > HTTPS priority | DataLad has integrity, S3 is fast, HTTPS fallback | ✓ Good |
+| bidser as Suggests | Optional dependency for BIDS integration | ✓ Good |
+| Subject IDs kept as-is from API | API returns ID portion without "sub-" prefix | ✓ Good |
+| Natural sorting via stringi | With base R fallback for environments without stringi | ✓ Good |
+| regex() returns S3 class | Explicit type detection vs metacharacter inference | ✓ Good |
+| Auto-anchor regex patterns | Full match semantics for subject filtering | ✓ Good |
+| Root files always included | dataset_description.json, README bypass subject filter | ✓ Good |
+| on_bids() auto-fetches pending handles | Reduces friction for users | ✓ Good |
 
 ---
-*Last updated: 2026-01-22 after v1.1 milestone start*
+*Last updated: 2026-01-22 after v1.1 milestone complete*

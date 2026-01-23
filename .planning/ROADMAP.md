@@ -2,8 +2,8 @@
 
 ## Milestones
 
-- **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22)
-- **v1.1 BIDS Integration** - Phases 6-8 (shipped 2026-01-22)
+- **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22) — see `milestones/v1.0-ROADMAP.md`
+- **v1.1 BIDS Integration** - Phases 6-8 (shipped 2026-01-22) — see `milestones/v1.1-ROADMAP.md`
 
 ## Phases
 
@@ -91,57 +91,14 @@ Plans:
 
 </details>
 
-### v1.1 BIDS Integration (Complete)
+<details>
+<summary>v1.1 BIDS Integration (Phases 6-8) - SHIPPED 2026-01-22</summary>
 
-**Milestone Goal:** Make openneuroR BIDS-native by integrating with bidser for rich BIDS-aware data access. Users can discover subjects before downloading, selectively download subsets, and convert fetched datasets into bids_project objects.
+- [x] Phase 6: Subject Querying (1/1 plans) — completed 2026-01-22
+- [x] Phase 7: Subject Filtering (1/1 plans) — completed 2026-01-22
+- [x] Phase 8: BIDS Bridge (1/1 plans) — completed 2026-01-22
 
-- [x] **Phase 6: Subject Querying** - Query subjects in a dataset without downloading
-- [x] **Phase 7: Subject Filtering** - Download specific subjects via subjects= parameter
-- [x] **Phase 8: BIDS Bridge** - Bridge to bidser for BIDS-aware project objects
-
-## Phase Details
-
-### Phase 6: Subject Querying
-**Goal**: Users can discover subjects in a dataset before downloading
-**Depends on**: Phase 5 (uses existing GraphQL infrastructure)
-**Requirements**: SUBJ-01, SUBJ-02
-**Success Criteria** (what must be TRUE):
-  1. User can call on_subjects("ds000001") and get a tibble with subject IDs
-  2. User can see how many subjects exist in the dataset from the output
-  3. Function works without downloading any data (metadata-only query)
-**Plans**: 1 plan
-
-Plans:
-- [x] 06-01-PLAN.md - GraphQL query, on_subjects() function, and tests
-
-### Phase 7: Subject Filtering
-**Goal**: Users can download only specific subjects instead of entire datasets
-**Depends on**: Phase 6 (uses on_subjects() for validation)
-**Requirements**: FILT-01, FILT-02, FILT-03
-**Success Criteria** (what must be TRUE):
-  1. User can call on_download(..., subjects = c("sub-01", "sub-02")) to download specific subjects
-  2. User can use regex patterns (subjects = regex("sub-0[1-5]")) for flexible matching
-  3. Download respects subject filter and only retrieves matching files
-  4. Invalid subject IDs produce helpful error messages
-**Plans**: 1 plan
-
-Plans:
-- [x] 07-01-PLAN.md - Subject filtering infrastructure and on_download() integration
-
-### Phase 8: BIDS Bridge
-**Goal**: Users can get BIDS-aware project objects from fetched datasets
-**Depends on**: Phase 7 (requires download functionality)
-**Requirements**: BIDS-01, BIDS-02, BIDS-03, BIDS-04, INF1-01, INF1-02, INF1-03
-**Success Criteria** (what must be TRUE):
-  1. User can call on_bids(handle) and get a bidser bids_project object
-  2. on_bids() provides helpful message if bidser is not installed
-  3. User can include fMRIPrep derivatives via on_bids(handle, fmriprep = TRUE)
-  4. User can specify custom derivatives path via on_bids(handle, prep_dir = "derivatives/custom")
-  5. R CMD check passes with bidser as Suggests (not Imports)
-**Plans**: 1 plan
-
-Plans:
-- [x] 08-01-PLAN.md - BIDS bridge with on_bids() function and bidser integration
+</details>
 
 ## Progress
 

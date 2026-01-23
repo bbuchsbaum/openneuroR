@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** v1.1 BIDS Integration - COMPLETE
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 8 of 8 (BIDS Bridge) - COMPLETE
-Plan: 1/1 complete
-Status: v1.1 COMPLETE
-Last activity: 2026-01-22 - Completed 08-01-PLAN.md
+Phase: 8 of 8 complete
+Plan: All plans complete
+Status: Ready for next milestone
+Last activity: 2026-01-22 — v1.1 milestone archived
 
-Progress: [====================] 100% (16/16 plans)
+Progress: [====================] 100% (16/16 plans across v1.0 + v1.1)
 
 ## Performance Metrics
 
@@ -24,32 +24,19 @@ Progress: [====================] 100% (16/16 plans)
 - R CMD check: 0 errors, 0 warnings, 0 notes
 - Tests: 375 passing
 - Exports: 13 public functions
-- Test coverage: 75.76%
 
 **v1.1 Summary:**
 - Phases: 3 (phases 6-8)
 - Plans completed: 3 (06-01, 07-01, 08-01)
 - R CMD check: 0 errors, 0 warnings, 0 notes
 - Tests: 495 passing (+120 new from v1.0)
-- Exports: 17 public functions (+4: on_subjects, regex, on_bids, include_derivatives param)
+- Exports: 17 public functions (+4: on_subjects, regex, on_bids)
 
 ## Accumulated Context
 
 ### Decisions
 
 All decisions logged in PROJECT.md Key Decisions table.
-
-Recent for v1.1:
-- bidser as Suggests (not Imports) - Optional dependency for BIDS integration
-- on_subjects() returns tibble - Consistent with existing API patterns
-- subjects= parameter in on_download() - Filter at download time, not handle creation
-- Subject IDs kept as-is from API (e.g., "01") - API returns ID portion without "sub-" prefix
-- Natural sorting via stringi::stri_sort - With base R fallback for environments without stringi
-- regex() returns S3 class (on_regex) - Explicit type detection vs metacharacter inference
-- Auto-anchor regex patterns - Full match semantics for subject filtering
-- Root files always included - dataset_description.json, README, etc. bypass subject filter
-- on_bids() returns bids_project directly - Let bidser's API shine through
-- Auto-fetch pending handles - Reduces friction for users
 
 ### Pending Todos
 
@@ -62,12 +49,14 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 08-01-PLAN.md
+Stopped at: v1.1 milestone archived
 Resume file: None
 
 ## Deliverables Index
 
-See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
+See archived milestones:
+- `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables
+- `.planning/milestones/v1.1-ROADMAP.md` for v1.1 deliverables
 
 **v1.0 Public API:**
 - Discovery: `on_client()`, `on_search()`, `on_dataset()`, `on_snapshots()`, `on_files()`
@@ -76,11 +65,11 @@ See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
 - Handle: `on_handle()`, `on_fetch()`, `on_path()`
 - Utility: `on_doctor()`
 
-**v1.1 Public API (NEW):**
-- Subject Discovery: `on_subjects()` - SHIPPED in 06-01
-- Download Filtering: `on_download(..., subjects=, include_derivatives=)` - SHIPPED in 07-01
-- Pattern Matching: `regex()` - SHIPPED in 07-01
-- BIDS Bridge: `on_bids()` - SHIPPED in 08-01
+**v1.1 Public API:**
+- Subject Discovery: `on_subjects()`
+- Download Filtering: `on_download(..., subjects=, include_derivatives=)`
+- Pattern Matching: `regex()`
+- BIDS Bridge: `on_bids()`
 
 ## Milestone History
 
@@ -89,8 +78,7 @@ See `.planning/milestones/v1.0-ROADMAP.md` for v1.0 deliverables.
 
 ## Next Steps
 
-v1.1 BIDS Integration milestone is complete. Consider:
+Both milestones complete and archived. Ready for:
+- `/gsd:new-milestone` — start next milestone cycle
 - CRAN submission preparation
 - Documentation improvements
-- Additional convenience functions
-- Performance optimizations
