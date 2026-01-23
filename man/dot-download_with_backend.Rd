@@ -10,11 +10,14 @@
   files = NULL,
   backend = NULL,
   quiet = FALSE,
-  timeout = 1800
+  timeout = 1800,
+  bucket = "openneuro.org"
 )
 }
 \arguments{
-\item{dataset_id}{Character string: Dataset identifier (e.g., "ds000001").}
+\item{dataset_id}{Character string: Dataset identifier (e.g., "ds000001").
+For derivatives from openneuro-derivatives bucket, caller constructs
+path as \code{{pipeline}/{dataset_id}-{pipeline}}.}
 
 \item{dest_dir}{Character string: Destination directory path.}
 
@@ -25,6 +28,9 @@
 \item{quiet}{Logical: If TRUE, suppress progress output.}
 
 \item{timeout}{Numeric: Timeout in seconds for backend operations.}
+
+\item{bucket}{Character string: S3 bucket name. Default "openneuro.org".
+Use "openneuro-derivatives" for derivative datasets.}
 }
 \value{
 A list with:
@@ -39,5 +45,23 @@ existing HTTPS flow).
 Executes download using the selected backend with automatic
 fallback on failure. Falls back through the priority chain:
 DataLad -> S3 -> HTTPS.
+}
+\details{
+Supports multiple S3 buckets:
+\itemize{
+\item \code{openneuro.org} - Raw datasets (default)
+\item \code{openneuro-derivatives} - Pre-computed derivatives
+}
+
+When verbose logging is enabled (quiet = FALSE), detailed progress is shown:
+\itemize{
+\item Backend selection messages
+\item Bucket information for S3 downloads
+\item Fallback attempts with error context
+}
+
+Note: For openneuro-derivatives bucket, the DataLad fallback uses
+github.com/OpenNeuroDerivatives/ instead of github.com/OpenNeuroDatasets/.
+This is handled by the caller constructing appropriate dataset_id.
 }
 \keyword{internal}

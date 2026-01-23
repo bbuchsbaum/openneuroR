@@ -66,11 +66,15 @@ NULL
 #' DataLad -> S3 -> HTTPS.
 #'
 #' @param dataset_id Character string: Dataset identifier (e.g., "ds000001").
+#'   For derivatives from openneuro-derivatives bucket, caller constructs
+#'   path as `{pipeline}/{dataset_id}-{pipeline}`.
 #' @param dest_dir Character string: Destination directory path.
 #' @param files Character vector: Specific files to download. If NULL, downloads all.
 #' @param backend Character string: Backend to use. If NULL, auto-selects.
 #' @param quiet Logical: If TRUE, suppress progress output.
 #' @param timeout Numeric: Timeout in seconds for backend operations.
+#' @param bucket Character string: S3 bucket name. Default "openneuro.org".
+#'   Use "openneuro-derivatives" for derivative datasets.
 #'
 #' @return A list with:
 #'   \describe{
@@ -80,15 +84,40 @@ NULL
 #'   Returns NULL if HTTPS fallback should be used (signals caller to use
 #'   existing HTTPS flow).
 #'
+#' @details
+#' Supports multiple S3 buckets:
+#' \itemize{
+#'   \item `openneuro.org` - Raw datasets (default)
+#'   \item `openneuro-derivatives` - Pre-computed derivatives
+#' }
+#'
+#' When verbose logging is enabled (quiet = FALSE), detailed progress is shown:
+#' \itemize{
+#'   \item Backend selection messages
+#'   \item Bucket information for S3 downloads
+#'   \item Fallback attempts with error context
+#' }
+#'
+#' Note: For openneuro-derivatives bucket, the DataLad fallback uses
+#' github.com/OpenNeuroDerivatives/ instead of github.com/OpenNeuroDatasets/.
+#' This is handled by the caller constructing appropriate dataset_id.
+#'
 #' @keywords internal
 .download_with_backend <- function(dataset_id, dest_dir, files = NULL,
                                     backend = NULL, quiet = FALSE,
-                                    timeout = 1800) {
+                                    timeout = 1800, bucket = "openneuro.org") {
   # Select backend
   selected <- .select_backend(backend)
 
+  # Verbose logging: show backend selection with bucket for S3
   if (!quiet) {
-    cli::cli_alert_info("Using {.val {selected}} backend")
+    if (selected == "s3") {
+      cli::cli_alert_info(
+        "Trying {.val {selected}} backend for bucket {.val {bucket}}..."
+      )
+    } else {
+      cli::cli_alert_info("Using {.val {selected}} backend")
+    }
   }
 
   # If HTTPS selected, signal caller to use existing flow
@@ -96,12 +125,15 @@ NULL
     return(NULL)
   }
 
+  # Track attempted backends for error context
+  attempted_backends <- selected
+
   # Execute download with fallback
   tryCatch(
     {
       result <- switch(selected,
         "datalad" = .download_datalad(dataset_id, dest_dir, files, quiet, timeout),
-        "s3" = .download_s3(dataset_id, dest_dir, files, quiet, timeout)
+        "s3" = .download_s3(dataset_id, dest_dir, files, quiet, timeout, bucket)
       )
       result
     },
@@ -112,18 +144,29 @@ NULL
         "s3" = "https"
       )
 
+      # Verbose logging: show failure with context
       if (!quiet) {
-        cli::cli_alert_warning("{.val {selected}} backend failed, falling back to {.val {fallback}}")
+        error_msg <- conditionMessage(e)
+        # Truncate long error messages
+        if (nchar(error_msg) > 80) {
+          error_msg <- paste0(substr(error_msg, 1, 77), "...")
+        }
+        cli::cli_alert_warning(
+          "{.val {selected}} failed: {error_msg}, trying {.val {fallback}}..."
+        )
       }
 
       # Recursive call with fallback
+      # Note: bucket parameter only matters for S3, but we pass it through
+      # to preserve context in error messages
       .download_with_backend(
         dataset_id = dataset_id,
         dest_dir = dest_dir,
         files = files,
         backend = fallback,
         quiet = quiet,
-        timeout = timeout
+        timeout = timeout,
+        bucket = bucket
       )
     }
   )
