@@ -14,7 +14,7 @@ NULL
 #' include/exclude patterns.
 #'
 #' @param dataset_id Character string: Dataset identifier (e.g., "ds000001").
-#'   For derivatives, caller constructs path as "{pipeline}/{dataset_id}-{pipeline}".
+#'   For derivatives, caller constructs path as `<pipeline>/<dataset_id>-<pipeline>`.
 #' @param dest_dir Character string: Destination directory path.
 #' @param files Character vector: Specific files/patterns to download.
 #'   If NULL, downloads all files. Patterns support glob syntax.

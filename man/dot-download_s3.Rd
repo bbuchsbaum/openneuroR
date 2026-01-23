@@ -15,7 +15,7 @@
 }
 \arguments{
 \item{dataset_id}{Character string: Dataset identifier (e.g., "ds000001").
-For derivatives, caller constructs path as "{pipeline}/{dataset_id}-{pipeline}".}
+For derivatives, caller constructs path as \verb{<pipeline>/<dataset_id>-<pipeline>}.}
 
 \item{dest_dir}{Character string: Destination directory path.}
 
