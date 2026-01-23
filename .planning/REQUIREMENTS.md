@@ -3,33 +3,40 @@
 **Defined:** 2026-01-20
 **Core Value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
 
-## v1.1 Requirements (Current Milestone)
+## v1.2 Requirements (Current Milestone)
 
-Requirements for BIDS integration milestone. Each maps to roadmap phases.
+Requirements for fMRIPrep Derivative Discovery milestone. Each maps to roadmap phases.
 
-### Subject Discovery
+### Discovery
 
-- [x] **SUBJ-01**: User can query subjects in a dataset without downloading (returns tibble with subject IDs)
-- [x] **SUBJ-02**: User can see subject count from on_subjects() output
+- [ ] **DISC-01**: User can list available derivative pipelines for a dataset via `on_derivatives()`
+- [ ] **DISC-02**: `on_derivatives()` returns tibble with pipeline name, source (embedded/OpenNeuroDerivatives), and metadata
+- [ ] **DISC-03**: User can discover OpenNeuroDerivatives (784+ pre-computed fMRIPrep datasets from GitHub org)
+- [ ] **DISC-04**: Discovery results are cached per-session to avoid GitHub API rate limits (60/hr unauthenticated)
 
-### Download Filtering
+### Spaces
 
-- [x] **FILT-01**: User can download specific subjects only via subjects= parameter in on_download()
-- [x] **FILT-02**: subjects= parameter accepts character vector of subject IDs (e.g., c("sub-01", "sub-02"))
-- [x] **FILT-03**: subjects= parameter supports regex patterns for flexible matching (e.g., "sub-0[1-5]")
+- [ ] **SPAC-01**: User can list available output spaces for a derivative via `on_spaces()`
+- [ ] **SPAC-02**: `on_spaces()` returns character vector of space names (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
 
-### BIDS Bridge
+### Download
 
-- [x] **BIDS-01**: User can get bidser bids_project object from fetched handle via on_bids()
-- [x] **BIDS-02**: on_bids() checks for bidser and provides helpful installation message if not installed
-- [x] **BIDS-03**: on_bids() accepts fmriprep= parameter to include fMRIPrep derivatives
-- [x] **BIDS-04**: on_bids() accepts prep_dir= parameter to specify custom derivatives path
+- [ ] **DOWN-01**: User can download fMRIPrep derivatives via `on_download_derivatives()`
+- [ ] **DOWN-02**: `on_download_derivatives()` supports `subjects=` parameter for subject filtering (reuses v1.1 pattern)
+- [ ] **DOWN-03**: `on_download_derivatives()` supports `space=` parameter for output space filtering
+- [ ] **DOWN-04**: Downloaded derivatives use BIDS-compliant cache structure (`{dataset}/derivatives/{pipeline}/`)
 
 ### Infrastructure
 
-- [x] **INF1-01**: bidser listed in Suggests (not Imports) for optional dependency
-- [x] **INF1-02**: All new functions have mocked tests (no real API/downloads in tests)
-- [x] **INF1-03**: Package passes R CMD check with no errors/warnings
+- [ ] **INFR-01**: New functions have mocked tests (no real API/downloads in tests)
+- [ ] **INFR-02**: Package passes R CMD check with no errors/warnings after changes
+- [ ] **INFR-03**: S3 backend supports parameterized bucket for derivatives bucket access
+
+## v1.1 Requirements (Complete)
+
+All v1.1 requirements shipped. See `.planning/milestones/v1.1-REQUIREMENTS.md` for full archive.
+
+**Summary:** 12 requirements across Subject Discovery (2), Download Filtering (3), BIDS Bridge (4), Infrastructure (3).
 
 ## v1.0 Requirements (Complete)
 
@@ -41,11 +48,13 @@ All v1.0 requirements shipped. See `.planning/milestones/v1.0-REQUIREMENTS.md` f
 
 Deferred to later milestones:
 
-- Session-level filtering in on_download() - v1.2+
-- Task-level filtering in on_download() - v1.2+
-- Derivative discovery from OpenNeuro API - v1.2+
-- Concurrent multi-subject downloads - v2+
-- tar_openneuro() targets helper - v2+
+- Session-level filtering in `on_download()` — v1.3+
+- Task-level filtering in `on_download()` — v1.3+
+- MRIQC derivative support — v1.3+
+- FreeSurfer derivative support — v2+
+- Concurrent multi-subject downloads — v2+
+- `tar_openneuro()` targets helper — v2+
+- Cross-dataset derivative aggregation — v3+
 
 ## Out of Scope
 
@@ -56,10 +65,10 @@ Explicitly excluded. Documented to prevent scope creep.
 | Upload/write operations | Read-only access for v1.x; OpenNeuro upload has separate workflow |
 | OAuth/social login | API key + bearer token sufficient; OpenNeuro uses simple auth |
 | BIDS validation | Separate concern; compose with bids-validator or other tools |
-| Derivative processing | openneuroR fetches data, bidser/other tools process it |
-| Real-time notifications | Not needed for data access patterns |
-| GUI/RStudio integration | CLI/programmatic access only |
-| Offline search index | High complexity, defer indefinitely |
+| Derivative processing | openneuroR fetches data, fMRIPrep/other tools process it |
+| Automatic space selection | MNI variants cause confusion; require explicit parameter |
+| Automatic confound selection | Hotly debated in literature; analysis-specific decision |
+| Unified derivatives API | OpenNeuro + OpenNeuroDerivatives have different access patterns; keep separate |
 
 ## Traceability
 
@@ -67,24 +76,25 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBJ-01 | Phase 6 | Complete |
-| SUBJ-02 | Phase 6 | Complete |
-| FILT-01 | Phase 7 | Complete |
-| FILT-02 | Phase 7 | Complete |
-| FILT-03 | Phase 7 | Complete |
-| BIDS-01 | Phase 8 | Complete |
-| BIDS-02 | Phase 8 | Complete |
-| BIDS-03 | Phase 8 | Complete |
-| BIDS-04 | Phase 8 | Complete |
-| INF1-01 | Phase 8 | Complete |
-| INF1-02 | Phase 8 | Complete |
-| INF1-03 | Phase 8 | Complete |
+| DISC-01 | Phase 9 | Pending |
+| DISC-02 | Phase 9 | Pending |
+| DISC-03 | Phase 9 | Pending |
+| DISC-04 | Phase 9 | Pending |
+| SPAC-01 | Phase 10 | Pending |
+| SPAC-02 | Phase 10 | Pending |
+| DOWN-01 | Phase 11 | Pending |
+| DOWN-02 | Phase 11 | Pending |
+| DOWN-03 | Phase 11 | Pending |
+| DOWN-04 | Phase 11 | Pending |
+| INFR-01 | Phase 11 | Pending |
+| INFR-02 | Phase 11 | Pending |
+| INFR-03 | Phase 10 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 12 total
-- Mapped to phases: 12
+- v1.2 requirements: 13 total
+- Mapped to phases: 13
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-22 - v1.1 milestone complete*
+*Last updated: 2026-01-23 — v1.2 requirements defined*
