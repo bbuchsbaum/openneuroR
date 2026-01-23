@@ -32,7 +32,15 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 
 ### Active
 
-(None — ready for next milestone planning)
+## Current Milestone: v1.2 fMRIPrep Derivative Discovery
+
+**Goal:** Enable researchers to discover and download fMRIPrep derivative datasets from OpenNeuro.
+
+**Target features:**
+- `on_derivatives()` to list derivative datasets for a given dataset
+- `on_download_derivatives()` to download fMRIPrep derivatives
+- Subject filtering support via `subjects=` parameter
+- Consistent API structure matching `on_files()` pattern
 
 ### Out of Scope
 
@@ -92,4 +100,4 @@ Test suite: 495 tests passing with httptest2 mocking.
 | on_bids() auto-fetches pending handles | Reduces friction for users | ✓ Good |
 
 ---
-*Last updated: 2026-01-22 after v1.1 milestone complete*
+*Last updated: 2026-01-22 after v1.2 milestone started*

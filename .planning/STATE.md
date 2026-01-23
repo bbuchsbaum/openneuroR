@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Planning next milestone
+**Current focus:** v1.2 fMRIPrep Derivative Discovery
 
 ## Current Position
 
-Phase: 8 of 8 complete
-Plan: All plans complete
-Status: Ready for next milestone
-Last activity: 2026-01-22 — v1.1 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.2
+Last activity: 2026-01-22 — Milestone v1.2 started
 
-Progress: [====================] 100% (16/16 plans across v1.0 + v1.1)
+Progress: [                    ] 0% (new milestone)
 
 ## Performance Metrics
 
@@ -78,7 +78,7 @@ See archived milestones:
 
 ## Next Steps
 
-Both milestones complete and archived. Ready for:
-- `/gsd:new-milestone` — start next milestone cycle
-- CRAN submission preparation
-- Documentation improvements
+Milestone v1.2 initialized. Continue with:
+- Define requirements
+- Create roadmap
+- `/gsd:plan-phase 9` — start execution after roadmap
