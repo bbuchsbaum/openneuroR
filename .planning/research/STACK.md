@@ -584,3 +584,222 @@ bidser::participants(proj)
 - [R Packages (2e) - Dependencies in Practice](https://r-pkgs.org/dependencies-in-practice.html)
 - [bidser GitHub](https://github.com/bbuchsbaum/bidser) - version 0.0.0.9000
 - [rlang check_installed documentation](https://rlang.r-lib.org/reference/is_installed.html)
+
+---
+
+# Addendum: fMRIPrep Derivative Discovery Stack (Milestone 2)
+
+**Researched:** 2026-01-22
+**Confidence:** HIGH (verified against existing codebase, official docs, CRAN)
+
+## Executive Summary
+
+fMRIPrep derivative discovery requires **ZERO new CRAN dependencies**. The existing stack (httr2, processx, fs, dplyr, tibble, cli, rlang, jsonlite) fully supports this capability. The only consideration is optional enhancement of the existing `bidser` Suggests dependency.
+
+**Key finding:** OpenNeuroDerivatives is a **separate GitHub organization** from OpenNeuroDatasets. Derivatives are accessed via:
+1. **GitHub API** - List available derivative datasets (httr2 handles this)
+2. **DataLad** - Clone from `github.com/OpenNeuroDerivatives/{dataset_id}-fmriprep`
+3. **S3 embedded** - `s3://openneuro/{dataset_id}/{version}/uncompressed/derivatives/`
+4. **S3 OpenNeuroDerivatives** - `s3://openneuro-derivatives/fmriprep/{dataset_id}-fmriprep`
+
+## Stack Additions for Derivative Discovery
+
+### Required Additions: NONE
+
+The current stack already handles all derivative discovery needs:
+
+| Capability Needed | Existing Technology | How It's Used |
+|-------------------|---------------------|---------------|
+| GitHub API calls | httr2 >= 1.2.1 | List OpenNeuroDerivatives org repos |
+| GitHub pagination | httr2 `req_url_query()` | `per_page`, `page` params |
+| DataLad cloning | processx >= 3.8.0 | Different GitHub org URL |
+| S3 sync | processx + AWS CLI | Different S3 paths |
+| File listing | on_files() + GraphQL | `tree="derivatives"` parameter |
+| Path manipulation | fs >= 1.6.6 | Build derivative paths |
+| User feedback | cli >= 3.6.0 | Progress for discovery |
+
+### Explicitly NOT Adding
+
+| Library | Why NOT to Add |
+|---------|----------------|
+| **gh** (>= 1.5.0) | Adds CRAN dependency for ~50 lines of code that httr2 handles natively |
+| **paws.storage** | AWS CLI via processx is already working; no benefit for public buckets |
+| **aws.s3** | Same as above - adds complexity without benefit |
+
+**gh package rejection rationale:**
+- gh adds transitively: gitcreds, glue, ini (3 new dependencies)
+- GitHub API pagination is straightforward with httr2's `req_url_query()`
+- The `.limit` auto-pagination in gh is convenient but not worth the dependency cost
+- Package already depends on httr2; adding gh wrapper adds no capability
+
+## Integration with Existing Code
+
+### 1. GitHub API for Derivative Discovery (httr2)
+
+```r
+#' List available fMRIPrep derivatives from OpenNeuroDerivatives
+#' @keywords internal
+.list_openneuro_derivatives <- function(type = "fmriprep") {
+  # Uses existing httr2 - NO NEW DEPENDENCY
+  base_url <- "https://api.github.com/orgs/OpenNeuroDerivatives/repos"
+
+  all_repos <- list()
+  page <- 1
+
+  repeat {
+    req <- httr2::request(base_url) |>
+      httr2::req_url_query(per_page = 100, page = page, type = "public") |>
+      httr2::req_headers(
+        "Accept" = "application/vnd.github+json",
+        "User-Agent" = paste0("openneuro-r/", packageVersion("openneuro"))
+      ) |>
+      httr2::req_retry(max_tries = 3)
+
+    resp <- httr2::req_perform(req)
+    repos <- httr2::resp_body_json(resp)
+
+    if (length(repos) == 0) break
+    all_repos <- c(all_repos, repos)
+    page <- page + 1
+  }
+
+  # Filter by type suffix (e.g., "-fmriprep")
+  pattern <- paste0("-", type, "$")
+  names <- vapply(all_repos, function(r) r$name, character(1))
+  matches <- grepl(pattern, names)
+
+  tibble::tibble(
+    derivative_repo = names[matches],
+    source_dataset = sub(pattern, "", names[matches]),
+    type = type,
+    github_url = vapply(all_repos[matches], function(r) r$html_url, character(1))
+  )
+}
+```
+
+### 2. DataLad Backend Extension
+
+Extend existing `.download_datalad()` in `backend-datalad.R`:
+
+```r
+# CURRENT (raw datasets):
+github_url <- paste0("https://github.com/OpenNeuroDatasets/", dataset_id, ".git")
+
+# NEW (derivatives):
+github_url <- paste0("https://github.com/OpenNeuroDerivatives/", dataset_id, "-fmriprep.git")
+```
+
+**No new dependencies** - same processx pattern, different URL.
+
+### 3. S3 Backend Extension
+
+Extend existing `.download_s3()` in `backend-s3.R` with derivative paths:
+
+```r
+# Two S3 access patterns for derivatives:
+
+# Pattern A: Embedded derivatives (in main OpenNeuro bucket)
+s3_uri <- paste0("s3://openneuro/", dataset_id, "/", version, "/uncompressed/derivatives/fmriprep")
+
+# Pattern B: OpenNeuroDerivatives bucket
+s3_uri <- paste0("s3://openneuro-derivatives/fmriprep/", dataset_id, "-fmriprep")
+```
+
+**Important caveat:** The `openneuro-derivatives` bucket has had [access issues](https://neurostars.org/t/openneuro-derivatives-bucket/26531) (ListObjectsV2 denied). The embedded path via the main `openneuro` bucket is more reliable.
+
+### 4. GraphQL Extension for Embedded Derivatives
+
+The existing `on_files()` already supports the `tree` parameter:
+
+```r
+# Already works - no changes needed
+on_files("ds000001", tree = "derivatives")
+on_files("ds000001", tree = "derivatives:fmriprep")
+```
+
+## Discovery Architecture
+
+### Recommended Discovery Flow
+
+```
+on_derivatives(dataset_id, type = "fmriprep")
+  |
+  v
+1. Check OpenNeuroDerivatives GitHub for {dataset_id}-fmriprep repo
+   |-- EXISTS --> Return metadata + DataLad URL
+   |
+   v
+2. Check embedded derivatives via on_files(id, tree="derivatives/fmriprep")
+   |-- EXISTS --> Return file listing
+   |
+   v
+3. No fMRIPrep derivatives available --> Return empty tibble with message
+```
+
+### Data Source Priority
+
+| Source | Access Method | Completeness | Reliability |
+|--------|---------------|--------------|-------------|
+| OpenNeuroDerivatives GitHub | GitHub API + DataLad | HIGH (curated) | HIGH |
+| OpenNeuro S3 embedded | S3 `derivatives/` path | MEDIUM | HIGH |
+| OpenNeuro GraphQL | `on_files(tree="derivatives")` | MEDIUM | HIGH |
+| openneuro-derivatives S3 | S3 bucket | HIGH | MEDIUM (past issues) |
+
+## Version Compatibility (No Changes)
+
+All existing version requirements remain sufficient:
+
+| Package | Minimum | Current CRAN | Status |
+|---------|---------|--------------|--------|
+| httr2 | >= 1.2.1 | 1.2.1 | Already required |
+| processx | >= 3.8.0 | 3.8.0+ | Already required |
+| fs | >= 1.6.6 | 1.6.6+ | Already required |
+| R | >= 4.1.0 | 4.4.x | Already required |
+
+## Testing Considerations
+
+No new test dependencies needed. Existing patterns apply:
+
+```r
+test_that("on_derivatives returns tibble for known dataset", {
+  # Use httptest2 fixtures for GitHub API responses
+  # Use existing vcr cassettes for GraphQL
+})
+
+test_that("on_derivatives returns empty tibble for no derivatives", {
+  # Mock 404 from GitHub API
+})
+```
+
+## Quality Gate Checklist
+
+- [x] **No new Imports**: All capabilities use existing httr2, processx, fs
+- [x] **No new Suggests**: Existing test framework sufficient
+- [x] **Versions verified**: httr2 1.2.1 on CRAN, processx 3.8.0+ on CRAN
+- [x] **Rationale for rejections**: gh package adds 3 transitive deps for marginal benefit
+- [x] **Integration points documented**: GitHub API, DataLad, S3, GraphQL all covered
+- [x] **Reliability caveat noted**: openneuro-derivatives S3 bucket has had access issues
+
+## Sources (Derivative Discovery)
+
+### Verified Sources (HIGH confidence)
+
+- [OpenNeuroDerivatives GitHub](https://github.com/OpenNeuroDerivatives) - Naming conventions, access methods
+- [OpenNeuro API Documentation](https://docs.openneuro.org/api.html) - GraphQL schema, file queries
+- [CRAN httr2](https://cran.r-project.org/package=httr2) - Version 1.2.1 verified
+- [httr2 1.2.0 changelog](https://httr2.r-lib.org/news/index.html) - Pagination improvements
+- [GitHub API repos endpoint](https://docs.github.com/en/rest/repos/repos) - Organization repo listing
+- [CRAN gh package](https://cran.r-project.org/package=gh) - Version 1.5.0, dependencies evaluated
+- [Neurostars discussion](https://neurostars.org/t/openneuro-derivatives-bucket/26531) - S3 bucket access issues
+
+### Codebase Verification
+
+- `/Users/bbuchsbaum/code/openneuroR/R/backend-s3.R` - Existing S3 patterns
+- `/Users/bbuchsbaum/code/openneuroR/R/backend-datalad.R` - Existing DataLad patterns
+- `/Users/bbuchsbaum/code/openneuroR/R/graphql.R` - Existing httr2 patterns
+- `/Users/bbuchsbaum/code/openneuroR/R/api-files.R` - Tree parameter support
+- `/Users/bbuchsbaum/code/openneuroR/DESCRIPTION` - Current dependencies
+
+---
+*Stack research for: fMRIPrep derivative discovery*
+*Researched: 2026-01-22*

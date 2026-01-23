@@ -1,7 +1,7 @@
 # Pitfalls Research: openneuro R Package
 
 **Domain:** R API wrapper for neuroimaging data repository (OpenNeuro)
-**Researched:** 2026-01-20
+**Researched:** 2026-01-22
 **Confidence:** HIGH (verified with official documentation and multiple authoritative sources)
 
 ---
@@ -816,58 +816,448 @@ _R_CHECK_FORCE_SUGGESTS_=FALSE R CMD check --as-cran openneuro_*.tar.gz
 
 ---
 
+## fMRIPrep Derivative Discovery Pitfalls
+
+**Context:** Adding fMRIPrep derivative discovery to existing openneuroR package (v1.2 milestone)
+**Researched:** 2026-01-22
+
+### Critical: Assuming Derivatives Use Same API/Bucket as Raw Data
+
+**What goes wrong:** Code assumes derivatives are in the main OpenNeuro S3 bucket (`s3://openneuro.org/`) using the same GraphQL API paths. In reality, derivatives may be in separate buckets (`s3://openneuro-derivatives/`, `s3://fmriprep-openneuro/`) with different access patterns.
+
+**Why it happens:** Developers test with raw data, assume derivatives follow identical patterns. The OpenNeuro derivatives infrastructure has evolved separately from the main platform.
+
+**Consequences:**
+- Download functions fail with "bucket not found" or "access denied" errors
+- Users cannot access derivatives that exist on OpenNeuro
+- Code works for some datasets but mysteriously fails for others
+
+**Warning signs:**
+- Hardcoded S3 bucket paths that work for raw data
+- No explicit derivatives-aware bucket configuration
+- Testing only with datasets that have derivatives embedded in raw data
+
+**Prevention:**
+1. Research and document actual derivative storage locations:
+   - Main bucket with derivatives path: `s3://openneuro/ds######/ds######_R#.#.#/uncompressed/derivatives/`
+   - Separate derivatives bucket: `s3://openneuro-derivatives/`
+   - OpenNeuroDerivatives GitHub: `https://github.com/OpenNeuroDerivatives/`
+2. Implement bucket discovery logic that checks multiple locations
+3. Handle access denied gracefully with informative messages about where derivatives actually exist
+4. Test with datasets from different eras of OpenNeuro derivatives storage
+
+**Source:** [Neurostars: OpenNeuro derivatives bucket](https://neurostars.org/t/openneuro-derivatives-bucket/26531)
+
+**Phase to address:** Phase 1 - Initial derivative discovery research and API design
+
+---
+
+### Critical: Ignoring OpenNeuroDerivatives GitHub Organization
+
+**What goes wrong:** Package only queries OpenNeuro API/S3 for derivatives, missing the majority of fMRIPrep derivatives stored in the OpenNeuroDerivatives GitHub organization.
+
+**Why it happens:** Developers expect all data to be accessible via the main OpenNeuro API. The OpenNeuroDerivatives organization (544+ repos) is a separate ecosystem that requires different access patterns.
+
+**Consequences:**
+- Users cannot find derivatives that exist for their datasets
+- Package reports "no derivatives available" when they actually exist
+- Incomplete derivative discovery leads to user confusion
+
+**Warning signs:**
+- No GitHub API calls in derivative discovery code
+- Documentation doesn't mention OpenNeuroDerivatives
+- Derivative discovery only checks OpenNeuro API endpoints
+
+**Prevention:**
+1. Implement dual discovery: OpenNeuro API + GitHub API for OpenNeuroDerivatives
+2. Use GitHub API to check for `ds######-fmriprep` repos in OpenNeuroDerivatives org
+3. Document the relationship: derivatives may be on OpenNeuro, GitHub, or both
+4. Provide `source` attribute in results indicating where derivatives were found
+
+**Source:** [OpenNeuroDerivatives GitHub](https://github.com/OpenNeuroDerivatives)
+
+**Phase to address:** Phase 1 - Derivative discovery architecture
+
+---
+
+### Critical: fMRIPrep Version Incompatibility Between Outputs
+
+**What goes wrong:** Code assumes consistent file naming/structure across all fMRIPrep versions. Users get file-not-found errors or parse failures when derivatives were processed with different fMRIPrep versions.
+
+**Why it happens:** fMRIPrep has evolved significantly. Key breaking changes include:
+- Confounds file naming: `confounds.tsv` -> `confounds_regressors.tsv` -> `timeseries.tsv`
+- Tissue probability naming: `probtissue` -> `probseg`
+- Per-session processing introduced in 25.2.x
+- Output layout options: "bids" vs "legacy"
+
+**Consequences:**
+- File parsing fails on older derivatives
+- Users cannot mix derivatives from different processing runs
+- Error messages are confusing (file exists but with different name)
+
+**Warning signs:**
+- Hardcoded filenames without version awareness
+- No parsing of `dataset_description.json` to detect fMRIPrep version
+- Testing only with derivatives from one fMRIPrep version
+
+**Prevention:**
+1. Parse `dataset_description.json` → `GeneratedBy.Name` and `GeneratedBy.Version`
+2. Implement version-aware filename patterns that handle known variations:
+   ```r
+   confounds_patterns <- c(
+     "desc-confounds_timeseries.tsv",  # >= 21.0
+     "desc-confounds_regressors.tsv",  # ~20.x
+     "confounds.tsv"                    # < 20.0
+   )
+   ```
+3. Document version requirements in function help
+4. Test with derivatives from multiple fMRIPrep versions (20.x, 21.x, 23.x, 25.x)
+
+**Source:** [fMRIPrep Changelog](https://fmriprep.org/en/stable/changes.html), [fMRIPrep Versioning](https://reproducibility.stanford.edu/fmriprep-lts/)
+
+**Phase to address:** Phase 2 - Derivative file parsing
+
+---
+
+### Critical: Treating Derivatives Folder in Raw Data as Equivalent to OpenNeuroDerivatives
+
+**What goes wrong:** Code conflates two different types of "derivatives":
+1. `derivatives/` folder within raw BIDS dataset (uploaded by data contributor)
+2. OpenNeuroDerivatives processed datasets (standardized fMRIPrep outputs)
+
+**Why it happens:** Both are called "derivatives" but have different origins, guarantees, and structures. Developers assume if derivatives exist in one place, they're equivalent to the other.
+
+**Consequences:**
+- Heterogeneous derivative structures break parsing logic
+- Non-BIDS-compliant derivatives crash the parser
+- Users get inconsistent results depending on derivative source
+
+**Warning signs:**
+- No distinction between "contributor derivatives" and "OpenNeuroDerivatives"
+- Same parsing logic applied to both types
+- No validation of derivative BIDS compliance
+
+**Prevention:**
+1. Separate API/code paths for:
+   - `on_derivatives()` - list available derivatives (from any source)
+   - `on_download_derivatives()` - download with source specification
+2. Add `source` parameter: "openneuro" | "github" | "embedded"
+3. Validate `dataset_description.json` presence and `DatasetType: "derivative"`
+4. Handle non-compliant embedded derivatives gracefully with warnings
+
+**Source:** [Neurostars: derivatives tab vs derivatives folder](https://neurostars.org/t/derivatives-tab-on-openneuro-vs-derivatives-folder-in-files-tab/26112)
+
+**Phase to address:** Phase 1 - API design
+
+---
+
+### Moderate: Missing Subject-Derivative Mapping
+
+**What goes wrong:** Subject filtering works for raw data but fails silently for derivatives. Users download derivatives expecting subject filtering to work.
+
+**Why it happens:** Derivative file paths have different subject directory structures than raw data. The existing subject filter logic doesn't account for derivative path patterns.
+
+**Consequences:**
+- `subjects = c("sub-01", "sub-02")` downloads all subjects' derivatives
+- Users waste bandwidth downloading unwanted subjects
+- Filtering appears to work (no errors) but doesn't actually filter
+
+**Warning signs:**
+- Subject filtering tested only with raw data
+- No derivative-specific path matching patterns
+- Derivative directory structure not analyzed
+
+**Prevention:**
+1. Verify derivative paths follow pattern: `derivatives/fmriprep/sub-XX/`
+2. Update `._filter_files_by_subjects()` to handle derivative paths:
+   ```r
+   # Raw: sub-XX/...
+   # Derivatives: derivatives/fmriprep/sub-XX/...
+   # Derivatives: derivatives/fmriprep/sub-XX/ses-XX/...
+   ```
+3. Add integration test: download derivatives for specific subjects
+4. Document derivative subject filtering behavior
+
+**Phase to address:** Phase 2 - Subject filtering integration
+
+---
+
+### Moderate: Derivatives File Sizes Not Handled
+
+**What goes wrong:** Derivative files are typically 10-100x larger than raw data. Timeout, memory, and disk space handling tuned for raw data fails for derivatives.
+
+**Why it happens:** Raw BIDS data has small JSON/TSV metadata and larger but manageable NIfTI files. Preprocessed derivatives include upsampled, multi-space outputs that dwarf raw data.
+
+**Consequences:**
+- Downloads timeout on large derivative files
+- Memory exhaustion when loading file lists
+- Disk space warnings come too late
+
+**Warning signs:**
+- Testing with small datasets only
+- No file size estimation before download
+- Same timeout values for raw and derivative downloads
+
+**Prevention:**
+1. Warn users about derivative sizes before download:
+   ```r
+   cli::cli_alert_warning(
+     "Derivatives for {.val {dataset_id}} are {.val {formatted_size}}. Continue?"
+   )
+   ```
+2. Increase default timeouts for derivative downloads (2-4x raw data timeouts)
+3. Implement disk space check before derivative downloads
+4. Consider streaming/chunked downloads for very large files
+
+**Phase to address:** Phase 3 - Download implementation
+
+---
+
+### Moderate: Failed Processing Subjects Not Handled
+
+**What goes wrong:** Code assumes all subjects have complete derivatives. Some subjects fail fMRIPrep processing (e.g., "Sub-20 processing failed" in ds002422-fmriprep).
+
+**Why it happens:** fMRIPrep can fail for individual subjects due to data quality issues. Failed subjects may have partial outputs or only error reports.
+
+**Consequences:**
+- File listing includes incomplete subjects
+- Downstream analysis crashes on missing expected files
+- Users don't know which subjects are usable
+
+**Warning signs:**
+- No parsing of HTML reports or logs for failure indicators
+- Assuming file existence = successful processing
+- No quality/completeness metadata exposed
+
+**Prevention:**
+1. Parse `logs/CITATION.md` or subject HTML reports for processing status
+2. Add `status` column to derivative file listings: "complete" | "partial" | "failed"
+3. Warn users about failed subjects:
+   ```r
+   cli::cli_alert_warning(
+     "Processing failed for: {.val {failed_subjects}}"
+   )
+   ```
+4. Provide option to exclude failed subjects from download
+
+**Source:** [OpenNeuroDerivatives/ds002422-fmriprep README](https://github.com/OpenNeuroDerivatives/ds002422-fmriprep)
+
+**Phase to address:** Phase 2 - File listing and metadata
+
+---
+
+### Moderate: Breaking Existing API When Adding Derivatives
+
+**What goes wrong:** New derivative functions change the behavior or return format of existing functions. Users' scripts break after updating the package.
+
+**Why it happens:** Existing functions like `on_files()`, `on_download()` may need modification to support derivatives. Without careful design, changes affect non-derivative users.
+
+**Consequences:**
+- User scripts break after package update
+- Semver violation (breaking change in minor version)
+- User trust eroded
+
+**Warning signs:**
+- Modifying existing function signatures
+- Changing return tibble column structure
+- Adding required parameters to existing functions
+
+**Prevention:**
+1. Add NEW functions for derivatives: `on_derivatives()`, `on_download_derivatives()`
+2. Keep existing functions unchanged (behavior freeze)
+3. If existing functions need derivative awareness, use OPT-IN parameters:
+   ```r
+   on_files(..., include_derivatives = FALSE)  # Default preserves old behavior
+   ```
+4. Document migration path clearly
+5. Run full existing test suite after every change
+
+**Phase to address:** All phases - API design principle
+
+---
+
+### Moderate: BIDS Derivatives Filename Parsing Errors
+
+**What goes wrong:** Code fails to parse BIDS derivative filenames correctly. Entity extraction breaks on complex filenames with multiple descriptors.
+
+**Why it happens:** BIDS Derivatives adds entities like `_desc-<label>`, `_space-<space>`, `_res-<resolution>` that don't exist in raw BIDS. Filename patterns are more complex.
+
+**Example complex filename:**
+```
+sub-01_task-rest_run-01_space-MNI152NLin2009cAsym_res-2_desc-preproc_bold.nii.gz
+```
+
+**Consequences:**
+- File metadata extraction fails
+- Filtering by space/resolution doesn't work
+- Users cannot find files by expected criteria
+
+**Warning signs:**
+- Regex patterns that assume simple filenames
+- No handling of `_space-`, `_desc-`, `_res-` entities
+- Filename parsing tested only on raw BIDS patterns
+
+**Prevention:**
+1. Use established BIDS parsing patterns:
+   ```r
+   entities <- c(
+     "sub", "ses", "task", "acq", "ce", "rec", "dir",
+     "run", "echo", "part", "space", "res", "desc"
+   )
+   ```
+2. Build entity-extraction function that handles all BIDS derivative entities
+3. Test with representative fMRIPrep output filenames
+4. Consider using/wrapping bidser for BIDS parsing if available
+
+**Source:** [fMRIPrep Outputs](https://fmriprep.org/en/stable/outputs.html), [BIDS Derivatives Specification](https://bids-specification.readthedocs.io/en/stable/derivatives/introduction.html)
+
+**Phase to address:** Phase 2 - File listing and filtering
+
+---
+
+### Minor: No Pipeline Filtering for Derivatives
+
+**What goes wrong:** Users want fMRIPrep derivatives but get mixed results including FreeSurfer, MRIQC, or other pipeline outputs.
+
+**Why it happens:** Derivatives directory may contain outputs from multiple pipelines. Code returns all derivatives without filtering.
+
+**Consequences:**
+- Users download unwanted pipeline outputs
+- Confusion about what derivatives are available
+- Wasted bandwidth and disk space
+
+**Warning signs:**
+- No `pipeline` parameter in derivative functions
+- Listing includes mixed pipeline outputs
+- No parsing of `GeneratedBy` metadata
+
+**Prevention:**
+1. Add `pipeline` parameter: `on_derivatives(dataset_id, pipeline = "fmriprep")`
+2. Parse `dataset_description.json` → `GeneratedBy.Name` to identify pipeline
+3. Support common pipeline values: "fmriprep", "mriqc", "freesurfer", "ciftify"
+4. Default to listing all pipelines, filter on request
+
+**Phase to address:** Phase 2 - Filtering implementation
+
+---
+
+### Minor: Confusing Derivative Versions
+
+**What goes wrong:** Multiple derivative versions exist for a dataset (e.g., processed with fMRIPrep 20.0, 21.0, 23.0). Users accidentally download wrong version.
+
+**Why it happens:** OpenNeuroDerivatives may have multiple repos for same dataset with different fMRIPrep versions. Code doesn't expose or handle this.
+
+**Consequences:**
+- Users get unexpected fMRIPrep version
+- Results vary based on which version is returned first
+- No way to request specific processing version
+
+**Warning signs:**
+- No version info in derivative listings
+- First-found derivatives returned without version consideration
+- No mechanism to request specific version
+
+**Prevention:**
+1. Include processing version in derivative discovery results
+2. Provide `version` parameter for version-specific downloads
+3. Default to latest version when multiple exist
+4. Show available versions:
+   ```r
+   on_derivatives("ds000001")
+   # Returns tibble with: pipeline, version, source, file_count, size
+   ```
+
+**Phase to address:** Phase 3 - Version management
+
+---
+
+## Technical Debt Patterns
+
+Shortcuts that seem reasonable but create long-term problems.
+
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Hardcode bucket URL | Quick implementation | Breaks when infrastructure changes | Never for production |
+| Skip version parsing | Simpler code | Fails on version variations | Only for MVP prototype |
+| Ignore embedded vs GitHub derivatives | Less complexity | Incorrect results for many datasets | Never |
+| Same timeout for derivatives | Code reuse | Failed large downloads | Only if derivatives are optional feature |
+| No disk space check | Simpler UX | Frustrated users with full disks | Only for small datasets |
+
+## Integration Gotchas
+
+Common mistakes when connecting to external services for derivative discovery.
+
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| OpenNeuro GraphQL | Assuming derivatives field exists | Check schema introspection first |
+| S3 openneuro-derivatives bucket | Using same auth as main bucket | May have different access policies |
+| OpenNeuroDerivatives GitHub | Not handling rate limits | Use GitHub API with pagination and backoff |
+| DataLad for derivatives | Assuming same repo structure | Derivatives repos may have different annex configuration |
+| fMRIPrep outputs | Hardcoding filename patterns | Version-aware pattern matching |
+
+## Performance Traps
+
+Patterns that work at small scale but fail as usage grows.
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|------|----------|------------|----------------|
+| Listing all derivative files at once | Memory exhaustion, timeout | Paginate file listings | >10,000 files |
+| Downloading derivatives without size warning | Full disk, angry users | Pre-download size estimate | >10GB derivatives |
+| No caching of derivative discovery | Repeated slow API calls | Cache derivative listings | Interactive use |
+| Single-threaded derivative download | Hours for large datasets | Parallel download with batching | >100 files or >5GB |
+
+## "Looks Done But Isn't" Checklist
+
+Things that appear complete but are missing critical pieces.
+
+- [ ] **Derivative discovery:** Often missing OpenNeuroDerivatives GitHub source - verify all sources checked
+- [ ] **Subject filtering:** Often missing derivative path patterns - verify derivatives filter correctly
+- [ ] **fMRIPrep version handling:** Often missing old version patterns - verify with 20.x derivatives
+- [ ] **Download function:** Often missing size warnings - verify user is warned for large downloads
+- [ ] **Error messages:** Often cryptic for derivative issues - verify clear guidance when derivatives not found
+- [ ] **Documentation:** Often missing derivative-specific examples - verify all functions have derivative examples
+
+## Recovery Strategies
+
+When pitfalls occur despite prevention, how to recover.
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| Wrong bucket hardcoded | LOW | Update bucket URL, release patch |
+| Existing API broken | HIGH | Deprecate changed behavior, add compat shim, semver major |
+| fMRIPrep version crashes | MEDIUM | Add version detection, pattern fallback, test suite expansion |
+| Derivatives not found (missed GitHub) | MEDIUM | Add GitHub discovery, update docs, user notification |
+| Subject filter not working | MEDIUM | Fix patterns, add regression tests, changelog note |
+
+---
+
 ## Prevention Strategies Summary
 
-### Phase 1: Foundation Setup
+### Phase 1: Derivative Discovery Foundation
 
 | Pitfall | Prevention |
 |---------|------------|
-| Wrong cache directory | Use `tools::R_user_dir()` from day one |
-| Missing user agent | Add to base request builder immediately |
-| DESCRIPTION errors | Follow CRAN checklist from start |
-| SystemRequirements missing | Document external deps in DESCRIPTION |
-| API key exposure | Environment variable pattern only |
+| Wrong bucket assumption | Research and document all derivative storage locations |
+| Missing GitHub derivatives | Implement dual discovery (API + GitHub) |
+| Breaking existing API | Add new functions, don't modify existing |
+| Embedded vs GitHub confusion | Separate code paths, clear source attribution |
 
-### Phase 2: Core API Layer
-
-| Pitfall | Prevention |
-|---------|------------|
-| Inadequate error handling | Custom error classes, GraphQL error parsing |
-| Tests hit real API | Set up vcr/webmockr from first test |
-| CLI tool not installed | Check + helpful error on first use |
-| system2() issues | Use processx::run() exclusively |
-| Network failures not graceful | tryCatch + informative messages |
-
-### Phase 3: Download/Cache Layer
+### Phase 2: File Listing and Filtering
 
 | Pitfall | Prevention |
 |---------|------------|
-| Timeout too short | Configurable timeout, document limits |
-| No resume support | curl::multi_download(resume = TRUE) |
-| No checksum verification | Verify all downloads against API checksums |
-| Open file limits | Batch parallel downloads |
-| Rate limiting | req_throttle() + req_retry() |
-| Pagination ignored | Implement cursor pagination |
+| fMRIPrep version incompatibility | Parse dataset_description.json, version-aware patterns |
+| Subject filter failure | Update patterns for derivative paths |
+| Filename parsing errors | Handle all BIDS derivative entities |
+| Failed subjects not handled | Parse logs, expose status metadata |
 
-### Phase 4: Documentation/Polish
+### Phase 3: Download Implementation
 
 | Pitfall | Prevention |
 |---------|------------|
-| Examples hit API | \dontrun{} or cached examples |
-| Vignettes slow | Pre-computed results, consider articles |
-| Check time too long | Profile and optimize |
-| Cache unbounded | Provide cache management functions |
-| No progress feedback | cli package integration |
-
-### Optional Dependency Integration (bidser)
-
-| Pitfall | Prevention |
-|---------|------------|
-| Unconditional examples | Wrap in \dontrun{} or requireNamespace check |
-| Missing function guards | requireNamespace() at function start |
-| Tests fail without package | skip_if_not_installed() in all tests |
-| Using require() | Use requireNamespace() + pkg::fun() |
-| DESCRIPTION not updated | usethis::use_package("bidser", "Suggests") first |
+| Derivative sizes not handled | Warn before download, check disk space |
+| Multiple versions confusion | Expose version info, provide version parameter |
+| Pipeline filtering missing | Parse GeneratedBy, add pipeline parameter |
 
 ---
 
@@ -880,6 +1270,9 @@ _R_CHECK_FORCE_SUGGESTS_=FALSE R CMD check --as-cran openneuro_*.tar.gz
 | **Phase 3: Downloads** | Timeout, resume, checksums, file limits, rate limiting |
 | **Phase 4: Polish** | Examples, vignettes, progress, cache management |
 | **bidser Integration** | requireNamespace guards, skip_if_not_installed, conditional examples |
+| **Derivatives Phase 1** | Bucket discovery, GitHub integration, API design |
+| **Derivatives Phase 2** | Version handling, subject filtering, filename parsing |
+| **Derivatives Phase 3** | Size handling, version management, pipeline filtering |
 
 ---
 
@@ -892,6 +1285,9 @@ _R_CHECK_FORCE_SUGGESTS_=FALSE R CMD check --as-cran openneuro_*.tar.gz
 - [R Packages (2e) - Dependencies in Practice](https://r-pkgs.org/dependencies-in-practice.html)
 - [processx documentation](https://processx.r-lib.org/)
 - [testthat skipping](https://testthat.r-lib.org/articles/skipping.html)
+- [fMRIPrep Outputs](https://fmriprep.org/en/stable/outputs.html)
+- [fMRIPrep Changelog](https://fmriprep.org/en/stable/changes.html)
+- [BIDS Derivatives Specification](https://bids-specification.readthedocs.io/en/stable/derivatives/introduction.html)
 
 ### rOpenSci Resources
 - [API package best practices](https://cran.r-project.org/web/packages/crul/vignettes/best-practices-api-packages.html)
@@ -904,3 +1300,11 @@ _R_CHECK_FORCE_SUGGESTS_=FALSE R CMD check --as-cran openneuro_*.tar.gz
 - [rappdirs CRAN issue](https://github.com/r-lib/rappdirs/issues/27)
 - [R Blog - Faster Downloads](https://blog.r-project.org/2024/12/02/faster-downloads/)
 - [curl package](https://cran.r-project.org/web/packages/curl/curl.pdf)
+
+### OpenNeuro/fMRIPrep References
+- [OpenNeuro API Documentation](https://docs.openneuro.org/api.html)
+- [OpenNeuroDerivatives GitHub](https://github.com/OpenNeuroDerivatives)
+- [Neurostars: OpenNeuro derivatives bucket](https://neurostars.org/t/openneuro-derivatives-bucket/26531)
+- [Neurostars: derivatives tab vs folder](https://neurostars.org/t/derivatives-tab-on-openneuro-vs-derivatives-folder-in-files-tab/26112)
+- [fMRIPrep LTS and Versioning](https://reproducibility.stanford.edu/fmriprep-lts/)
+- [GitHub issue: Sharing derivatives-only datasets](https://github.com/OpenNeuroOrg/openneuro/issues/2436)
