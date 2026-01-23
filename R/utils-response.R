@@ -300,6 +300,39 @@ transform_timestamps <- function(df) {
   }
 }
 
+#' Create Empty Derivatives Tibble
+#'
+#' Returns a tibble with the correct structure for derivative discovery but zero rows.
+#' Used as the base structure for on_derivatives() results.
+#'
+#' @return An empty tibble with derivative columns:
+#'   \describe{
+#'     \item{dataset_id}{Dataset identifier (character)}
+#'     \item{pipeline}{Pipeline name, e.g., "fmriprep" (character)}
+#'     \item{source}{Source of derivative: "embedded" or "openneuro-derivatives" (character)}
+#'     \item{version}{Pipeline version if available (character)}
+#'     \item{n_subjects}{Number of subjects processed (integer)}
+#'     \item{n_files}{Number of derivative files (integer)}
+#'     \item{total_size}{Human-readable size string, e.g., "2.3 GB" (character)}
+#'     \item{last_modified}{Last modification time (POSIXct)}
+#'     \item{s3_url}{S3 URL for OpenNeuroDerivatives sources (character)}
+#'   }
+#'
+#' @keywords internal
+.empty_derivatives_tibble <- function() {
+  tibble::tibble(
+    dataset_id = character(),
+    pipeline = character(),
+    source = character(),
+    version = character(),
+    n_subjects = integer(),
+    n_files = integer(),
+    total_size = character(),
+    last_modified = as.POSIXct(character(), tz = "UTC"),
+    s3_url = character()
+  )
+}
+
 #' Parse Subjects Response
 #'
 #' Converts the subjects query response to a tibble.
