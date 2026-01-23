@@ -9,10 +9,10 @@ Requirements for fMRIPrep Derivative Discovery milestone. Each maps to roadmap p
 
 ### Discovery
 
-- [ ] **DISC-01**: User can list available derivative pipelines for a dataset via `on_derivatives()`
-- [ ] **DISC-02**: `on_derivatives()` returns tibble with pipeline name, source (embedded/OpenNeuroDerivatives), and metadata
-- [ ] **DISC-03**: User can discover OpenNeuroDerivatives (784+ pre-computed fMRIPrep datasets from GitHub org)
-- [ ] **DISC-04**: Discovery results are cached per-session to avoid GitHub API rate limits (60/hr unauthenticated)
+- [x] **DISC-01**: User can list available derivative pipelines for a dataset via `on_derivatives()`
+- [x] **DISC-02**: `on_derivatives()` returns tibble with pipeline name, source (embedded/OpenNeuroDerivatives), and metadata
+- [x] **DISC-03**: User can discover OpenNeuroDerivatives (784+ pre-computed fMRIPrep datasets from GitHub org)
+- [x] **DISC-04**: Discovery results are cached per-session to avoid GitHub API rate limits (60/hr unauthenticated)
 
 ### Spaces
 
@@ -76,10 +76,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 9 | Pending |
-| DISC-02 | Phase 9 | Pending |
-| DISC-03 | Phase 9 | Pending |
-| DISC-04 | Phase 9 | Pending |
+| DISC-01 | Phase 9 | Complete |
+| DISC-02 | Phase 9 | Complete |
+| DISC-03 | Phase 9 | Complete |
+| DISC-04 | Phase 9 | Complete |
 | SPAC-01 | Phase 10 | Pending |
 | SPAC-02 | Phase 10 | Pending |
 | DOWN-01 | Phase 11 | Pending |
@@ -97,4 +97,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-23 — v1.2 requirements defined*
+*Last updated: 2026-01-23 — Phase 9 requirements complete*

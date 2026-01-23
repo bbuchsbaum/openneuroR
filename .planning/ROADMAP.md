@@ -114,10 +114,11 @@ Plans:
   2. Tibble includes pipeline name, source (embedded vs OpenNeuroDerivatives), and metadata
   3. OpenNeuroDerivatives GitHub organization repos are discoverable (784+ datasets)
   4. Discovery results are cached per-session (no repeated GitHub API calls within session)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 09-01: TBD
+- [x] 09-01-PLAN.md — Session cache and GitHub API infrastructure
+- [x] 09-02-PLAN.md — Main on_derivatives() function with embedded detection
 
 #### Phase 10: Spaces and S3 Backend
 **Goal**: Users can explore output spaces and S3 infrastructure supports derivative bucket access
@@ -163,10 +164,12 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 | 6. Subject Querying | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 7. Subject Filtering | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 8. BIDS Bridge | v1.1 | 1/1 | Complete | 2026-01-22 |
-| 9. Discovery Foundation | v1.2 | 0/TBD | Not started | - |
+| 9. Discovery Foundation | v1.2 | 2/2 | Complete | 2026-01-23 |
 | 10. Spaces and S3 Backend | v1.2 | 0/TBD | Not started | - |
 | 11. Download Integration | v1.2 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-20*
 *v1.2 milestone added: 2026-01-23*
+*Phase 9 planned: 2026-01-23*
+*Phase 9 completed: 2026-01-23*

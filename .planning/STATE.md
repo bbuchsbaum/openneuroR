@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 9 - Discovery Foundation
+**Current focus:** Phase 10 - Spaces and S3 Backend
 
 ## Current Position
 
