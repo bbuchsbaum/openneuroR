@@ -16,8 +16,8 @@ Requirements for fMRIPrep Derivative Discovery milestone. Each maps to roadmap p
 
 ### Spaces
 
-- [ ] **SPAC-01**: User can list available output spaces for a derivative via `on_spaces()`
-- [ ] **SPAC-02**: `on_spaces()` returns character vector of space names (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
+- [x] **SPAC-01**: User can list available output spaces for a derivative via `on_spaces()`
+- [x] **SPAC-02**: `on_spaces()` returns character vector of space names (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
 
 ### Download
 
@@ -30,7 +30,7 @@ Requirements for fMRIPrep Derivative Discovery milestone. Each maps to roadmap p
 
 - [ ] **INFR-01**: New functions have mocked tests (no real API/downloads in tests)
 - [ ] **INFR-02**: Package passes R CMD check with no errors/warnings after changes
-- [ ] **INFR-03**: S3 backend supports parameterized bucket for derivatives bucket access
+- [x] **INFR-03**: S3 backend supports parameterized bucket for derivatives bucket access
 
 ## v1.1 Requirements (Complete)
 
@@ -80,15 +80,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-02 | Phase 9 | Complete |
 | DISC-03 | Phase 9 | Complete |
 | DISC-04 | Phase 9 | Complete |
-| SPAC-01 | Phase 10 | Pending |
-| SPAC-02 | Phase 10 | Pending |
+| SPAC-01 | Phase 10 | Complete |
+| SPAC-02 | Phase 10 | Complete |
 | DOWN-01 | Phase 11 | Pending |
 | DOWN-02 | Phase 11 | Pending |
 | DOWN-03 | Phase 11 | Pending |
 | DOWN-04 | Phase 11 | Pending |
 | INFR-01 | Phase 11 | Pending |
 | INFR-02 | Phase 11 | Pending |
-| INFR-03 | Phase 10 | Pending |
+| INFR-03 | Phase 10 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 13 total
@@ -97,4 +97,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-20*
-*Last updated: 2026-01-23 — Phase 9 requirements complete*
+*Last updated: 2026-01-23 — Phase 10 requirements complete*
