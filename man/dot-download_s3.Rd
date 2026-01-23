@@ -4,10 +4,18 @@
 \alias{.download_s3}
 \title{Download Dataset via S3 Backend}
 \usage{
-.download_s3(dataset_id, dest_dir, files = NULL, quiet = FALSE, timeout = 1800)
+.download_s3(
+  dataset_id,
+  dest_dir,
+  files = NULL,
+  quiet = FALSE,
+  timeout = 1800,
+  bucket = "openneuro.org"
+)
 }
 \arguments{
-\item{dataset_id}{Character string: Dataset identifier (e.g., "ds000001").}
+\item{dataset_id}{Character string: Dataset identifier (e.g., "ds000001").
+For derivatives, caller constructs path as "{pipeline}/{dataset_id}-{pipeline}".}
 
 \item{dest_dir}{Character string: Destination directory path.}
 
@@ -17,6 +25,9 @@ If NULL, downloads all files. Patterns support glob syntax.}
 \item{quiet}{Logical: If TRUE, suppress progress output.}
 
 \item{timeout}{Numeric: Timeout in seconds. Default 1800 (30 minutes).}
+
+\item{bucket}{Character string: S3 bucket name. Default "openneuro.org".
+Use "openneuro-derivatives" for derivative datasets.}
 }
 \value{
 Invisibly returns a list with:
@@ -26,16 +37,35 @@ Invisibly returns a list with:
 }
 }
 \description{
-Uses AWS CLI \verb{s3 sync} command to download datasets from the
+Uses AWS CLI \verb{s3 sync} command to download datasets from an
 OpenNeuro S3 bucket. Supports selective file downloads via
 include/exclude patterns.
 }
 \details{
-Uses \code{--no-sign-request} for anonymous access to the public
-OpenNeuro S3 bucket (\verb{s3://openneuro.org}).
+Uses \code{--no-sign-request} for anonymous access to public S3 buckets.
+
+Supported buckets:
+\itemize{
+\item \code{openneuro.org} - Raw datasets (default)
+\item \code{openneuro-derivatives} - Pre-computed derivatives (fMRIPrep, MRIQC, etc.)
+}
 
 When \code{files} is provided, the function first excludes all files
 (\verb{--exclude "*"}) then includes only the specified patterns.
 This is the correct order for AWS CLI include/exclude logic.
+}
+\examples{
+\dontrun{
+# Download raw dataset (default bucket)
+.download_s3("ds000001", "/tmp/ds000001")
+
+# Download derivative from openneuro-derivatives bucket
+.download_s3(
+  "fmriprep/ds000001-fmriprep",
+  "/tmp/ds000001-fmriprep",
+  bucket = "openneuro-derivatives"
+)
+}
+
 }
 \keyword{internal}
