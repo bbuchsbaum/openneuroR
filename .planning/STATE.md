@@ -10,19 +10,19 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 9 of 11 (Discovery Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-01-23 — Roadmap created for v1.2 milestone
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-23 — Completed 09-01-PLAN.md (session cache + GitHub API)
 
-Progress: [=========>..........] 45%
-(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 3 phases pending)
+Progress: [==========>.........] 47%
+(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 1/6 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: ~15 min (estimated from v1.0/v1.1)
-- Total execution time: ~4 hours (v1.0 + v1.1)
+- Total plans completed: 17
+- Average duration: ~14 min
+- Total execution time: ~4.1 hours (v1.0 + v1.1 + v1.2 start)
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [=========>..........] 45%
 |-------|-------|-------|----------|
 | 1-5 (v1.0) | 13 | ~3h | ~14 min |
 | 6-8 (v1.1) | 3 | ~1h | ~20 min |
-| 9-11 (v1.2) | TBD | - | - |
+| 9 (v1.2) | 1/2 | 4min | 4 min |
 
 **Recent Trend:**
-- Last milestone (v1.1): 3 plans in single session
-- Trend: Stable (efficient single-plan phases)
+- Last plan (09-01): 4 min (fast - minimal code, clear spec)
+- Trend: Stable (efficient execution)
 
 *Updated after each plan completion*
 
@@ -48,6 +48,9 @@ Recent decisions affecting current work:
 - [v1.1]: Subject IDs kept as-is from API (no "sub-" prefix transformation)
 - [v1.1]: on_bids() auto-fetches pending handles for reduced friction
 - [v1.2 research]: Separate code paths for embedded vs OpenNeuroDerivatives sources
+- [09-01]: Closure pattern for session cache (avoids namespace lock issues)
+- [09-01]: 30 req/min GitHub throttle (50% margin under 60/hr limit)
+- [09-01]: Parse only ds######-{fmriprep|mriqc|fitlins} repos
 
 ### Pending Todos
 
@@ -55,15 +58,16 @@ None yet.
 
 ### Blockers/Concerns
 
-- GitHub API rate limit: 60/hr unauthenticated. Session caching (DISC-04) mitigates this.
+- GitHub API rate limit: 60/hr unauthenticated. **MITIGATED** - Session caching implemented in 09-01.
 - S3 bucket access: `s3://openneuro-derivatives/` may have ListObjectsV2 issues (per Neurostars). Need to test and implement fallback.
 
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Roadmap created for v1.2 milestone
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
 
 ---
 *State initialized: 2026-01-22*
 *v1.2 roadmap added: 2026-01-23*
+*09-01 completed: 2026-01-23*
