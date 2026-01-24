@@ -29,18 +29,20 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 - ✓ Regex pattern matching for subject filtering via `regex()` helper — v1.1
 - ✓ Bridge to bidser: `on_bids(handle)` returns `bids_project` object — v1.1
 - ✓ bidser as optional Suggests dependency with graceful fallback — v1.1
+- ✓ List derivative pipelines for a dataset via `on_derivatives()` — v1.2
+- ✓ Discover OpenNeuroDerivatives GitHub repos (780+ fMRIPrep/MRIQC datasets) — v1.2
+- ✓ Session caching for GitHub API rate limit compliance — v1.2
+- ✓ List available output spaces via `on_spaces()` — v1.2
+- ✓ S3 backend supports openneuro-derivatives bucket — v1.2
+- ✓ Download fMRIPrep derivatives via `on_download_derivatives()` — v1.2
+- ✓ Subject filtering for derivative downloads via `subjects=` parameter — v1.2
+- ✓ Output space filtering via `space=` parameter — v1.2
+- ✓ BIDS suffix filtering via `suffix=` parameter — v1.2
+- ✓ Cache manifest type field distinguishes raw vs derivative data — v1.2
 
 ### Active
 
-## Current Milestone: v1.2 fMRIPrep Derivative Discovery
-
-**Goal:** Enable researchers to discover and download fMRIPrep derivative datasets from OpenNeuro.
-
-**Target features:**
-- `on_derivatives()` to list derivative datasets for a given dataset
-- `on_download_derivatives()` to download fMRIPrep derivatives
-- Subject filtering support via `subjects=` parameter
-- Consistent API structure matching `on_files()` pattern
+(No active requirements — ready for next milestone)
 
 ### Out of Scope
 
@@ -53,12 +55,12 @@ Researchers can find, download, and cache OpenNeuro datasets with a single pipel
 
 ## Context
 
-Shipped v1.1 with 3,781 LOC R.
+Shipped v1.2 with 5,988 LOC R.
 Tech stack: httr2, tibble, dplyr, rlang, cli, fs, processx.
 Backend CLIs: DataLad/OpenNeuro CLI optional; AWS CLI optional; HTTPS always available.
 
 R CMD check: 0 errors, 0 warnings, 0 notes.
-Test suite: 495 tests passing with httptest2 mocking.
+Test suite: 531+ tests passing with httptest2 mocking.
 
 **Optional integrations:**
 - bidser package (github.com/bbuchsbaum/bidser) for BIDS-aware data access
@@ -66,6 +68,11 @@ Test suite: 495 tests passing with httptest2 mocking.
 
 **Known issues:**
 - Search API unavailable: OpenNeuro search endpoint returns null for all queries. Modality filter works as alternative.
+
+**v1.2 notable additions:**
+- Derivative discovery from embedded BIDS derivatives AND OpenNeuroDerivatives GitHub organization
+- Closure-based session caching (avoids R namespace lock issues)
+- Multi-bucket S3 backend support (openneuro.org + openneuro-derivatives)
 
 ## Constraints
 
@@ -98,6 +105,11 @@ Test suite: 495 tests passing with httptest2 mocking.
 | Auto-anchor regex patterns | Full match semantics for subject filtering | ✓ Good |
 | Root files always included | dataset_description.json, README bypass subject filter | ✓ Good |
 | on_bids() auto-fetches pending handles | Reduces friction for users | ✓ Good |
+| Closure-based session cache | Avoids R namespace lock issues during runtime | ✓ Good |
+| Embedded derivatives preferred over GitHub | Author-provided derivatives take precedence | ✓ Good |
+| Space matching is exact | Prevents unexpected matches (MNI vs MNI152NLin2009cAsym) | ✓ Good |
+| Native space files always included | Files without _space- entity are BIDS-compliant native space | ✓ Good |
+| Cache type field defaults to "raw" | Backward compatible with existing manifests | ✓ Good |
 
 ---
-*Last updated: 2026-01-22 after v1.2 milestone started*
+*Last updated: 2026-01-23 after v1.2 milestone shipped*

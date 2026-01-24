@@ -1,5 +1,34 @@
 # Project Milestones: openneuro
 
+## v1.2 fMRIPrep Derivative Discovery (Shipped: 2026-01-23)
+
+**Delivered:** Complete derivative discovery and download pipeline for fMRIPrep/MRIQC data from both embedded BIDS derivatives and OpenNeuroDerivatives organization.
+
+**Phases completed:** 9-11 (7 plans total)
+
+**Key accomplishments:**
+
+- Derivative discovery API (`on_derivatives()`) finding pipelines from embedded and GitHub sources
+- Session caching via closure pattern (avoids R namespace lock, rate limit friendly)
+- Space discovery (`on_spaces()`) for exploring output spaces (MNI152NLin2009cAsym, fsaverage, etc.)
+- S3 backend parameterization for openneuro-derivatives bucket access
+- Filtered derivative downloads (`on_download_derivatives()`) with subject, space, suffix filtering
+- Cache manifest type field distinguishing raw vs derivative data
+
+**Stats:**
+
+- 6 files created/modified
+- 5,988 lines of R (package total)
+- 5,133 lines of tests (531+ tests passing)
+- 3 phases, 7 plans
+- 1 day (rapid iteration)
+
+**Git range:** `feat(09-01)` → `docs(11)`
+
+**What's next:** CRAN submission, session/task filtering, MRIQC derivatives
+
+---
+
 ## v1.1 BIDS Integration (Shipped: 2026-01-22)
 
 **Delivered:** BIDS-native integration with subject discovery, filtered downloads, and bidser bridge for rich BIDS-aware data access.

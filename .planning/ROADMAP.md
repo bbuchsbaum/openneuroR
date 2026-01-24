@@ -9,6 +9,15 @@
 ## Phases
 
 <details>
+<summary>v1.2 fMRIPrep Derivative Discovery (Phases 9-11) - SHIPPED 2026-01-23</summary>
+
+- [x] Phase 9: Discovery Foundation (2/2 plans) — completed 2026-01-23
+- [x] Phase 10: Spaces and S3 Backend (2/2 plans) — completed 2026-01-23
+- [x] Phase 11: Download Integration (3/3 plans) — completed 2026-01-23
+
+</details>
+
+<details>
 <summary>v1.0 MVP (Phases 1-5) - SHIPPED 2026-01-22</summary>
 
 ### Phase 1: Foundation + Discovery
@@ -101,57 +110,6 @@ Plans:
 
 </details>
 
-### v1.2 fMRIPrep Derivative Discovery (In Progress)
-
-**Milestone Goal:** Enable researchers to discover and download fMRIPrep derivative datasets from OpenNeuro.
-
-#### Phase 9: Discovery Foundation
-**Goal**: Users can discover available derivative datasets for any OpenNeuro dataset
-**Depends on**: Phase 8 (v1.1 complete)
-**Requirements**: DISC-01, DISC-02, DISC-03, DISC-04
-**Success Criteria** (what must be TRUE):
-  1. User can call `on_derivatives("ds000001")` and get a tibble of available pipelines
-  2. Tibble includes pipeline name, source (embedded vs OpenNeuroDerivatives), and metadata
-  3. OpenNeuroDerivatives GitHub organization repos are discoverable (784+ datasets)
-  4. Discovery results are cached per-session (no repeated GitHub API calls within session)
-**Plans**: 2 plans
-
-Plans:
-- [x] 09-01-PLAN.md — Session cache and GitHub API infrastructure
-- [x] 09-02-PLAN.md — Main on_derivatives() function with embedded detection
-
-#### Phase 10: Spaces and S3 Backend
-**Goal**: Users can explore output spaces and S3 infrastructure supports derivative bucket access
-**Depends on**: Phase 9
-**Requirements**: SPAC-01, SPAC-02, INFR-03
-**Success Criteria** (what must be TRUE):
-  1. User can call `on_spaces()` on a derivative to get available output spaces
-  2. Space names returned as character vector (MNI152NLin2009cAsym, T1w, fsaverage, etc.)
-  3. S3 backend can download from `s3://openneuro-derivatives/` bucket (not just `s3://openneuro/`)
-**Plans**: 2 plans
-
-Plans:
-- [x] 10-01-PLAN.md — on_spaces() function with BIDS space entity extraction
-- [x] 10-02-PLAN.md — S3 backend parameterization for derivatives bucket
-
-#### Phase 11: Download Integration
-**Goal**: Users can download filtered derivative data with full test coverage
-**Depends on**: Phase 10
-**Requirements**: DOWN-01, DOWN-02, DOWN-03, DOWN-04, INFR-01, INFR-02
-**Success Criteria** (what must be TRUE):
-  1. User can call `on_download_derivatives()` to download fMRIPrep derivatives
-  2. User can filter by subject via `subjects=` parameter (reuses v1.1 pattern)
-  3. User can filter by output space via `space=` parameter
-  4. Downloaded derivatives stored in BIDS-compliant path: `{dataset}/derivatives/{pipeline}/`
-  5. All new functions have mocked tests (no real API/downloads in test suite)
-  6. Package passes R CMD check with 0 errors, 0 warnings after changes
-**Plans**: 3 plans
-
-Plans:
-- [x] 11-01-PLAN.md — Core on_download_derivatives() function with filter helpers
-- [x] 11-02-PLAN.md — Cache integration with manifest type field
-- [x] 11-03-PLAN.md — Mocked tests and R CMD check compliance
-
 ## Progress
 
 **Execution Order:**
@@ -173,10 +131,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 
 ---
 *Roadmap created: 2026-01-20*
-*v1.2 milestone added: 2026-01-23*
-*Phase 9 planned: 2026-01-23*
-*Phase 9 completed: 2026-01-23*
-*Phase 10 planned: 2026-01-23*
-*Phase 10 completed: 2026-01-23*
-*Phase 11 planned: 2026-01-23*
-*Phase 11 completed: 2026-01-23*
+*v1.2 milestone shipped: 2026-01-23*
