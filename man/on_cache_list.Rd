@@ -15,6 +15,9 @@ A tibble with columns:
 \item{total_size}{Total size in bytes}
 \item{size_formatted}{Human-readable size (e.g., "1.2 GB")}
 \item{cached_at}{When first cached (ISO 8601 timestamp)}
+\item{type}{Type of cached data: "raw" for raw dataset files,
+"derivative" for fMRIPrep/MRIQC outputs, or "raw+derivative"
+if both are cached}
 }
 }
 \description{
@@ -28,5 +31,8 @@ on_cache_list()
 # Check total cache usage
 cached <- on_cache_list()
 sum(cached$total_size)  # total bytes
+
+# Filter to only derivatives
+cached[grepl("derivative", cached$type), ]
 }
 }

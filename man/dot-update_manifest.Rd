@@ -9,7 +9,8 @@
   new_file_info,
   dataset_id,
   snapshot_tag,
-  backend = "https"
+  backend = "https",
+  type = "raw"
 )
 }
 \arguments{
@@ -22,6 +23,11 @@
 \item{snapshot_tag}{Snapshot tag (used if creating new manifest).}
 
 \item{backend}{Backend used for download (e.g., "https").}
+
+\item{type}{Type of cached data: "raw" for raw dataset files, "derivative"
+for fMRIPrep/MRIQC derivative outputs. Defaults to "raw". Existing
+manifest entries without a type field are treated as "raw" for backward
+compatibility.}
 }
 \value{
 Invisibly returns the updated manifest.
