@@ -313,7 +313,8 @@ on_download_derivatives <- function(dataset_id,
             ),
             dataset_id = dataset_id,
             snapshot_tag = paste0(pipeline, "-derivative"),
-            backend = backend_result$backend
+            backend = backend_result$backend,
+            type = "derivative"
           )
         }
       }
