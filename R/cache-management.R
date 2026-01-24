@@ -10,6 +10,9 @@
 #'     \item{total_size}{Total size in bytes}
 #'     \item{size_formatted}{Human-readable size (e.g., "1.2 GB")}
 #'     \item{cached_at}{When first cached (ISO 8601 timestamp)}
+#'     \item{type}{Type of cached data: "raw" for raw dataset files,
+#'       "derivative" for fMRIPrep/MRIQC outputs, or "raw+derivative"
+#'       if both are cached}
 #'   }
 #'
 #' @export
@@ -21,6 +24,9 @@
 #' # Check total cache usage
 #' cached <- on_cache_list()
 #' sum(cached$total_size)  # total bytes
+#'
+#' # Filter to only derivatives
+#' cached[grepl("derivative", cached$type), ]
 #' }
 on_cache_list <- function() {
   cache_root <- .on_cache_root()
@@ -55,12 +61,25 @@ on_cache_list <- function() {
       n_files <- length(files)
       snapshot_tag <- NA_character_
       cached_at <- NA_character_
+      type_str <- "raw"  # No manifest = legacy data, assume raw
     } else {
       # Use manifest data
       n_files <- length(manifest$files)
       total_size <- sum(vapply(manifest$files, function(f) f$size %||% 0, numeric(1)))
       snapshot_tag <- manifest$snapshot_tag %||% NA_character_
       cached_at <- manifest$cached_at %||% NA_character_
+
+      # Determine type from manifest entries (default to "raw" for backward compat)
+      types <- vapply(manifest$files, function(f) f$type %||% "raw", character(1))
+      has_raw <- "raw" %in% types
+      has_deriv <- "derivative" %in% types
+      type_str <- if (has_raw && has_deriv) {
+        "raw+derivative"
+      } else if (has_deriv) {
+        "derivative"
+      } else {
+        "raw"
+      }
     }
 
     list(
@@ -69,7 +88,8 @@ on_cache_list <- function() {
       n_files = n_files,
       total_size = total_size,
       size_formatted = .format_bytes(total_size),
-      cached_at = cached_at
+      cached_at = cached_at,
+      type = type_str
     )
   })
 
@@ -87,7 +107,8 @@ on_cache_list <- function() {
     n_files = vapply(results, function(x) as.integer(x$n_files), integer(1)),
     total_size = vapply(results, function(x) x$total_size, numeric(1)),
     size_formatted = vapply(results, function(x) x$size_formatted, character(1)),
-    cached_at = vapply(results, function(x) x$cached_at, character(1))
+    cached_at = vapply(results, function(x) x$cached_at, character(1)),
+    type = vapply(results, function(x) x$type, character(1))
   )
 }
 
@@ -242,6 +263,7 @@ on_cache_clear <- function(dataset_id = NULL, confirm = interactive()) {
     n_files = integer(),
     total_size = numeric(),
     size_formatted = character(),
-    cached_at = character()
+    cached_at = character(),
+    type = character()
   )
 }
