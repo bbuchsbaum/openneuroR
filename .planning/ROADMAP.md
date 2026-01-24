@@ -4,7 +4,7 @@
 
 - **v1.0 MVP** - Phases 1-5 (shipped 2026-01-22) — see `milestones/v1.0-ROADMAP.md`
 - **v1.1 BIDS Integration** - Phases 6-8 (shipped 2026-01-22) — see `milestones/v1.1-ROADMAP.md`
-- **v1.2 fMRIPrep Derivative Discovery** - Phases 9-11 (in progress)
+- **v1.2 fMRIPrep Derivative Discovery** - Phases 9-11 (shipped 2026-01-23) — see `milestones/v1.2-ROADMAP.md`
 
 ## Phases
 
@@ -145,10 +145,12 @@ Plans:
   4. Downloaded derivatives stored in BIDS-compliant path: `{dataset}/derivatives/{pipeline}/`
   5. All new functions have mocked tests (no real API/downloads in test suite)
   6. Package passes R CMD check with 0 errors, 0 warnings after changes
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 11-01: TBD
+- [x] 11-01-PLAN.md — Core on_download_derivatives() function with filter helpers
+- [x] 11-02-PLAN.md — Cache integration with manifest type field
+- [x] 11-03-PLAN.md — Mocked tests and R CMD check compliance
 
 ## Progress
 
@@ -167,7 +169,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 | 8. BIDS Bridge | v1.1 | 1/1 | Complete | 2026-01-22 |
 | 9. Discovery Foundation | v1.2 | 2/2 | Complete | 2026-01-23 |
 | 10. Spaces and S3 Backend | v1.2 | 2/2 | Complete | 2026-01-23 |
-| 11. Download Integration | v1.2 | 0/TBD | Not started | - |
+| 11. Download Integration | v1.2 | 3/3 | Complete | 2026-01-23 |
 
 ---
 *Roadmap created: 2026-01-20*
@@ -176,3 +178,5 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10 > 11
 *Phase 9 completed: 2026-01-23*
 *Phase 10 planned: 2026-01-23*
 *Phase 10 completed: 2026-01-23*
+*Phase 11 planned: 2026-01-23*
+*Phase 11 completed: 2026-01-23*
