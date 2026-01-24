@@ -724,3 +724,204 @@ test_that("on_download_derivatives returns zeros when no files found", {
   expect_equal(result$skipped, 0L)
   expect_equal(result$failed, character())
 })
+
+
+# --- Manifest Type Field Tests ---
+
+test_that(".update_manifest adds type field to entries", {
+  cache_dir <- local_temp_cache()
+  dataset_dir <- file.path(cache_dir, "ds000001")
+  fs::dir_create(dataset_dir)
+
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "test.txt", size = 100),
+    dataset_id = "ds000001",
+    snapshot_tag = "1.0.0",
+    backend = "https",
+    type = "derivative"
+  )
+
+  manifest <- .read_manifest(dataset_dir)
+  expect_equal(manifest$files[[1]]$type, "derivative")
+})
+
+test_that(".update_manifest defaults type to 'raw'", {
+  cache_dir <- local_temp_cache()
+  dataset_dir <- file.path(cache_dir, "ds000002")
+  fs::dir_create(dataset_dir)
+
+  # Call without type parameter (should default to "raw")
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "participants.tsv", size = 200),
+    dataset_id = "ds000002",
+    snapshot_tag = "2.0.0",
+    backend = "https"
+  )
+
+  manifest <- .read_manifest(dataset_dir)
+  expect_equal(manifest$files[[1]]$type, "raw")
+})
+
+test_that(".update_manifest preserves type when updating existing entry", {
+  cache_dir <- local_temp_cache()
+  dataset_dir <- file.path(cache_dir, "ds000003")
+  fs::dir_create(dataset_dir)
+
+  # First entry as derivative
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "sub-01_bold.nii.gz", size = 1000),
+    dataset_id = "ds000003",
+    snapshot_tag = "1.0.0",
+    backend = "s3",
+    type = "derivative"
+  )
+
+  # Update same file (e.g., re-download)
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "sub-01_bold.nii.gz", size = 1100),
+    dataset_id = "ds000003",
+    snapshot_tag = "1.0.0",
+    backend = "https",
+    type = "derivative"
+  )
+
+  manifest <- .read_manifest(dataset_dir)
+  # Should still have only one entry
+  expect_equal(length(manifest$files), 1L)
+  expect_equal(manifest$files[[1]]$type, "derivative")
+  expect_equal(manifest$files[[1]]$size, 1100)
+})
+
+
+# --- on_cache_list() Type Column Tests ---
+
+test_that("on_cache_list includes type column", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with manifest
+  dataset_dir <- file.path(cache_dir, "ds000001")
+  fs::dir_create(dataset_dir)
+
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "participants.tsv", size = 100),
+    dataset_id = "ds000001",
+    snapshot_tag = "1.0.0",
+    backend = "https",
+    type = "raw"
+  )
+
+  result <- on_cache_list()
+
+  expect_true("type" %in% names(result))
+  expect_equal(nrow(result), 1L)
+  expect_equal(result$type[[1]], "raw")
+})
+
+test_that("on_cache_list shows 'derivative' for derivative-only cache", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with only derivative entries in root manifest
+  dataset_dir <- file.path(cache_dir, "ds000001")
+  fs::dir_create(dataset_dir)
+
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "derivatives/fmriprep/sub-01_bold.nii.gz", size = 1000),
+    dataset_id = "ds000001",
+    snapshot_tag = "fmriprep-derivative",
+    backend = "s3",
+    type = "derivative"
+  )
+
+  result <- on_cache_list()
+
+  # Should find the ds000001 directory
+  ds_row <- result[result$dataset_id == "ds000001", ]
+  expect_equal(nrow(ds_row), 1L)
+  expect_equal(ds_row$type[[1]], "derivative")
+})
+
+test_that("on_cache_list shows 'raw+derivative' for mixed cache", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with both raw and derivative entries
+  dataset_dir <- file.path(cache_dir, "ds000001")
+  fs::dir_create(dataset_dir)
+
+  # Add raw file
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "participants.tsv", size = 100),
+    dataset_id = "ds000001",
+    snapshot_tag = "1.0.0",
+    backend = "https",
+    type = "raw"
+  )
+
+  # Add derivative file
+  .update_manifest(
+    dataset_dir = dataset_dir,
+    new_file_info = list(path = "derivatives/fmriprep/sub-01_bold.nii.gz", size = 1000),
+    dataset_id = "ds000001",
+    snapshot_tag = "1.0.0",
+    backend = "s3",
+    type = "derivative"
+  )
+
+  result <- on_cache_list()
+
+  ds_row <- result[result$dataset_id == "ds000001", ]
+  expect_equal(nrow(ds_row), 1L)
+  expect_equal(ds_row$type[[1]], "raw+derivative")
+})
+
+test_that("manifests without type field default to 'raw'", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with an old-style manifest (no type field)
+  dataset_dir <- file.path(cache_dir, "ds000001")
+  fs::dir_create(dataset_dir)
+
+  # Write manifest directly without type field
+  old_manifest <- list(
+    schema_version = 1L,
+    dataset_id = "ds000001",
+    snapshot_tag = "1.0.0",
+    cached_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    files = list(
+      list(
+        path = "participants.tsv",
+        size = 100,
+        downloaded_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        backend = "https"
+        # Note: no type field
+      )
+    )
+  )
+
+  jsonlite::write_json(old_manifest,
+                       file.path(dataset_dir, "manifest.json"),
+                       auto_unbox = TRUE, pretty = TRUE)
+
+  result <- on_cache_list()
+
+  ds_row <- result[result$dataset_id == "ds000001", ]
+  expect_equal(nrow(ds_row), 1L)
+  # Should default to "raw" for backward compatibility
+  expect_equal(ds_row$type[[1]], "raw")
+})
+
+test_that("on_cache_list returns empty tibble with type column when no cache", {
+  cache_dir <- local_temp_cache()
+
+  result <- on_cache_list()
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0L)
+  expect_true("type" %in% names(result))
+})
