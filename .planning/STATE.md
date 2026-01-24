@@ -5,24 +5,24 @@
 See: .planning/PROJECT.md (updated 2026-01-22)
 
 **Core value:** Researchers can find, download, and cache OpenNeuro datasets with a single pipeline-friendly API that just works.
-**Current focus:** Phase 10 - Spaces and S3 Backend
+**Current focus:** Phase 11 - Download Integration
 
 ## Current Position
 
-Phase: 10 of 11 (Spaces and S3 Backend)
-Plan: 2 of 2 in current phase - PHASE COMPLETE
-Status: Phase 10 complete
-Last activity: 2026-01-23 - Completed 10-01-PLAN.md (on_spaces function)
+Phase: 11 of 11 (Download Integration)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-23 - Completed 11-01-PLAN.md (on_download_derivatives function)
 
-Progress: [==============>....] 57%
-(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 4/6 plans complete)
+Progress: [================>..] 62%
+(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 5/6 plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
-- Average duration: ~13 min
-- Total execution time: ~4.4 hours (v1.0 + v1.1 + v1.2 partial)
+- Total plans completed: 21
+- Average duration: ~12 min
+- Total execution time: ~4.5 hours (v1.0 + v1.1 + v1.2 partial)
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [==============>....] 57%
 | 6-8 (v1.1) | 3 | ~1h | ~20 min |
 | 9 (v1.2) | 2/2 | 8min | 4 min |
 | 10 (v1.2) | 2/2 | 11min | 5.5 min |
+| 11 (v1.2) | 1/3 | 3min | 3 min |
 
 **Recent Trend:**
-- Last plan (10-01): 7 min (clean execution, on_spaces function)
-- Trend: Stable (efficient execution)
+- Last plan (11-01): 3 min (clean execution, download_derivatives function)
+- Trend: Efficient (streamlined execution pattern)
 
 *Updated after each plan completion*
 
@@ -60,6 +61,10 @@ Recent decisions affecting current work:
 - [10-01]: Space regex pattern `_space-([A-Za-z0-9]+)` for BIDS extraction
 - [10-01]: No T1w inference from files without space entity (BIDS convention)
 - [10-01]: Sample first 2-3 subjects for efficient space discovery
+- [11-01]: Space matching is exact (not prefix) to avoid unexpected results
+- [11-01]: Native space files (no _space- entity) always included in space filtering
+- [11-01]: Metadata files (no clear suffix) always included in suffix filtering
+- [11-01]: Derivative cache path: {cache}/{dataset}/derivatives/{pipeline}/
 
 ### Pending Todos
 
@@ -73,7 +78,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-23
-Stopped at: Completed 10-01-PLAN.md (Phase 10 complete)
+Stopped at: Completed 11-01-PLAN.md
 Resume file: None
 
 ---
@@ -83,3 +88,4 @@ Resume file: None
 *09-02 completed: 2026-01-23*
 *10-02 completed: 2026-01-23*
 *10-01 completed: 2026-01-23*
+*11-01 completed: 2026-01-23*
