@@ -13,7 +13,7 @@ test_that("on_cache_list has correct columns", {
   result <- on_cache_list()
   expect_named(
     result,
-    c("dataset_id", "snapshot_tag", "n_files", "total_size", "size_formatted", "cached_at")
+    c("dataset_id", "snapshot_tag", "n_files", "total_size", "size_formatted", "cached_at", "type")
   )
 })
 
