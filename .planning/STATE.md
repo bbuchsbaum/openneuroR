@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-01-22)
 ## Current Position
 
 Phase: 11 of 11 (Download Integration)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase complete
 Status: In progress
-Last activity: 2026-01-23 - Completed 11-01-PLAN.md (on_download_derivatives function)
+Last activity: 2026-01-24 - Completed 11-02-PLAN.md (cache manifest type field)
 
-Progress: [================>..] 62%
-(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 5/6 plans complete)
+Progress: [=================>.] 68%
+(v1.0 + v1.1 complete: 8 phases / 16 plans; v1.2: 6/6 plans complete)
 
 ## Performance Metrics
 
@@ -32,10 +32,10 @@ Progress: [================>..] 62%
 | 6-8 (v1.1) | 3 | ~1h | ~20 min |
 | 9 (v1.2) | 2/2 | 8min | 4 min |
 | 10 (v1.2) | 2/2 | 11min | 5.5 min |
-| 11 (v1.2) | 1/3 | 3min | 3 min |
+| 11 (v1.2) | 2/3 | 7min | 3.5 min |
 
 **Recent Trend:**
-- Last plan (11-01): 3 min (clean execution, download_derivatives function)
+- Last plan (11-02): 4 min (cache manifest type field)
 - Trend: Efficient (streamlined execution pattern)
 
 *Updated after each plan completion*
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - [11-01]: Native space files (no _space- entity) always included in space filtering
 - [11-01]: Metadata files (no clear suffix) always included in suffix filtering
 - [11-01]: Derivative cache path: {cache}/{dataset}/derivatives/{pipeline}/
+- [11-02]: Manifest type field defaults to "raw" for backward compatibility
+- [11-02]: on_cache_list() type column shows raw, derivative, or raw+derivative
 
 ### Pending Todos
 
@@ -77,8 +79,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-01-24
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
 
 ---
@@ -89,3 +91,4 @@ Resume file: None
 *10-02 completed: 2026-01-23*
 *10-01 completed: 2026-01-23*
 *11-01 completed: 2026-01-23*
+*11-02 completed: 2026-01-24*
