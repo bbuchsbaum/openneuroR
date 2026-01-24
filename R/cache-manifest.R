@@ -135,11 +135,16 @@
 #' @param dataset_id Dataset identifier (used if creating new manifest).
 #' @param snapshot_tag Snapshot tag (used if creating new manifest).
 #' @param backend Backend used for download (e.g., "https").
+#' @param type Type of cached data: "raw" for raw dataset files, "derivative"
+#'   for fMRIPrep/MRIQC derivative outputs. Defaults to "raw". Existing
+#'   manifest entries without a type field are treated as "raw" for backward
+#'   compatibility.
 #'
 #' @return Invisibly returns the updated manifest.
 #'
 #' @keywords internal
-.update_manifest <- function(dataset_dir, new_file_info, dataset_id, snapshot_tag, backend = "https") {
+.update_manifest <- function(dataset_dir, new_file_info, dataset_id,
+                              snapshot_tag, backend = "https", type = "raw") {
   # Read existing manifest or create new
   manifest <- .read_manifest(dataset_dir)
 
@@ -152,7 +157,8 @@
     path = new_file_info$path,
     size = new_file_info$size,
     downloaded_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-    backend = backend
+    backend = backend,
+    type = type
   )
 
   # Find existing entry index or append
