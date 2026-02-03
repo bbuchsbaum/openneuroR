@@ -60,3 +60,100 @@ test_that("on_files shows expected root files for ds000001", {
 test_that("on_files throws error for invalid ID", {
   expect_error(on_files(""), class = "openneuro_validation_error")
 })
+
+# --- Mocked tests for edge cases ---
+
+test_that("on_files uses explicit tag parameter", {
+  tag_used <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_request = function(gql, variables, client) {
+      tag_used <<- variables$tag
+      list(snapshot = list(files = list(
+        list(filename = "test.txt", size = 100, directory = FALSE,
+             annexed = FALSE, key = "k1")
+      )))
+    },
+    .on_read_gql = function(name) "query { }"
+  )
+
+  result <- on_files("ds000001", tag = "1.0.0")
+  expect_equal(tag_used, "1.0.0")
+  expect_s3_class(result, "tbl_df")
+})
+
+test_that("on_files explores subdirectory with tree parameter", {
+  tree_used <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(id, client) tibble::tibble(tag = "1.0.0", created = Sys.time(), size = 0),
+    on_request = function(gql, variables, client) {
+      tree_used <<- variables$tree
+      list(snapshot = list(files = list(
+        list(filename = "file_in_subdir.txt", size = 50, directory = FALSE,
+             annexed = FALSE, key = "k2")
+      )))
+    },
+    .on_read_gql = function(name) "query { }"
+  )
+
+  result <- on_files("ds000001", tree = "sub-01_key")
+  expect_equal(tree_used, "sub-01_key")
+  expect_s3_class(result, "tbl_df")
+})
+
+test_that("on_files handles snapshot not found error", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(id, client) tibble::tibble(tag = "1.0.0", created = Sys.time(), size = 0),
+    on_request = function(gql, variables, client) {
+      rlang::abort(
+        "Snapshot does not exist",
+        class = "openneuro_api_error"
+      )
+    },
+    .on_read_gql = function(name) "query { }"
+  )
+
+  expect_error(
+    on_files("ds000001", tag = "nonexistent"),
+    class = "openneuro_not_found_error"
+  )
+})
+
+test_that("on_files re-signals non-matching API errors", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(id, client) tibble::tibble(tag = "1.0.0", created = Sys.time(), size = 0),
+    on_request = function(gql, variables, client) {
+      rlang::abort(
+        "Internal server error",
+        class = "openneuro_api_error"
+      )
+    },
+    .on_read_gql = function(name) "query { }"
+  )
+
+  expect_error(
+    on_files("ds000001"),
+    class = "openneuro_api_error"
+  )
+})
+
+test_that("on_files handles null snapshot response", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(id, client) tibble::tibble(tag = "1.0.0", created = Sys.time(), size = 0),
+    on_request = function(gql, variables, client) {
+      list(snapshot = NULL)  # Null response
+    },
+    .on_read_gql = function(name) "query { }"
+  )
+
+  expect_error(
+    on_files("ds000001"),
+    class = "openneuro_not_found_error"
+  )
+})

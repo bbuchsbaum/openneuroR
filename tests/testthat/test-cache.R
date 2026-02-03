@@ -112,3 +112,109 @@ test_that("on_cache_info counts datasets correctly", {
   expect_equal(result$n_datasets, 2)
   expect_true(result$total_size > 0)
 })
+
+# --- Manifest handling tests ---
+
+test_that("on_cache_list handles corrupted manifest gracefully", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with corrupted manifest
+  ds_dir <- file.path(cache_dir, "ds_corrupt")
+  dir.create(ds_dir, recursive = TRUE)
+  writeLines("{ not valid json }", file.path(ds_dir, "manifest.json"))
+  writeLines("test content", file.path(ds_dir, "test.txt"))
+
+  # Should not error, should fall back to file counting
+  result <- on_cache_list()
+  expect_s3_class(result, "tbl_df")
+  # Dataset should appear (with file count fallback)
+  expect_true(nrow(result) >= 1)
+})
+
+test_that("on_cache_list handles empty dataset directories", {
+  cache_dir <- local_temp_cache()
+
+  # Create empty directory
+  ds_dir <- file.path(cache_dir, "ds_empty")
+  dir.create(ds_dir, recursive = TRUE)
+
+  result <- on_cache_list()
+  expect_s3_class(result, "tbl_df")
+  # Empty directories should be skipped
+  expect_equal(nrow(result), 0)
+})
+
+test_that("on_cache_clear clears specific dataset successfully", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset
+  ds_dir <- file.path(cache_dir, "ds000001")
+  dir.create(ds_dir, recursive = TRUE)
+  writeLines("test content", file.path(ds_dir, "test.txt"))
+
+  # Verify it exists
+  expect_true(dir.exists(ds_dir))
+
+  # Clear without confirmation
+  result <- on_cache_clear("ds000001", confirm = FALSE)
+
+  expect_equal(result, 1L)
+  expect_false(dir.exists(ds_dir))
+})
+
+test_that("on_cache_clear returns 0 when all cleared from empty cache", {
+  cache_dir <- local_temp_cache()
+
+  result <- on_cache_clear(confirm = FALSE)
+  expect_equal(result, 0L)
+})
+
+test_that(".confirm_action returns TRUE in non-interactive sessions", {
+  # In test context, interactive() returns FALSE
+  result <- openneuro:::.confirm_action("Test message")
+  expect_true(result)
+})
+
+test_that("on_cache_list handles manifest with NULL file entries", {
+  cache_dir <- local_temp_cache()
+
+  # Create a dataset with manifest containing NULL values
+  ds_dir <- file.path(cache_dir, "ds_null")
+  dir.create(ds_dir, recursive = TRUE)
+
+  manifest <- list(
+    schema_version = 1L,
+    dataset_id = "ds_null",
+    snapshot_tag = "1.0.0",
+    cached_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    files = list(
+      list(
+        path = "file1.txt",
+        size = NULL,  # NULL size
+        downloaded_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        backend = "https"
+      )
+    )
+  )
+
+  jsonlite::write_json(manifest, file.path(ds_dir, "manifest.json"),
+                       auto_unbox = TRUE, pretty = TRUE, null = "null")
+
+  result <- on_cache_list()
+  expect_s3_class(result, "tbl_df")
+  # Should handle NULL gracefully (size defaults to 0)
+})
+
+test_that(".empty_cache_tibble returns correct structure", {
+  result <- openneuro:::.empty_cache_tibble()
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0)
+  expect_true("dataset_id" %in% names(result))
+  expect_true("snapshot_tag" %in% names(result))
+  expect_true("n_files" %in% names(result))
+  expect_true("total_size" %in% names(result))
+  expect_true("size_formatted" %in% names(result))
+  expect_true("cached_at" %in% names(result))
+  expect_true("type" %in% names(result))
+})

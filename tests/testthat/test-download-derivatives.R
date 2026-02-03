@@ -596,7 +596,125 @@ test_that("on_download_derivatives uses derivative cache path", {
   expect_true(grepl("fmriprep", dest_used))
 })
 
+test_that("on_download_derivatives writes derivative entries to root manifest", {
+  cache_dir <- local_temp_cache()
+  manifest_calls <- list()
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "openneuro-derivatives"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet, bucket) {
+      list(success = TRUE, backend = "s3")
+    },
+    .update_manifest = function(dataset_dir, new_file_info, dataset_id, snapshot_tag,
+                                 backend = "https", type = "raw", ...) {
+      manifest_calls <<- c(manifest_calls, list(list(
+        dataset_dir = dataset_dir,
+        path = new_file_info$path,
+        type = type,
+        snapshot_tag = snapshot_tag,
+        backend = backend
+      )))
+      invisible(NULL)
+    },
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  on_download_derivatives("ds000001", "fmriprep", quiet = TRUE)
+
+  expect_length(manifest_calls, 1L)
+  expect_equal(manifest_calls[[1]]$type, "derivative")
+  expect_equal(manifest_calls[[1]]$path, "derivatives/fmriprep/sub-01/func/sub-01_bold.nii.gz")
+  expect_equal(
+    normalizePath(manifest_calls[[1]]$dataset_dir),
+    normalizePath(file.path(cache_dir, "ds000001"))
+  )
+})
+
 # --- Helper Function Tests ---
+
+test_that("on_download_derivatives uses download_with_progress for embedded source", {
+  cache_dir <- local_temp_cache()
+  download_args <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "embedded"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .on_dataset_cache_path = function(id) file.path(cache_dir, id),
+    .download_with_progress = function(files_df, dest_dir, dataset_id, tag = NULL,
+                                        quiet = FALSE, verbose = FALSE, force = FALSE,
+                                        use_cache = FALSE, type = "raw") {
+      download_args <<- list(
+        files_df = files_df,
+        dest_dir = dest_dir,
+        dataset_id = dataset_id,
+        type = type,
+        use_cache = use_cache
+      )
+      list(
+        downloaded = 1L,
+        skipped = 0L,
+        failed = character(),
+        total_bytes = 1000,
+        dest_dir = dest_dir
+      )
+    },
+    .package = "openneuro"
+  )
+
+  result <- on_download_derivatives("ds000001", "fmriprep", quiet = TRUE)
+
+  expect_equal(result$backend, "https")
+  expect_true(grepl("derivatives", result$dest_dir))
+  expect_equal(download_args$type, "derivative")
+  expect_true(download_args$use_cache)
+  expect_equal(download_args$dataset_id, "ds000001")
+  expect_equal(download_args$files_df$full_path[[1]], "derivatives/fmriprep/sub-01/func/sub-01_bold.nii.gz")
+})
+
+test_that(".list_derivative_files_s3_full parses aws s3 ls output", {
+  local_mocked_bindings(
+    .find_aws_cli = function() "aws",
+    .package = "openneuro"
+  )
+
+  local_mocked_bindings(
+    run = function(...) list(
+      status = 0,
+      stdout = paste(
+        "2024-01-15 12:34:56    1234 sub-01/func/sub-01_bold.nii.gz",
+        "2024-01-15 12:34:56    12 dataset_description.json",
+        sep = "\n"
+      ),
+      stderr = ""
+    ),
+    .package = "processx"
+  )
+
+  out <- .list_derivative_files_s3_full("ds000001", "fmriprep")
+  expect_s3_class(out, "tbl_df")
+  expect_equal(nrow(out), 2L)
+  expect_true("sub-01_bold.nii.gz" %in% out$filename)
+  expect_true("dataset_description.json" %in% out$filename)
+})
 
 test_that(".filter_files_by_space returns all files when space is NULL", {
   files_df <- tibble::tibble(
@@ -924,4 +1042,211 @@ test_that("on_cache_list returns empty tibble with type column when no cache", {
   expect_s3_class(result, "tbl_df")
   expect_equal(nrow(result), 0L)
   expect_true("type" %in% names(result))
+})
+
+# --- dest_dir vs use_cache precedence tests ---
+
+test_that("on_download_derivatives uses custom dest_dir when provided", {
+  cache_dir <- local_temp_cache()
+  dest_used <- NULL
+  custom_dest <- file.path(cache_dir, "custom_location")
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "openneuro-derivatives"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet, bucket) {
+      dest_used <<- dest_dir
+      list(success = TRUE, backend = "s3")
+    },
+    .update_manifest = function(...) invisible(NULL),
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  on_download_derivatives("ds000001", "fmriprep",
+                          dest_dir = custom_dest,
+                          quiet = TRUE)
+
+  # Should use custom destination
+  expect_equal(normalizePath(dest_used, mustWork = FALSE),
+               normalizePath(custom_dest, mustWork = FALSE))
+})
+
+test_that("on_download_derivatives uses cwd when use_cache=FALSE and dest_dir=NULL", {
+  cache_dir <- local_temp_cache()
+  dest_used <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "openneuro-derivatives"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet, bucket) {
+      dest_used <<- dest_dir
+      list(success = TRUE, backend = "s3")
+    },
+    .update_manifest = function(...) invisible(NULL),
+    .print_completion_summary = function(...) invisible(NULL)
+  )
+
+  on_download_derivatives("ds000001", "fmriprep",
+                          use_cache = FALSE,
+                          quiet = TRUE)
+
+  # Should use cwd-based path
+  expect_true(grepl("ds000001", dest_used))
+  expect_true(grepl("derivatives", dest_used))
+  expect_true(grepl("fmriprep", dest_used))
+})
+
+# --- S3 backend failure handling ---
+
+test_that("on_download_derivatives returns failure result when S3 fails", {
+  cache_dir <- local_temp_cache()
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "openneuro-derivatives"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .download_with_backend = function(...) {
+      list(success = FALSE, backend = "s3")  # Failure
+    }
+  )
+
+  result <- on_download_derivatives("ds000001", "fmriprep", quiet = TRUE)
+
+  expect_equal(result$downloaded, 0L)
+  expect_equal(result$backend, "failed")
+  expect_true(length(result$failed) > 0)
+})
+
+# --- Filter edge cases ---
+
+test_that("on_download_derivatives handles empty subject filter gracefully", {
+  cache_dir <- local_temp_cache()
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "openneuro-derivatives"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    )
+  )
+
+  # Filter with subject that doesn't exist
+  result <- on_download_derivatives("ds000001", "fmriprep",
+                                     subjects = c("sub-99", "sub-100"),
+                                     dry_run = TRUE,
+                                     quiet = TRUE)
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0L)
+})
+
+test_that(".filter_derivative_files_by_subjects includes root files", {
+  files_df <- tibble::tibble(
+    filename = c("dataset_description.json", "sub-01_bold.nii.gz", "sub-02_bold.nii.gz"),
+    full_path = c("dataset_description.json",
+                  "sub-01/func/sub-01_bold.nii.gz",
+                  "sub-02/func/sub-02_bold.nii.gz"),
+    size = c(100, 1000, 1000)
+  )
+
+  result <- openneuro:::.filter_derivative_files_by_subjects(files_df, "sub-01")
+
+  # Root file (no subject in path) should be included
+  expect_true("dataset_description.json" %in% result$full_path)
+  expect_true("sub-01/func/sub-01_bold.nii.gz" %in% result$full_path)
+  expect_false("sub-02/func/sub-02_bold.nii.gz" %in% result$full_path)
+})
+
+test_that(".filter_derivative_files_by_subjects_regex includes root files", {
+  files_df <- tibble::tibble(
+    filename = c("dataset_description.json", "sub-01_bold.nii.gz", "sub-02_bold.nii.gz"),
+    full_path = c("dataset_description.json",
+                  "sub-01/func/sub-01_bold.nii.gz",
+                  "sub-02/func/sub-02_bold.nii.gz"),
+    size = c(100, 1000, 1000)
+  )
+
+  result <- openneuro:::.filter_derivative_files_by_subjects_regex(files_df, "sub-01")
+
+  # Root file (no subject in path) should be included
+  expect_true("dataset_description.json" %in% result$full_path)
+  expect_true("sub-01/func/sub-01_bold.nii.gz" %in% result$full_path)
+  expect_false("sub-02/func/sub-02_bold.nii.gz" %in% result$full_path)
+})
+
+# --- Recursive directory listing tests ---
+
+test_that(".list_directory_recursive handles empty directories", {
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_files = function(...) tibble::tibble(
+      filename = character(),
+      size = numeric(),
+      directory = logical(),
+      annexed = logical(),
+      key = character()
+    )
+  )
+
+  result <- openneuro:::.list_directory_recursive(
+    dataset_id = "ds000001",
+    tag = NULL,
+    key = "empty_dir_key",
+    parent_path = "",
+    client = list(url = "mock", token = NULL)
+  )
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0L)
+})
+
+test_that(".list_directory_recursive handles API errors gracefully", {
+  local_mocked_bindings(
+    on_files = function(...) {
+      stop("API error")
+    }
+  )
+
+  result <- openneuro:::.list_directory_recursive(
+    dataset_id = "ds000001",
+    tag = NULL,
+    key = "error_key",
+    parent_path = "",
+    client = list(url = "mock", token = NULL)
+  )
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 0L)
 })
