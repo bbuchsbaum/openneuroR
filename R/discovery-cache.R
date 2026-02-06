@@ -29,8 +29,7 @@ NULL
 #' @keywords internal
 .discovery_cache_store <- function() {
   # Private cache environment captured by closure
-
-cache <- new.env(parent = emptyenv())
+  cache <- new.env(parent = emptyenv())
 
   list(
     get = function(key) {

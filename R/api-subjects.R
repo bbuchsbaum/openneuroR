@@ -44,7 +44,7 @@
 #' @seealso [on_files()] to list files, [on_download()] to download data
 on_subjects <- function(id, tag = NULL, client = NULL) {
   # Input validation - match on_files() pattern exactly
-  if (missing(id) || is.null(id) || !is.character(id) || nchar(id) == 0) {
+  if (missing(id) || is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
     rlang::abort(
       c("Invalid dataset ID",
         "x" = "Dataset ID must be a non-empty character string"),

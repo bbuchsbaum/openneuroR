@@ -44,12 +44,15 @@ on_request <- function(query, variables = NULL, client = NULL) {
     error = function(e) "0.1.0"
   )
 
+  timeout <- getOption("openneuro.timeout", default = 60)
+
   req <- httr2::request(client$url) |>
     httr2::req_headers(
       "Content-Type" = "application/json",
       "User-Agent" = paste0("openneuro-r/", pkg_version)
     ) |>
     httr2::req_body_json(body) |>
+    httr2::req_timeout(seconds = timeout) |>
     httr2::req_retry(
       max_tries = 3,
       is_transient = function(resp) httr2::resp_status(resp) %in% c(429L, 500L, 502L, 503L)

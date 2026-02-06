@@ -91,9 +91,11 @@ on_search <- function(query = NULL,
     page_info <- response$search$pageInfo
     if (is.null(page_info) || !isTRUE(page_info$hasNextPage)) break
     cursor <- page_info$endCursor
+    if (length(results) >= 200L) break  # safety limit
   }
 
-  do.call(rbind, results)
+  if (length(results) == 0) return(.empty_datasets_tibble())
+  dplyr::bind_rows(results)
 }
 
 #' List Datasets (Internal)
@@ -134,7 +136,9 @@ on_search <- function(query = NULL,
     page_info <- response$datasets$pageInfo
     if (!isTRUE(page_info$hasNextPage)) break
     cursor <- page_info$endCursor
+    if (length(results) >= 200L) break  # safety limit
   }
 
-  do.call(rbind, results)
+  if (length(results) == 0) return(.empty_datasets_tibble())
+  dplyr::bind_rows(results)
 }

@@ -43,18 +43,21 @@ NULL
   if (is.null(x) || is.na(x) || x == "") {
     return(NA_real_)
   }
-  # Try ISO 8601 format with timezone
+  # Normalize: strip trailing Z, milliseconds, and timezone offset
+  # so we can parse as UTC consistently
+  cleaned <- x
+  # Remove fractional seconds (e.g., .123, .123456)
+  cleaned <- sub("\\.\\d+", "", cleaned)
+  # Remove trailing Z
+  cleaned <- sub("Z$", "", cleaned)
+  # Remove timezone offset (+HH:MM or -HH:MM) -- treat all as UTC
+  # (OpenNeuro API returns UTC timestamps)
+  cleaned <- sub("[+-]\\d{2}:?\\d{2}$", "", cleaned)
+
   result <- tryCatch(
-    as.POSIXct(x, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC"),
+    as.POSIXct(cleaned, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC"),
     error = function(e) NA_real_
   )
-  # Handle milliseconds if present
-  if (is.na(result)) {
-    result <- tryCatch(
-      as.POSIXct(sub("\\.\\d+", "", x), format = "%Y-%m-%dT%H:%M:%S", tz = "UTC"),
-      error = function(e) NA_real_
-    )
-  }
   result
 }
 
@@ -122,7 +125,7 @@ NULL
       .extract_nested(x, "latestSnapshot", "summary", "tasks", default = list())
     })
   ) |>
-    transform_timestamps()
+    .transform_timestamps()
 }
 
 #' Parse Datasets List Response
@@ -159,7 +162,7 @@ NULL
       .extract_nested(x, "latestSnapshot", "summary", "tasks", default = list())
     })
   ) |>
-    transform_timestamps()
+    .transform_timestamps()
 }
 
 #' Parse Single Dataset Response
@@ -181,7 +184,7 @@ NULL
       .extract_nested(dataset, "latestSnapshot", "tag", default = NA_character_)
     )
   ) |>
-    transform_timestamps()
+    .transform_timestamps()
 }
 
 #' Create Empty Datasets Tibble
@@ -212,7 +215,7 @@ NULL
 #' @return The tibble with POSIXct timestamp columns.
 #'
 #' @keywords internal
-transform_timestamps <- function(df) {
+.transform_timestamps <- function(df) {
   if ("created" %in% names(df) && is.numeric(df$created)) {
     df$created <- as.POSIXct(df$created, origin = "1970-01-01", tz = "UTC")
   }
@@ -244,7 +247,7 @@ transform_timestamps <- function(df) {
     created = vapply(snapshots, function(x) .parse_timestamp(x$created), numeric(1)),
     size = vapply(snapshots, function(x) .null_to_na(x$size, "real"), numeric(1))
   ) |>
-    transform_timestamps()
+    .transform_timestamps()
 }
 
 #' Parse Files Response

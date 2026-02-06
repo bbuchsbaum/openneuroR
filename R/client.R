@@ -39,7 +39,7 @@ on_client <- function(url = "https://openneuro.org/crn/graphql",
 
 #' @export
 print.openneuro_client <- function(x, ...) {
-  cli::cli_text("<openneuro_client>")
+  cli::cli_text("{.cls openneuro_client}")
   cli::cli_text("URL: {.url {x$url}}")
   cli::cli_text("Authenticated: {.val {!is.null(x$token)}}")
   invisible(x)

@@ -278,20 +278,18 @@ on_download <- function(id, tag = NULL, files = NULL, subjects = NULL,
   )
 
   if (!is.null(backend_result) && isTRUE(backend_result$success)) {
-    # S3 or DataLad succeeded - update manifest for each file
+    # S3 or DataLad succeeded - batch update manifest
     if (caching) {
-      for (i in seq_len(nrow(filtered_files))) {
-        .update_manifest(
-          dataset_dir = dest_dir,
-          new_file_info = list(
-            path = filtered_files$full_path[i],
-            size = filtered_files$size[i]
-          ),
-          dataset_id = id,
-          snapshot_tag = tag,
-          backend = backend_result$backend
-        )
-      }
+      file_entries <- lapply(seq_len(nrow(filtered_files)), function(i) {
+        list(path = filtered_files$full_path[i], size = filtered_files$size[i])
+      })
+      .batch_update_manifest(
+        dataset_dir = dest_dir,
+        file_entries = file_entries,
+        dataset_id = id,
+        snapshot_tag = tag,
+        backend = backend_result$backend
+      )
     }
 
     # Build result - S3/DataLad don't track individual skipped files

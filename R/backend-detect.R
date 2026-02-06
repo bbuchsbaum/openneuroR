@@ -17,7 +17,6 @@ NULL
 #'
 #' @keywords internal
 .sys_which <- function(names) {
-
   Sys.which(names)
 }
 
@@ -38,7 +37,6 @@ NULL
     "datalad" = nzchar(.sys_which("datalad")) && nzchar(.sys_which("git-annex")),
     "https" = TRUE,  # Always available
     FALSE  # Unknown backend
-
   )
 }
 
@@ -74,8 +72,7 @@ NULL
 #' @keywords internal
 .find_aws_cli <- function() {
   # Check PATH first
-
-path <- Sys.which("aws")
+  path <- Sys.which("aws")
   if (nzchar(path)) {
     return(as.character(path))
   }

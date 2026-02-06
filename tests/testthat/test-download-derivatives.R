@@ -101,6 +101,7 @@ test_that("on_download_derivatives filters by literal subjects", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -143,6 +144,7 @@ test_that("on_download_derivatives filters by regex() subjects", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -180,6 +182,7 @@ test_that("on_download_derivatives accepts subject IDs without sub- prefix", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -220,6 +223,7 @@ test_that("on_download_derivatives filters by space parameter", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -259,6 +263,7 @@ test_that("on_download_derivatives includes files without space entity", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -291,6 +296,7 @@ test_that("on_download_derivatives warns for unknown space", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -332,6 +338,7 @@ test_that("on_download_derivatives filters by suffix parameter", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -370,6 +377,7 @@ test_that("on_download_derivatives includes metadata files when filtering by suf
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -420,6 +428,7 @@ test_that("on_download_derivatives combines filters with AND logic", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -526,6 +535,7 @@ test_that("on_download_derivatives uses openneuro-derivatives bucket", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -555,6 +565,7 @@ test_that("on_download_derivatives constructs correct S3 dataset ID", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -585,6 +596,7 @@ test_that("on_download_derivatives uses derivative cache path", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -615,15 +627,18 @@ test_that("on_download_derivatives writes derivative entries to root manifest", 
     .download_with_backend = function(dataset_id, dest_dir, files, backend, quiet, bucket) {
       list(success = TRUE, backend = "s3")
     },
-    .update_manifest = function(dataset_dir, new_file_info, dataset_id, snapshot_tag,
-                                 backend = "https", type = "raw", ...) {
-      manifest_calls <<- c(manifest_calls, list(list(
-        dataset_dir = dataset_dir,
-        path = new_file_info$path,
-        type = type,
-        snapshot_tag = snapshot_tag,
-        backend = backend
-      )))
+    .batch_update_manifest = function(dataset_dir, file_entries, dataset_id,
+                                       snapshot_tag, backend = "https",
+                                       type = "raw", ...) {
+      for (fi in file_entries) {
+        manifest_calls <<- c(manifest_calls, list(list(
+          dataset_dir = dataset_dir,
+          path = fi$path,
+          type = type,
+          snapshot_tag = snapshot_tag,
+          backend = backend
+        )))
+      }
       invisible(NULL)
     },
     .print_completion_summary = function(...) invisible(NULL)
@@ -805,6 +820,7 @@ test_that("on_download_derivatives returns correct structure on success", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -1068,6 +1084,7 @@ test_that("on_download_derivatives uses custom dest_dir when provided", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -1101,6 +1118,7 @@ test_that("on_download_derivatives uses cwd when use_cache=FALSE and dest_dir=NU
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 

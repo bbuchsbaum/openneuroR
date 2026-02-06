@@ -117,6 +117,7 @@ test_that("on_download filters by exact file paths", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -144,6 +145,7 @@ test_that("on_download filters by regex pattern", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -224,6 +226,7 @@ test_that("on_download returns backend info on S3/DataLad success", {
       list(success = TRUE, backend = "s3")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -263,6 +266,7 @@ test_that("on_download filters by literal subject IDs", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -305,6 +309,7 @@ test_that("on_download filters by regex() subjects", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -393,6 +398,7 @@ test_that("on_download include_derivatives=FALSE excludes derivatives", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -431,6 +437,7 @@ test_that("on_download includes derivatives by default with subjects=", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -468,6 +475,7 @@ test_that("on_download root files always included with subject filter", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 
@@ -508,6 +516,7 @@ test_that("on_download accepts subject IDs without sub- prefix", {
       list(success = TRUE, backend = "https")
     },
     .update_manifest = function(...) invisible(NULL),
+    .batch_update_manifest = function(...) invisible(NULL),
     .print_completion_summary = function(...) invisible(NULL)
   )
 

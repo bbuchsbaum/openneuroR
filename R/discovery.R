@@ -99,7 +99,7 @@ NULL
       paste0("s3://openneuro-derivatives/", r$pipeline, "/", r$repo_name, "/")
     }, character(1))
   ) |>
-    transform_timestamps_posix()
+    .transform_timestamps_posix()
 }
 
 #' Transform Numeric Timestamps to POSIXct
@@ -111,7 +111,7 @@ NULL
 #' @return The tibble with POSIXct timestamp columns.
 #'
 #' @keywords internal
-transform_timestamps_posix <- function(df) {
+.transform_timestamps_posix <- function(df) {
   if ("last_modified" %in% names(df) && is.numeric(df$last_modified)) {
     df$last_modified <- as.POSIXct(df$last_modified, origin = "1970-01-01", tz = "UTC")
   }
@@ -201,7 +201,7 @@ on_derivatives <- function(dataset_id,
                            refresh = FALSE,
                            client = NULL) {
   # Validate dataset_id
- if (missing(dataset_id) || is.null(dataset_id) || !is.character(dataset_id) ||
+  if (missing(dataset_id) || is.null(dataset_id) || !is.character(dataset_id) ||
       length(dataset_id) != 1 || nchar(dataset_id) == 0) {
     rlang::abort(
       c("Invalid dataset ID",

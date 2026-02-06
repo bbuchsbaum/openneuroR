@@ -183,3 +183,64 @@
 
   invisible(manifest)
 }
+
+
+#' Batch Update Manifest with Multiple Files
+#'
+#' Updates a manifest with multiple file entries in a single read-write cycle,
+#' avoiding the O(n^2) cost of calling `.update_manifest()` per file.
+#'
+#' @param dataset_dir Path to the dataset cache directory.
+#' @param file_entries A list of lists, each with `path` and `size` fields.
+#' @param dataset_id Dataset identifier (used if creating new manifest).
+#' @param snapshot_tag Snapshot tag (used if creating new manifest).
+#' @param backend Backend used for download (e.g., "https").
+#' @param type Type of cached data: "raw" or "derivative".
+#'
+#' @return Invisibly returns the updated manifest.
+#'
+#' @keywords internal
+.batch_update_manifest <- function(dataset_dir, file_entries, dataset_id,
+                                    snapshot_tag, backend = "https",
+                                    type = "raw") {
+  if (length(file_entries) == 0) return(invisible(NULL))
+
+  manifest <- .read_manifest(dataset_dir)
+  if (is.null(manifest)) {
+    manifest <- .new_manifest(dataset_id, snapshot_tag)
+  }
+
+  # Build a lookup of existing paths for O(1) access
+  if (length(manifest$files) > 0) {
+    existing_paths <- vapply(manifest$files, function(f) f$path, character(1))
+    path_index <- new.env(hash = TRUE, parent = emptyenv())
+    for (j in seq_along(existing_paths)) {
+      path_index[[existing_paths[j]]] <- j
+    }
+  } else {
+    path_index <- new.env(hash = TRUE, parent = emptyenv())
+  }
+
+  now <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+
+  for (fi in file_entries) {
+    entry <- list(
+      path = fi$path,
+      size = fi$size,
+      downloaded_at = now,
+      backend = backend,
+      type = type
+    )
+
+    idx <- path_index[[fi$path]]
+    if (!is.null(idx)) {
+      manifest$files[[idx]] <- entry
+    } else {
+      manifest$files <- c(manifest$files, list(entry))
+      path_index[[fi$path]] <- length(manifest$files)
+    }
+  }
+
+  .write_manifest(manifest, dataset_dir)
+  invisible(manifest)
+}

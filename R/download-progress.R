@@ -12,6 +12,8 @@
 #' @param verbose If `TRUE`, show per-file progress in addition to overall progress.
 #' @param force If `TRUE`, re-download files even if they exist with correct size.
 #' @param use_cache If `TRUE`, use manifest for cache tracking and update after downloads.
+#' @param type Type of cached data: "raw" for raw dataset files, "derivative" for
+#'   derivative outputs under `derivatives/`.
 #'
 #' @return A list with components:
 #'   \describe{
@@ -25,7 +27,7 @@
 #' @keywords internal
 .download_with_progress <- function(files_df, dest_dir, dataset_id, tag = NULL,
                                      quiet = FALSE, verbose = FALSE, force = FALSE,
-                                     use_cache = FALSE) {
+                                     use_cache = FALSE, type = "raw") {
   n_files <- nrow(files_df)
 
   # Initialize counters
@@ -33,6 +35,7 @@
   skipped_count <- 0L
   failed_files <- character()
   total_bytes <- 0
+  manifest_entries <- list()  # accumulate for batch manifest write
 
   # Read manifest if using cache (for skip checking and snapshot version)
   manifest <- NULL
@@ -78,6 +81,9 @@
   for (i in seq_len(n_files)) {
     file_info <- files_df[i, ]
     dest_path <- fs::path(dest_dir, file_info$full_path)
+
+    # Guard against path traversal from API-supplied file paths
+    .validate_path_under_root(dest_path, dest_dir)
 
     # Check if file exists with correct size (skip unless force=TRUE)
     # For cache: also check manifest entry exists with correct size
@@ -134,14 +140,11 @@
         downloaded_count <- downloaded_count + 1L
         total_bytes <- total_bytes + file_info$size
 
-        # Update manifest after successful download (if caching)
+        # Accumulate manifest entry for batch write (if caching)
         if (use_cache) {
-          .update_manifest(
-            dataset_dir = dest_dir,
-            new_file_info = list(path = file_info$full_path, size = file_info$size),
-            dataset_id = dataset_id,
-            snapshot_tag = tag,
-            backend = "https"
+          manifest_entries[[length(manifest_entries) + 1L]] <- list(
+            path = file_info$full_path,
+            size = file_info$size
           )
         }
 
@@ -164,6 +167,18 @@
 
   if (show_progress && n_files > 0) {
     cli::cli_progress_done()
+  }
+
+  # Batch write all manifest entries at once (avoids O(n^2) per-file I/O)
+  if (use_cache && length(manifest_entries) > 0) {
+    .batch_update_manifest(
+      dataset_dir = dest_dir,
+      file_entries = manifest_entries,
+      dataset_id = dataset_id,
+      snapshot_tag = tag,
+      backend = "https",
+      type = type
+    )
   }
 
   # Build result
@@ -193,6 +208,9 @@
 #'
 #' @keywords internal
 .format_bytes <- function(bytes) {
+  if (length(bytes) != 1 || is.na(bytes) || is.null(bytes)) {
+    return("unknown")
+  }
   if (bytes < 1024) {
     return(paste0(bytes, " B"))
   } else if (bytes < 1024^2) {

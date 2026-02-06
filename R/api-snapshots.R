@@ -33,7 +33,7 @@
 #'
 #' @seealso [on_files()] to list files in a snapshot, [on_dataset()] for metadata
 on_snapshots <- function(id, client = NULL) {
-  if (missing(id) || is.null(id) || !is.character(id) || nchar(id) == 0) {
+  if (missing(id) || is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
     rlang::abort(
       c("Invalid dataset ID",
         "x" = "Dataset ID must be a non-empty character string"),

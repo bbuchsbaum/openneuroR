@@ -178,8 +178,14 @@ on_cache_clear <- function(dataset_id = NULL, confirm = interactive()) {
   cache_root <- .on_cache_root()
 
   if (!is.null(dataset_id)) {
+    # Validate dataset ID format to prevent path traversal
+    .validate_dataset_id(dataset_id)
+
     # Clear specific dataset
     dataset_path <- fs::path(cache_root, dataset_id)
+
+    # Safety: verify resolved path stays under cache root
+    .validate_path_under_root(dataset_path, cache_root)
 
     if (!fs::dir_exists(dataset_path)) {
       cli::cli_alert_warning("Dataset {.val {dataset_id}} is not in cache")

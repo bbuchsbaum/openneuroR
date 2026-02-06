@@ -12,7 +12,8 @@
   quiet = FALSE,
   verbose = FALSE,
   force = FALSE,
-  use_cache = FALSE
+  use_cache = FALSE,
+  type = "raw"
 )
 }
 \arguments{
@@ -31,6 +32,9 @@
 \item{force}{If \code{TRUE}, re-download files even if they exist with correct size.}
 
 \item{use_cache}{If \code{TRUE}, use manifest for cache tracking and update after downloads.}
+
+\item{type}{Type of cached data: "raw" for raw dataset files, "derivative" for
+derivative outputs under \verb{derivatives/}.}
 }
 \value{
 A list with components:

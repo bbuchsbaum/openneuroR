@@ -165,6 +165,23 @@ NULL
   # Collect filenames from subject directories (sample first 3 subjects)
   all_filenames <- character(0)
 
+  # Helper: list filenames (non-directories) within a directory key
+  .list_files_in_dir <- function(dir_key) {
+    dir_contents <- tryCatch(
+      on_files(dataset_id, tag, tree = dir_key, client = client),
+      error = function(e) {
+        return(NULL)
+      }
+    )
+
+    if (is.null(dir_contents) || nrow(dir_contents) == 0) {
+      return(character(0))
+    }
+
+    files <- dir_contents[!dir_contents$directory, ]
+    files$filename
+  }
+
   # Look for subject directories (sub-*)
   subject_dirs <- pipeline_contents[pipeline_contents$directory == TRUE &
                                       grepl("^sub-", pipeline_contents$filename), ]
@@ -192,29 +209,49 @@ NULL
       next
     }
 
-    # Check anat/ and func/ subdirectories
-    for (modality in c("anat", "func", "ses-01", "ses-02")) {
-      mod_row <- subject_contents[subject_contents$directory == TRUE &
-                                    subject_contents$filename == modality, ]
+    # Files directly in subject directory
+    subject_files <- subject_contents[!subject_contents$directory, ]
+    all_filenames <- c(all_filenames, subject_files$filename)
 
+    # Check anat/ and func/ subdirectories directly under subject
+    for (modality in c("anat", "func")) {
+      mod_row <- subject_contents[subject_contents$directory == TRUE &
+                                   subject_contents$filename == modality, ]
       if (nrow(mod_row) > 0) {
-        mod_contents <- tryCatch(
-          on_files(dataset_id, tag, tree = mod_row$key[1], client = client),
+        all_filenames <- c(all_filenames, .list_files_in_dir(mod_row$key[1]))
+      }
+    }
+
+    # Also check within session directories (ses-*)
+    session_dirs <- subject_contents[subject_contents$directory == TRUE &
+                                       grepl("^ses-", subject_contents$filename), ]
+    if (nrow(session_dirs) > 0) {
+      for (j in seq_len(nrow(session_dirs))) {
+        session_contents <- tryCatch(
+          on_files(dataset_id, tag, tree = session_dirs$key[j], client = client),
           error = function(e) {
             return(NULL)
           }
         )
 
-        if (!is.null(mod_contents) && nrow(mod_contents) > 0) {
-          files <- mod_contents[!mod_contents$directory, ]
-          all_filenames <- c(all_filenames, files$filename)
+        if (is.null(session_contents) || nrow(session_contents) == 0) {
+          next
+        }
+
+        # Files directly in session directory (rare but include)
+        session_files <- session_contents[!session_contents$directory, ]
+        all_filenames <- c(all_filenames, session_files$filename)
+
+        # anat/func within session
+        for (modality in c("anat", "func")) {
+          mod_row <- session_contents[session_contents$directory == TRUE &
+                                       session_contents$filename == modality, ]
+          if (nrow(mod_row) > 0) {
+            all_filenames <- c(all_filenames, .list_files_in_dir(mod_row$key[1]))
+          }
         }
       }
     }
-
-    # Also check files directly in subject directory
-    subject_files <- subject_contents[!subject_contents$directory, ]
-    all_filenames <- c(all_filenames, subject_files$filename)
   }
 
   unique(all_filenames)
@@ -266,7 +303,7 @@ NULL
     processx::run(
       command = aws_cli,
       args = c("s3", "ls", "--no-sign-request", "--recursive",
-               s3_path, "--page-size", "500"),
+               s3_path, "--max-items", "500"),
       timeout = 30,
       error_on_status = FALSE
     )

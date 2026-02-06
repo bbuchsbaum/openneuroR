@@ -302,21 +302,25 @@ on_download_derivatives <- function(dataset_id,
     )
 
     if (!is.null(backend_result) && isTRUE(backend_result$success)) {
-      # Update manifest for each file
+      # Batch update manifest
       if (caching) {
-        for (i in seq_len(nrow(files_df))) {
-          .update_manifest(
-            dataset_dir = dest_dir,
-            new_file_info = list(
-              path = files_df$full_path[i],
-              size = files_df$size[i]
-            ),
-            dataset_id = dataset_id,
-            snapshot_tag = paste0(pipeline, "-derivative"),
-            backend = backend_result$backend,
-            type = "derivative"
+        dataset_root <- .on_dataset_cache_path(dataset_id)
+        fs::dir_create(dataset_root, recurse = TRUE)
+
+        file_entries <- lapply(seq_len(nrow(files_df)), function(i) {
+          list(
+            path = paste0("derivatives/", pipeline, "/", files_df$full_path[i]),
+            size = files_df$size[i]
           )
-        }
+        })
+        .batch_update_manifest(
+          dataset_dir = dataset_root,
+          file_entries = file_entries,
+          dataset_id = dataset_id,
+          snapshot_tag = paste0(pipeline, "-derivative"),
+          backend = backend_result$backend,
+          type = "derivative"
+        )
       }
 
       # Build result
@@ -359,7 +363,8 @@ on_download_derivatives <- function(dataset_id,
       quiet = quiet,
       verbose = verbose,
       force = force,
-      use_cache = caching
+      use_cache = caching,
+      type = "derivative"
     )
 
     result$backend <- "https"
@@ -507,37 +512,55 @@ on_download_derivatives <- function(dataset_id,
     return(.empty_derivative_files_tibble())
   }
 
-  result <- .empty_derivative_files_tibble()
-
-  for (i in seq_len(nrow(dir_files))) {
-    entry <- dir_files[i, ]
-    entry_path <- if (nchar(parent_path) > 0) {
-      paste0(parent_path, "/", entry$filename)
-    } else {
-      entry$filename
-    }
-
-    if (!entry$directory) {
-      # File entry
-      result <- rbind(result, tibble::tibble(
-        filename = entry$filename,
-        full_path = entry_path,
-        size = as.numeric(entry$size)
-      ))
-    } else {
-      # Directory - recurse
-      subfiles <- .list_directory_recursive(
-        dataset_id = dataset_id,
-        tag = tag,
-        key = entry$key,
-        parent_path = entry_path,
-        client = client
-      )
-      result <- rbind(result, subfiles)
-    }
+  has_parent <- length(parent_path) == 1 && !is.na(parent_path) && nzchar(parent_path)
+  entry_paths <- if (has_parent) {
+    paste0(parent_path, "/", dir_files$filename)
+  } else {
+    dir_files$filename
   }
 
-  result
+  file_mask <- !dir_files$directory
+  dir_mask <- dir_files$directory
+
+  result_parts <- list()
+
+  if (any(file_mask)) {
+    result_parts[[length(result_parts) + 1L]] <- tibble::tibble(
+      filename = dir_files$filename[file_mask],
+      full_path = entry_paths[file_mask],
+      size = as.numeric(dir_files$size[file_mask])
+    )
+  }
+
+  if (any(dir_mask)) {
+    dir_keys <- dir_files$key[dir_mask]
+    dir_paths <- entry_paths[dir_mask]
+
+    sub_parts <- Map(
+      function(subkey, subpath) {
+        .list_directory_recursive(
+          dataset_id = dataset_id,
+          tag = tag,
+          key = subkey,
+          parent_path = subpath,
+          client = client
+        )
+      },
+      dir_keys,
+      dir_paths
+    )
+
+    # Drop empty results early to avoid bind overhead
+    sub_parts <- sub_parts[vapply(sub_parts, nrow, integer(1)) > 0]
+
+    result_parts <- c(result_parts, sub_parts)
+  }
+
+  if (length(result_parts) == 0) {
+    return(.empty_derivative_files_tibble())
+  }
+
+  dplyr::bind_rows(result_parts)
 }
 
 
@@ -803,24 +826,19 @@ on_download_derivatives <- function(dataset_id,
     return(files_df)
   }
 
-  # Check each file path for subject match
-  keep <- vapply(files_df$full_path, function(path) {
-    for (subj in subjects) {
-      # Match subject directory: sub-XX/... or .../sub-XX/...
-      if (grepl(paste0("(^|/)", subj, "/"), path)) {
-        return(TRUE)
-      }
-      # Also match subject in filename: sub-XX_...
-      if (grepl(paste0("(^|/)", subj, "_"), path)) {
-        return(TRUE)
-      }
-    }
-    # Root-level files (no subject directory) are included
-    if (!grepl("/sub-", path) && !grepl("^sub-", path)) {
-      return(TRUE)
-    }
-    FALSE
-  }, logical(1), USE.NAMES = FALSE)
+  paths <- files_df$full_path
+
+  # Build single alternation regex for all subjects (vectorized)
+  subj_alt <- paste(subjects, collapse = "|")
+
+  # Match subject directory: sub-XX/... or .../sub-XX/...
+  dir_pattern <- paste0("(^|/)(", subj_alt, ")/")
+  # Match subject in filename: sub-XX_...
+  file_pattern <- paste0("(^|/)(", subj_alt, ")_")
+  # Root-level files (no subject reference) are always included
+  no_subject <- !grepl("/sub-", paths) & !grepl("^sub-", paths)
+
+  keep <- grepl(dir_pattern, paths) | grepl(file_pattern, paths) | no_subject
 
   files_df[keep, ]
 }

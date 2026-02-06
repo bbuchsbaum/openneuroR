@@ -63,8 +63,7 @@ is_regex <- function(x) {
 .normalize_subject_id <- function(id) {
   if (startsWith(id, "sub-")) {
     id
-
-} else {
+  } else {
     paste0("sub-", id)
   }
 }
@@ -80,7 +79,8 @@ is_regex <- function(x) {
 #'
 #' @keywords internal
 .normalize_subject_ids <- function(ids) {
-  vapply(ids, .normalize_subject_id, character(1), USE.NAMES = FALSE)
+  if (length(ids) == 0) return(character(0))
+  ifelse(startsWith(ids, "sub-"), ids, paste0("sub-", ids))
 }
 
 
@@ -154,47 +154,25 @@ is_regex <- function(x) {
 #' @keywords internal
 .filter_files_by_subjects <- function(files_df, matching_subjects,
                                        include_derivatives = TRUE) {
-  # Root file patterns (files that should always be included)
-  root_patterns <- c(
-    "dataset_description.json",
-    "README",
-    "README.md",
-    "README.txt",
-    "CHANGES",
-    "participants.tsv",
-    "participants.json",
-    ".bidsignore"
-  )
+  paths <- files_df$full_path
 
-  # Check each file
-  keep <- vapply(files_df$full_path, function(path) {
-    # Root-level files (no directory separator OR known root files)
-    if (!grepl("/", path)) {
-      return(TRUE)
-    }
+  # Root-level files (no directory separator) are always included
+  is_root <- !grepl("/", paths, fixed = TRUE)
 
-    # Check if it's a known root file (may have been listed with flat structure)
-    if (basename(path) %in% root_patterns && !grepl("/", path)) {
-      return(TRUE)
-    }
+  # Build a single alternation regex for all subjects (vectorized matching)
+  subj_alt <- paste(matching_subjects, collapse = "|")
 
-    # Check if path starts with a matching subject directory
-    for (subj in matching_subjects) {
-      # Direct subject directory: sub-XX/...
-      if (startsWith(path, paste0(subj, "/"))) {
-        return(TRUE)
-      }
+  # Direct subject directory: sub-XX/...
+  subj_pattern <- paste0("^(", subj_alt, ")/")
+  is_subject_file <- grepl(subj_pattern, paths)
 
-      # Derivatives directory: derivatives/*/sub-XX/... (if enabled)
-      if (include_derivatives) {
-        if (grepl(paste0("^derivatives/[^/]+/", subj, "/"), path)) {
-          return(TRUE)
-        }
-      }
-    }
+  # Derivatives directory: derivatives/*/sub-XX/...
+  if (include_derivatives) {
+    deriv_pattern <- paste0("^derivatives/[^/]+/(", subj_alt, ")/")
+    is_deriv_file <- grepl(deriv_pattern, paths)
+  } else {
+    is_deriv_file <- logical(length(paths))
+  }
 
-    FALSE
-  }, logical(1), USE.NAMES = FALSE)
-
-  files_df[keep, ]
+  files_df[is_root | is_subject_file | is_deriv_file, ]
 }

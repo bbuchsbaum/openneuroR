@@ -122,14 +122,22 @@
       status <- httr2::resp_status(resp)
 
       if (status == 206L) {
-        # Partial Content: append temp content to existing file
-        temp_content <- readBin(temp_path, "raw", n = fs::file_size(temp_path))
-        con <- file(dest_path, "ab")  # append binary
+        # Partial Content: append temp content to existing file in chunks
+        chunk_size <- 16L * 1024L * 1024L  # 16 MB chunks
+        src <- file(temp_path, "rb")
+        dest <- file(dest_path, "ab")  # append binary
         tryCatch(
           {
-            writeBin(temp_content, con)
+            repeat {
+              chunk <- readBin(src, "raw", n = chunk_size)
+              if (length(chunk) == 0L) break
+              writeBin(chunk, dest)
+            }
           },
-          finally = close(con)
+          finally = {
+            close(src)
+            close(dest)
+          }
         )
         fs::file_delete(temp_path)
       } else if (status == 200L) {

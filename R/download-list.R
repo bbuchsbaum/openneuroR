@@ -24,12 +24,26 @@
 .list_all_files <- function(dataset_id, tag = NULL, client = NULL) {
   client <- client %||% on_client()
 
+  # Resolve snapshot tag once to avoid redundant on_snapshots() calls
+  # in each recursive on_files() invocation
+  if (is.null(tag)) {
+    snapshots <- on_snapshots(dataset_id, client)
+    if (nrow(snapshots) == 0) {
+      rlang::abort(
+        c("No snapshots available",
+          "x" = paste0("Dataset ", dataset_id, " has no snapshots")),
+        class = "openneuro_not_found_error"
+      )
+    }
+    tag <- snapshots$tag[1]
+  }
+
   # Start progress indicator for interactive sessions
   if (interactive()) {
     cli::cli_progress_step("Scanning files in {dataset_id}...", spinner = TRUE)
   }
 
-  # Get root listing
+  # Get root listing (tag is now always resolved, no redundant on_snapshots() call)
   root_files <- on_files(dataset_id, tag = tag, client = client)
 
   if (nrow(root_files) == 0) {
@@ -42,13 +56,8 @@
     ))
   }
 
-  # Initialize result collector
-  result <- tibble::tibble(
-    filename = character(),
-    full_path = character(),
-    size = numeric(),
-    annexed = logical()
-  )
+  # Collect results in a list and bind once at the end (avoids O(n^2) growth)
+  parts <- list()
 
   # Process each root entry
   for (i in seq_len(nrow(root_files))) {
@@ -56,8 +65,7 @@
 
     if (!entry$directory) {
       # It's a file at root level
-      result <- tibble::add_row(
-        result,
+      parts[[length(parts) + 1L]] <- tibble::tibble(
         filename = entry$filename,
         full_path = entry$filename,
         size = as.numeric(entry$size),
@@ -72,9 +80,14 @@
         parent_path = entry$filename,
         client = client
       )
-      result <- dplyr::bind_rows(result, subfiles)
+      if (nrow(subfiles) > 0) parts[[length(parts) + 1L]] <- subfiles
     }
   }
+
+  result <- if (length(parts) > 0) dplyr::bind_rows(parts) else tibble::tibble(
+    filename = character(), full_path = character(),
+    size = numeric(), annexed = logical()
+  )
 
   if (interactive()) cli::cli_progress_done()
 
@@ -110,12 +123,7 @@
     ))
   }
 
-  result <- tibble::tibble(
-    filename = character(),
-    full_path = character(),
-    size = numeric(),
-    annexed = logical()
-  )
+  parts <- list()
 
   for (i in seq_len(nrow(dir_files))) {
     entry <- dir_files[i, ]
@@ -123,8 +131,7 @@
 
     if (!entry$directory) {
       # It's a file
-      result <- tibble::add_row(
-        result,
+      parts[[length(parts) + 1L]] <- tibble::tibble(
         filename = entry$filename,
         full_path = as.character(entry_full_path),
         size = as.numeric(entry$size),
@@ -139,9 +146,12 @@
         parent_path = as.character(entry_full_path),
         client = client
       )
-      result <- dplyr::bind_rows(result, subfiles)
+      if (nrow(subfiles) > 0) parts[[length(parts) + 1L]] <- subfiles
     }
   }
 
-  result
+  if (length(parts) > 0) dplyr::bind_rows(parts) else tibble::tibble(
+    filename = character(), full_path = character(),
+    size = numeric(), annexed = logical()
+  )
 }

@@ -28,6 +28,7 @@ mock_files_tibble <- function(files = list()) {
 test_that(".list_all_files returns empty tibble when no files found", {
   local_mocked_bindings(
     on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(...) tibble::tibble(tag = "1.0.0", created = as.numeric(Sys.time()), size = 1000),
     on_files = function(...) mock_files_tibble()
   )
 
@@ -41,6 +42,7 @@ test_that(".list_all_files returns empty tibble when no files found", {
 test_that(".list_all_files collects files from root level", {
   local_mocked_bindings(
     on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(...) tibble::tibble(tag = "1.0.0", created = as.numeric(Sys.time()), size = 1000),
     on_files = function(dataset_id, tag = NULL, tree = NULL, client = NULL) {
       # Return root level files (no directories)
       mock_files_tibble(list(
@@ -65,6 +67,7 @@ test_that(".list_all_files recurses into directories", {
   call_count <- 0
   local_mocked_bindings(
     on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(...) tibble::tibble(tag = "1.0.0", created = as.numeric(Sys.time()), size = 1000),
     on_files = function(dataset_id, tag = NULL, tree = NULL, client = NULL) {
       call_count <<- call_count + 1
 
@@ -96,6 +99,7 @@ test_that(".list_all_files recurses into directories", {
 test_that(".list_all_files returns correct column types", {
   local_mocked_bindings(
     on_client = function() list(url = "mock", token = NULL),
+    on_snapshots = function(...) tibble::tibble(tag = "1.0.0", created = as.numeric(Sys.time()), size = 1000),
     on_files = function(...) {
       mock_files_tibble(list(
         list(filename = "data.nii.gz", key = "k1", size = "1000",

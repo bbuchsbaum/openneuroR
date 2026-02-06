@@ -120,10 +120,10 @@ NULL
       after = .github_after,
       max_tries = 3
     ) |>
-    httr2::req_throttle(rate = 30 / 60)  # 30 per minute to stay under 60/hr
+  httr2::req_throttle(rate = 30 / 60)  # 30 per minute to stay under 60/hr
 
   # Add authentication if token available
-if (token != "") {
+  if (token != "") {
     req <- httr2::req_auth_bearer_token(req, token)
   }
 
@@ -149,9 +149,10 @@ if (token != "") {
     return(NULL)
   }
 
-  # Match pattern: ds######-(fmriprep|mriqc|fitlins)
-  pattern <- "^(ds\\d{6})-(fmriprep|mriqc|fitlins)$"
-  match <- regmatches(name, regexec(pattern, name))[[1]]
+  # Match pattern: ds######-<pipeline>
+  # Keep this flexible so new pipelines don't require code changes.
+  pattern <- "^(ds\\d{6})-([A-Za-z0-9][A-Za-z0-9._-]*)$"
+  match <- regmatches(name, regexec(pattern, name, perl = TRUE))[[1]]
 
   if (length(match) < 3) {
     return(NULL)
@@ -250,6 +251,7 @@ if (token != "") {
     }
 
     page <- page + 1
+    if (page > 200L) break  # safety limit
   }
 
   # Cache the results
