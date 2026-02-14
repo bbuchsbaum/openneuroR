@@ -52,16 +52,7 @@
 #' path <- on_path(handle)
 #' }
 on_handle <- function(dataset_id, tag = NULL, files = NULL, backend = NULL) {
-  # Validate dataset_id
-  if (missing(dataset_id) || !is.character(dataset_id) ||
-      length(dataset_id) != 1 || nchar(dataset_id) == 0) {
-    rlang::abort(
-      c("Invalid dataset identifier",
-        "x" = "`dataset_id` must be a non-empty character string",
-        "i" = 'Example: on_handle("ds000001")'),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(dataset_id)
 
   # Validate backend if provided
   if (!is.null(backend)) {

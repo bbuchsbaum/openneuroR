@@ -200,15 +200,7 @@ on_derivatives <- function(dataset_id,
                            sources = c("embedded", "openneuro-derivatives"),
                            refresh = FALSE,
                            client = NULL) {
-  # Validate dataset_id
-  if (missing(dataset_id) || is.null(dataset_id) || !is.character(dataset_id) ||
-      length(dataset_id) != 1 || nchar(dataset_id) == 0) {
-    rlang::abort(
-      c("Invalid dataset ID",
-        "x" = "Dataset ID must be a non-empty character string"),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(dataset_id)
 
   # Validate sources
   valid_sources <- c("embedded", "openneuro-derivatives")

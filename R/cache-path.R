@@ -44,7 +44,14 @@
 .validate_path_under_root <- function(path, root) {
   norm_path <- fs::path_norm(fs::path_abs(path))
   norm_root <- fs::path_norm(fs::path_abs(root))
-  if (!startsWith(as.character(norm_path), as.character(norm_root))) {
+
+  # Normalize separators and enforce path-segment boundary matching.
+  # This prevents prefix collisions (e.g., /cache_root_evil matching /cache_root).
+  path_chr <- gsub("\\\\", "/", as.character(norm_path))
+  root_chr <- gsub("\\\\", "/", as.character(norm_root))
+  under_root <- startsWith(paste0(path_chr, "/"), paste0(root_chr, "/"))
+
+  if (!under_root) {
     rlang::abort(
       c("Path traversal detected",
         "x" = "Resolved path escapes the expected directory",
@@ -95,6 +102,7 @@
 #'
 #' @keywords internal
 .on_dataset_cache_path <- function(dataset_id) {
+  .validate_dataset_id(dataset_id)
   cache_root <- .on_cache_root()
   fs::path(cache_root, dataset_id)
 }
@@ -112,6 +120,7 @@
 #'
 #' @keywords internal
 .on_file_cache_path <- function(dataset_id, file_path) {
+  .validate_dataset_id(dataset_id)
   dataset_path <- .on_dataset_cache_path(dataset_id)
   fs::path(dataset_path, file_path)
 }

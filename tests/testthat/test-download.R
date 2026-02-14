@@ -192,7 +192,7 @@ test_that("on_download falls back to HTTPS when backend returns NULL", {
       NULL  # Backend not available
     },
     .download_with_progress = function(files_df, dest_dir, dataset_id, tag,
-                                        quiet, verbose, force, use_cache) {
+                                        quiet, verbose, force, use_cache, ...) {
       list(
         downloaded = 1L,
         skipped = 0L,

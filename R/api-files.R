@@ -59,13 +59,7 @@
 #'
 #' @seealso [on_snapshots()] to list available snapshots
 on_files <- function(id, tag = NULL, tree = NULL, client = NULL) {
-  if (missing(id) || is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
-    rlang::abort(
-      c("Invalid dataset ID",
-        "x" = "Dataset ID must be a non-empty character string"),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(id)
 
   client <- client %||% on_client()
 

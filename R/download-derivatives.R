@@ -127,16 +127,7 @@ on_download_derivatives <- function(dataset_id,
                                      force = FALSE,
                                      backend = NULL,
                                      client = NULL) {
-  # Validate dataset_id
-  if (missing(dataset_id) || !is.character(dataset_id) ||
-      length(dataset_id) != 1 || nchar(dataset_id) == 0) {
-    rlang::abort(
-      c("Invalid dataset identifier",
-        "x" = "`dataset_id` must be a non-empty character string",
-        "i" = 'Example: on_download_derivatives("ds000001", "fmriprep")'),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(dataset_id)
 
   # Validate pipeline
   if (missing(pipeline) || !is.character(pipeline) ||
@@ -342,33 +333,34 @@ on_download_derivatives <- function(dataset_id,
   # HTTPS fallback or embedded source
   # For embedded derivatives, use standard download flow
   if (source == "embedded") {
-    # Transform files_df to match expected format for .download_with_progress
-    # Need full_path prefixed with derivatives/{pipeline}/
+    # Use derivative-local paths for destination layout while keeping
+    # derivative-prefixed paths for remote URL + manifest tracking.
     download_files_df <- tibble::tibble(
       filename = files_df$filename,
-      full_path = paste0("derivatives/", pipeline, "/", files_df$full_path),
+      full_path = files_df$full_path,
       size = files_df$size,
       annexed = rep(FALSE, nrow(files_df))
     )
 
-    # Download to parent directory (raw dataset cache) since paths include derivatives/
-    parent_dest <- .on_dataset_cache_path(dataset_id)
-    fs::dir_create(parent_dest, recurse = TRUE)
+    manifest_dir <- if (caching) .on_dataset_cache_path(dataset_id) else dest_dir
+    fs::dir_create(dest_dir, recurse = TRUE)
 
     result <- .download_with_progress(
       files_df = download_files_df,
-      dest_dir = parent_dest,
+      dest_dir = dest_dir,
       dataset_id = dataset_id,
       tag = NULL,
       quiet = quiet,
       verbose = verbose,
       force = force,
       use_cache = caching,
-      type = "derivative"
+      type = "derivative",
+      manifest_dir = manifest_dir,
+      url_prefix = paste0("derivatives/", pipeline),
+      manifest_prefix = if (caching) paste0("derivatives/", pipeline) else NULL
     )
 
     result$backend <- "https"
-    result$dest_dir <- dest_dir
     return(invisible(result))
   }
 
@@ -885,6 +877,7 @@ on_download_derivatives <- function(dataset_id,
 #'
 #' @keywords internal
 .on_derivative_cache_path <- function(dataset_id, pipeline) {
+  .validate_dataset_id(dataset_id)
   base_path <- .on_dataset_cache_path(dataset_id)
   fs::path(base_path, "derivatives", pipeline)
 }

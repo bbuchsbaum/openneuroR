@@ -118,15 +118,7 @@ on_download <- function(id, tag = NULL, files = NULL, subjects = NULL,
                         include_derivatives = TRUE, dest_dir = NULL,
                         use_cache = TRUE, quiet = FALSE, verbose = FALSE,
                         force = FALSE, backend = NULL, client = NULL) {
-  # Validate id
-  if (missing(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
-    rlang::abort(
-      c("Invalid dataset identifier",
-        "x" = "`id` must be a non-empty character string",
-        "i" = 'Example: on_download("ds000001")'),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(id)
 
   # Get or create client
   client <- client %||% on_client()

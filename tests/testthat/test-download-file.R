@@ -115,6 +115,33 @@ test_that(".download_single_file error message includes filename", {
   expect_true(grepl("my_special_file.txt", conditionMessage(error)))
 })
 
+test_that(".download_single_file fails on size mismatch", {
+  tmp_dir <- withr::local_tempdir()
+  dest_path <- file.path(tmp_dir, "size_mismatch.bin")
+
+  local_mocked_bindings(
+    req_perform = function(req, path = NULL) {
+      if (!is.null(path)) {
+        writeBin(as.raw(1:5), path)
+      }
+      structure(list(status_code = 200L), class = "httr2_response")
+    },
+    .package = "httr2"
+  )
+
+  expect_error(
+    .download_single_file(
+      url = "http://fake.url/file.bin",
+      dest_path = dest_path,
+      expected_size = 10,
+      resume = FALSE,
+      quiet = TRUE
+    ),
+    class = "openneuro_download_error"
+  )
+  expect_false(file.exists(dest_path))
+})
+
 # --- .download_resumable status handling tests ---
 
 test_that(".download_resumable handles HTTP 200 (full file response)", {

@@ -5,3 +5,12 @@
 ^\.gitignore$
 ^LICENSE\.md$
 ^\.\.Rcheck$
+^\.Rlib$
+^openneuro\.Rcheck$
+^openneuroR\.Rcheck$
+^openneuro_.*\.tar\.gz$
+^docs$
+^pkgdown$
+^scripts$
+^_pkgdown\.yml$
+^vignettes$

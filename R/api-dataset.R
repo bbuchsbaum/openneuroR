@@ -29,13 +29,7 @@
 #'
 #' @seealso [on_search()] to find datasets, [on_snapshots()] for version history
 on_dataset <- function(id, client = NULL) {
-  if (missing(id) || is.null(id) || !is.character(id) || length(id) != 1 || nchar(id) == 0) {
-    rlang::abort(
-      c("Invalid dataset ID",
-        "x" = "Dataset ID must be a non-empty character string"),
-      class = "openneuro_validation_error"
-    )
-  }
+  .validate_dataset_id(id)
 
   client <- client %||% on_client()
   gql <- .on_read_gql("get_dataset")

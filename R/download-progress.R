@@ -14,6 +14,11 @@
 #' @param use_cache If `TRUE`, use manifest for cache tracking and update after downloads.
 #' @param type Type of cached data: "raw" for raw dataset files, "derivative" for
 #'   derivative outputs under `derivatives/`.
+#' @param manifest_dir Directory that owns `manifest.json`. Defaults to `dest_dir`.
+#' @param url_prefix Optional prefix prepended to each file path when constructing
+#'   download URLs.
+#' @param manifest_prefix Optional prefix prepended to each file path when writing
+#'   manifest entries and performing cache skip checks.
 #'
 #' @return A list with components:
 #'   \describe{
@@ -27,7 +32,10 @@
 #' @keywords internal
 .download_with_progress <- function(files_df, dest_dir, dataset_id, tag = NULL,
                                      quiet = FALSE, verbose = FALSE, force = FALSE,
-                                     use_cache = FALSE, type = "raw") {
+                                     use_cache = FALSE, type = "raw",
+                                     manifest_dir = dest_dir,
+                                     url_prefix = NULL,
+                                     manifest_prefix = NULL) {
   n_files <- nrow(files_df)
 
   # Initialize counters
@@ -41,7 +49,7 @@
   manifest <- NULL
   cached_snapshot <- NULL
   if (use_cache) {
-    manifest <- .read_manifest(dest_dir)
+    manifest <- .read_manifest(manifest_dir)
     if (!is.null(manifest)) {
       cached_snapshot <- manifest$snapshot_tag
     }
@@ -81,6 +89,18 @@
   for (i in seq_len(n_files)) {
     file_info <- files_df[i, ]
     dest_path <- fs::path(dest_dir, file_info$full_path)
+    manifest_path <- if (is.null(manifest_prefix)) {
+      file_info$full_path
+    } else {
+      paste0(sub("/$", "", manifest_prefix), "/", file_info$full_path)
+    }
+    manifest_path <- gsub("\\\\", "/", manifest_path)
+    url_path <- if (is.null(url_prefix)) {
+      file_info$full_path
+    } else {
+      paste0(sub("/$", "", url_prefix), "/", file_info$full_path)
+    }
+    url_path <- gsub("\\\\", "/", url_path)
 
     # Guard against path traversal from API-supplied file paths
     .validate_path_under_root(dest_path, dest_dir)
@@ -91,7 +111,7 @@
     if (!force) {
       if (use_cache) {
         # Check manifest AND file existence
-        cached_entry <- cached_files[[file_info$full_path]]
+        cached_entry <- cached_files[[manifest_path]]
         if (!is.null(cached_entry) &&
             cached_entry$size == file_info$size &&
             .validate_existing_file(dest_path, file_info$size)) {
@@ -114,7 +134,7 @@
     }
 
     # Construct download URL
-    url <- .construct_download_url(dataset_id, file_info$full_path)
+    url <- .construct_download_url(dataset_id, url_path)
 
     # Attempt download
     tryCatch(
@@ -143,7 +163,7 @@
         # Accumulate manifest entry for batch write (if caching)
         if (use_cache) {
           manifest_entries[[length(manifest_entries) + 1L]] <- list(
-            path = file_info$full_path,
+            path = manifest_path,
             size = file_info$size
           )
         }
@@ -172,7 +192,7 @@
   # Batch write all manifest entries at once (avoids O(n^2) per-file I/O)
   if (use_cache && length(manifest_entries) > 0) {
     .batch_update_manifest(
-      dataset_dir = dest_dir,
+      dataset_dir = manifest_dir,
       file_entries = manifest_entries,
       dataset_id = dataset_id,
       snapshot_tag = tag,

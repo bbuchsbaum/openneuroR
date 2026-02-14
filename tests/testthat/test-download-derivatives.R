@@ -676,13 +676,19 @@ test_that("on_download_derivatives uses download_with_progress for embedded sour
     .on_dataset_cache_path = function(id) file.path(cache_dir, id),
     .download_with_progress = function(files_df, dest_dir, dataset_id, tag = NULL,
                                         quiet = FALSE, verbose = FALSE, force = FALSE,
-                                        use_cache = FALSE, type = "raw") {
+                                        use_cache = FALSE, type = "raw",
+                                        manifest_dir = dest_dir,
+                                        url_prefix = NULL,
+                                        manifest_prefix = NULL) {
       download_args <<- list(
         files_df = files_df,
         dest_dir = dest_dir,
         dataset_id = dataset_id,
         type = type,
-        use_cache = use_cache
+        use_cache = use_cache,
+        manifest_dir = manifest_dir,
+        url_prefix = url_prefix,
+        manifest_prefix = manifest_prefix
       )
       list(
         downloaded = 1L,
@@ -702,7 +708,58 @@ test_that("on_download_derivatives uses download_with_progress for embedded sour
   expect_equal(download_args$type, "derivative")
   expect_true(download_args$use_cache)
   expect_equal(download_args$dataset_id, "ds000001")
-  expect_equal(download_args$files_df$full_path[[1]], "derivatives/fmriprep/sub-01/func/sub-01_bold.nii.gz")
+  expect_equal(download_args$files_df$full_path[[1]], "sub-01/func/sub-01_bold.nii.gz")
+  expect_equal(download_args$url_prefix, "derivatives/fmriprep")
+  expect_equal(download_args$manifest_prefix, "derivatives/fmriprep")
+  expect_equal(
+    normalizePath(download_args$manifest_dir, mustWork = FALSE),
+    normalizePath(file.path(cache_dir, "ds000001"), mustWork = FALSE)
+  )
+})
+
+test_that("on_download_derivatives embedded source honors non-cache destination", {
+  dest_used <- NULL
+
+  local_mocked_bindings(
+    on_client = function() list(url = "mock", token = NULL),
+    on_derivatives = function(...) tibble::tibble(
+      dataset_id = "ds000001",
+      pipeline = "fmriprep",
+      source = "embedded"
+    ),
+    .list_derivative_files_full = function(...) tibble::tibble(
+      filename = c("sub-01_bold.nii.gz"),
+      full_path = c("sub-01/func/sub-01_bold.nii.gz"),
+      size = c(1000)
+    ),
+    .download_with_progress = function(files_df, dest_dir, dataset_id, tag = NULL,
+                                        quiet = FALSE, verbose = FALSE, force = FALSE,
+                                        use_cache = FALSE, type = "raw",
+                                        manifest_dir = dest_dir,
+                                        url_prefix = NULL,
+                                        manifest_prefix = NULL) {
+      dest_used <<- dest_dir
+      list(
+        downloaded = 1L,
+        skipped = 0L,
+        failed = character(),
+        total_bytes = 1000,
+        dest_dir = dest_dir
+      )
+    },
+    .package = "openneuro"
+  )
+
+  result <- on_download_derivatives(
+    "ds000001",
+    "fmriprep",
+    use_cache = FALSE,
+    quiet = TRUE
+  )
+
+  expect_equal(normalizePath(result$dest_dir, mustWork = FALSE),
+               normalizePath(dest_used, mustWork = FALSE))
+  expect_true(grepl("derivatives", result$dest_dir))
 })
 
 test_that(".list_derivative_files_s3_full parses aws s3 ls output", {

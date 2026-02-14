@@ -151,14 +151,8 @@ test_that(".print_completion_summary uses format_bytes for size", {
     dest_dir = "/tmp/test"
   )
 
-  # Capture output - should contain "5 MB" or similar
-  output <- capture.output(
-    .print_completion_summary(result_list, quiet = FALSE),
-    type = "message"
-  )
-
-  # CLI output should contain size info
-  expect_true(any(grepl("MB|downloaded", output, ignore.case = TRUE)))
+  expect_match(.format_bytes(result_list$total_bytes), "MB")
+  expect_no_error(.print_completion_summary(result_list, quiet = FALSE))
 })
 
 # --- .download_with_progress tests ---

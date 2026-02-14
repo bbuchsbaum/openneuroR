@@ -60,6 +60,13 @@
 
       # Return success info
       final_size <- as.numeric(fs::file_size(dest_path))
+      if (!is.null(expected_size) && !is.na(expected_size) && final_size != expected_size) {
+        rlang::abort(
+          c("Download size mismatch",
+            "x" = paste0("Expected ", expected_size, " bytes, got ", final_size)),
+          class = "openneuro_download_error"
+        )
+      }
       list(
         success = TRUE,
         path = dest_path,

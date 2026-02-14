@@ -13,7 +13,10 @@
   verbose = FALSE,
   force = FALSE,
   use_cache = FALSE,
-  type = "raw"
+  type = "raw",
+  manifest_dir = dest_dir,
+  url_prefix = NULL,
+  manifest_prefix = NULL
 )
 }
 \arguments{
@@ -35,6 +38,14 @@
 
 \item{type}{Type of cached data: "raw" for raw dataset files, "derivative" for
 derivative outputs under \verb{derivatives/}.}
+
+\item{manifest_dir}{Directory that owns \code{manifest.json}. Defaults to \code{dest_dir}.}
+
+\item{url_prefix}{Optional prefix prepended to each file path when constructing
+download URLs.}
+
+\item{manifest_prefix}{Optional prefix prepended to each file path when writing
+manifest entries and performing cache skip checks.}
 }
 \value{
 A list with components:
