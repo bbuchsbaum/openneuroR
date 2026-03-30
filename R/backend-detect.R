@@ -72,7 +72,7 @@ NULL
 #' @keywords internal
 .find_aws_cli <- function() {
   # Check PATH first
-  path <- Sys.which("aws")
+  path <- .sys_which("aws")
   if (nzchar(path)) {
     return(as.character(path))
   }
