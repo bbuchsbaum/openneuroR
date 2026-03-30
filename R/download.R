@@ -84,7 +84,7 @@
 #'
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Download to cache (default - auto-selects best backend)
 #' on_download("ds000001", files = "participants.tsv")
 #'

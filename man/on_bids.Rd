@@ -52,7 +52,7 @@ path does not exist.
 }
 
 \examples{
-\dontrun{
+\donttest{
 # Basic usage
 handle <- on_handle("ds000001")
 handle <- on_fetch(handle)

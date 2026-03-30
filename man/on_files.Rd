@@ -50,7 +50,7 @@ To explore a directory structure:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # List root files using latest snapshot
 files <- on_files("ds000001")
 print(files)

@@ -54,18 +54,4 @@ When \code{files} is provided, the function first excludes all files
 (\verb{--exclude "*"}) then includes only the specified patterns.
 This is the correct order for AWS CLI include/exclude logic.
 }
-\examples{
-\dontrun{
-# Download raw dataset (default bucket)
-.download_s3("ds000001", "/tmp/ds000001")
-
-# Download derivative from openneuro-derivatives bucket
-.download_s3(
-  "fmriprep/ds000001-fmriprep",
-  "/tmp/ds000001-fmriprep",
-  bucket = "openneuro-derivatives"
-)
-}
-
-}
 \keyword{internal}

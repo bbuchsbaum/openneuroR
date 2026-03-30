@@ -33,7 +33,7 @@ GraphQL errors (returned with HTTP 200 status) are detected and raised
 as R errors with class \code{openneuro_api_error}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Execute a simple query
 query <- "query { datasets(first: 1) { edges { node { id } } } }"
 result <- on_request(query)

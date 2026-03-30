@@ -6,7 +6,7 @@
 \alias{openneuro-package}
 \title{openneuro: Programmatic Access to OpenNeuro Datasets}
 \description{
-Search, explore, and download datasets from OpenNeuro, the largest open neuroimaging repository. Provides GraphQL-based discovery, multi-backend downloads (HTTPS/S3/DataLad), and smart caching.
+Search, explore, and download datasets from 'OpenNeuro' \url{https://openneuro.org}, the largest open neuroimaging data repository. Queries the 'OpenNeuro' GraphQL API to discover datasets by modality, diagnosis, or keyword; inspect snapshots, files, and subject lists; and download full datasets or selected subsets via HTTPS, Amazon S3, or 'DataLad'. Downloaded data are cached locally so subsequent requests skip already-fetched files.
 }
 \seealso{
 Useful links:
@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Bradley Buchsbaum \email{brad.buchsbaum@gmail.com}
+\strong{Maintainer}: Bradley Buchsbaum \email{brad.buchsbaum@gmail.com} [copyright holder]
 
 }
 \keyword{internal}

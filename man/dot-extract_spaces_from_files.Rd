@@ -17,17 +17,4 @@ Returns \code{character(0)} if no spaces are found.
 Extracts unique space labels from a vector of BIDS-formatted filenames.
 Results are sorted alphabetically and NAs are removed.
 }
-\examples{
-\dontrun{
-files <- c(
-  "sub-01_space-MNI152NLin2009cAsym_desc-preproc_T1w.nii.gz",
-  "sub-01_space-fsaverage_hemi-L_bold.func.gii",
-  "sub-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz",
-  "sub-01_desc-preproc_T1w.nii.gz"  # No space entity
-)
-.extract_spaces_from_files(files)
-# Returns: c("MNI152NLin2009cAsym", "fsaverage")
-}
-
-}
 \keyword{internal}

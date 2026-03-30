@@ -1,5 +1,7 @@
 ^\.planning$
 ^\.claude$
+^\.omc$
+^cran-comments\.md$
 ^DESIGN_NOTES.*\.md$
 ^\.git$
 ^\.gitignore$

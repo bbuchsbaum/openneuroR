@@ -42,19 +42,6 @@ NULL
 #' (`--exclude "*"`) then includes only the specified patterns.
 #' This is the correct order for AWS CLI include/exclude logic.
 #'
-#' @examples
-#' \dontrun{
-#' # Download raw dataset (default bucket)
-#' .download_s3("ds000001", "/tmp/ds000001")
-#'
-#' # Download derivative from openneuro-derivatives bucket
-#' .download_s3(
-#'   "fmriprep/ds000001-fmriprep",
-#'   "/tmp/ds000001-fmriprep",
-#'   bucket = "openneuro-derivatives"
-#' )
-#' }
-#'
 #' @keywords internal
 .download_s3 <- function(dataset_id, dest_dir, files = NULL, quiet = FALSE,
                           timeout = 1800, bucket = "openneuro.org") {
@@ -132,18 +119,6 @@ NULL
 #' Results are cached in `.discovery_cache` with key format
 #' `s3_bucket_probe_<bucket>` (or `s3_bucket_probe_<bucket>_<test_path>`
 #' if test_path is provided).
-#'
-#' @examples
-#' \dontrun{
-#' # Check if openneuro-derivatives is accessible
-#' .probe_s3_bucket("openneuro-derivatives")
-#'
-#' # Probe specific path (better for restricted buckets)
-#' .probe_s3_bucket("openneuro-derivatives", test_path = "fmriprep/")
-#'
-#' # Force refresh of cached result
-#' .probe_s3_bucket("openneuro.org", refresh = TRUE)
-#' }
 #'
 #' @keywords internal
 .probe_s3_bucket <- function(bucket, test_path = NULL, refresh = FALSE) {

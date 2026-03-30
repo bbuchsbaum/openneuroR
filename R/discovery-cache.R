@@ -68,12 +68,6 @@ NULL
 #'
 #' @return Invisibly returns `TRUE`.
 #'
-#' @examples
-#' \dontrun{
-#' # Force refresh of cached data
-#' .discovery_cache_clear()
-#' }
-#'
 #' @keywords internal
 .discovery_cache_clear <- function() {
   .discovery_cache$clear()

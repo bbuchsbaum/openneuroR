@@ -115,7 +115,7 @@ auto-anchored for full subject ID matching, so \code{regex("sub-01")} will
 match "sub-01" but not "sub-010".
 }
 \examples{
-\dontrun{
+\donttest{
 # Download to cache (default - auto-selects best backend)
 on_download("ds000001", files = "participants.tsv")
 

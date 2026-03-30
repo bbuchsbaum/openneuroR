@@ -30,17 +30,4 @@ Results are cached in \code{.discovery_cache} with key format
 \verb{s3_bucket_probe_<bucket>} (or \verb{s3_bucket_probe_<bucket>_<test_path>}
 if test_path is provided).
 }
-\examples{
-\dontrun{
-# Check if openneuro-derivatives is accessible
-.probe_s3_bucket("openneuro-derivatives")
-
-# Probe specific path (better for restricted buckets)
-.probe_s3_bucket("openneuro-derivatives", test_path = "fmriprep/")
-
-# Force refresh of cached result
-.probe_s3_bucket("openneuro.org", refresh = TRUE)
-}
-
-}
 \keyword{internal}

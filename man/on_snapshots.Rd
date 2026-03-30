@@ -27,7 +27,7 @@ Retrieves all snapshots (versioned releases) for a dataset. Snapshots are
 immutable versions of the dataset that can be referenced by tag.
 }
 \examples{
-\dontrun{
+\donttest{
 # List all snapshots for a dataset
 snaps <- on_snapshots("ds000001")
 print(snaps)

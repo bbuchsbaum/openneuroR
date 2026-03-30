@@ -29,7 +29,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # List subjects in a dataset
 #' subjects <- on_subjects("ds000001")
 #' print(subjects)

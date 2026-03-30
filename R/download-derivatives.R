@@ -81,7 +81,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Download all fMRIPrep derivatives for a dataset
 #' on_download_derivatives("ds000001", "fmriprep")
 #'
@@ -741,15 +741,6 @@ on_download_derivatives <- function(dataset_id,
 #'
 #' @details
 #' Handles compound extensions like `.nii.gz`, `.func.gii`, `.dtseries.nii`.
-#'
-#' @examples
-#' \dontrun{
-#' .extract_suffix_from_filename("sub-01_space-MNI_desc-preproc_bold.nii.gz")
-#' # Returns: "bold"
-#'
-#' .extract_suffix_from_filename("dataset_description.json")
-#' # Returns: NA_character_ (not a BIDS file)
-#' }
 #'
 #' @keywords internal
 .extract_suffix_from_filename <- function(filename) {

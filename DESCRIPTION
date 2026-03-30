@@ -2,13 +2,16 @@ Package: openneuro
 Title: Programmatic Access to OpenNeuro Datasets
 Version: 0.1.0
 Authors@R: c(
-    person("Bradley", "Buchsbaum", email = "brad.buchsbaum@gmail.com", role = c("aut", "cre"))
+    person("Bradley", "Buchsbaum", email = "brad.buchsbaum@gmail.com",
+           role = c("aut", "cre", "cph"))
   )
-Author: Bradley Buchsbaum [aut, cre]
-Maintainer: Bradley Buchsbaum <brad.buchsbaum@gmail.com>
-Description: Search, explore, and download datasets from OpenNeuro, the largest
-    open neuroimaging repository. Provides GraphQL-based discovery,
-    multi-backend downloads (HTTPS/S3/DataLad), and smart caching.
+Description: Search, explore, and download datasets from 'OpenNeuro'
+    <https://openneuro.org>, the largest open neuroimaging data repository.
+    Queries the 'OpenNeuro' GraphQL API to discover datasets by modality,
+    diagnosis, or keyword; inspect snapshots, files, and subject lists;
+    and download full datasets or selected subsets via HTTPS, Amazon S3,
+    or 'DataLad'. Downloaded data are cached locally so subsequent
+    requests skip already-fetched files.
 License: MIT + file LICENSE
 Depends:
     R (>= 4.1.0)
@@ -32,11 +35,9 @@ Suggests:
     httptest2,
     withr,
     stringi,
-    bidser,
-    fmriprepper
-Remotes:
-    bbuchsbaum/fmriprepper
+    bidser
 VignetteBuilder: knitr
+Language: en-US
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

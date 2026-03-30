@@ -20,7 +20,7 @@ Invisibly returns the number of datasets cleared.
 Removes cached datasets. Can clear a specific dataset or all cached data.
 }
 \examples{
-\dontrun{
+\donttest{
 # Clear specific dataset (with confirmation)
 on_cache_clear("ds000001")
 

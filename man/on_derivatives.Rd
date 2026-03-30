@@ -74,7 +74,7 @@ to bypass the cache and fetch fresh data.
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Find all derivatives for a dataset
 derivs <- on_derivatives("ds000102")
 print(derivs)

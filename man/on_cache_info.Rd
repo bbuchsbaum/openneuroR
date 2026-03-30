@@ -19,7 +19,7 @@ A list with:
 Returns information about the openneuroR cache location and total size.
 }
 \examples{
-\dontrun{
+\donttest{
 # Get cache info
 info <- on_cache_info()
 info$cache_path    # Where cache is stored

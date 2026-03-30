@@ -16,7 +16,7 @@
 #' # Match any subject starting with sub-1
 #' regex("sub-1.*")
 #'
-#' \dontrun{
+#' \donttest{
 #' # Use in on_download()
 #' on_download("ds000001", subjects = regex("sub-0[1-5]"))
 #' }

@@ -14,11 +14,4 @@ Clears all cached discovery data from the current session.
 Useful for testing or when you want to force a refresh of
 GitHub API data.
 }
-\examples{
-\dontrun{
-# Force refresh of cached data
-.discovery_cache_clear()
-}
-
-}
 \keyword{internal}

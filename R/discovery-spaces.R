@@ -22,15 +22,6 @@ NULL
 #' Per BIDS convention, native space files often omit the space entity,
 #' so absence of `_space-` does not imply T1w space.
 #'
-#' @examples
-#' \dontrun{
-#' .extract_space_from_filename("sub-01_space-MNI152NLin2009cAsym_desc-preproc_T1w.nii.gz")
-#' # Returns: "MNI152NLin2009cAsym"
-#'
-#' .extract_space_from_filename("sub-01_desc-preproc_T1w.nii.gz")
-#' # Returns: NA_character_
-#' }
-#'
 #' @keywords internal
 .extract_space_from_filename <- function(filename) {
   # Pattern matches _space- followed by alphanumeric characters
@@ -56,18 +47,6 @@ NULL
 #'
 #' @return Character vector: Unique space labels, sorted alphabetically.
 #'   Returns `character(0)` if no spaces are found.
-#'
-#' @examples
-#' \dontrun{
-#' files <- c(
-#'   "sub-01_space-MNI152NLin2009cAsym_desc-preproc_T1w.nii.gz",
-#'   "sub-01_space-fsaverage_hemi-L_bold.func.gii",
-#'   "sub-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz",
-#'   "sub-01_desc-preproc_T1w.nii.gz"  # No space entity
-#' )
-#' .extract_spaces_from_files(files)
-#' # Returns: c("MNI152NLin2009cAsym", "fsaverage")
-#' }
 #'
 #' @keywords internal
 .extract_spaces_from_files <- function(filenames) {
@@ -409,7 +388,7 @@ NULL
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # First, get available derivatives for a dataset
 #' derivs <- on_derivatives("ds000102")
 #' print(derivs)

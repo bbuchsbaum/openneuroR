@@ -22,14 +22,4 @@ This function does NOT infer T1w from files without a space entity.
 Per BIDS convention, native space files often omit the space entity,
 so absence of \verb{_space-} does not imply T1w space.
 }
-\examples{
-\dontrun{
-.extract_space_from_filename("sub-01_space-MNI152NLin2009cAsym_desc-preproc_T1w.nii.gz")
-# Returns: "MNI152NLin2009cAsym"
-
-.extract_space_from_filename("sub-01_desc-preproc_T1w.nii.gz")
-# Returns: NA_character_
-}
-
-}
 \keyword{internal}
