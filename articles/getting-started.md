@@ -1,0 +1,165 @@
+# Getting Started with openneuro
+
+## Why openneuro?
+
+[OpenNeuro](https://openneuro.org) is the largest open neuroimaging data
+repository, hosting thousands of BIDS-formatted datasets spanning MRI,
+EEG, MEG, and more. Accessing these datasets programmatically —
+searching by modality, downloading specific subjects, managing local
+caches — typically requires juggling GraphQL queries, S3 URLs, and
+file-system bookkeeping.
+
+The `openneuro` package handles all of that so you can focus on your
+analysis. With a few function calls you can search the catalogue,
+inspect dataset contents, and download exactly the files you need.
+
+## Load the package
+
+``` r
+library(openneuro)
+```
+
+## Find datasets
+
+Search the OpenNeuro catalogue. Results come back as a tibble:
+
+``` r
+ds <- on_search(limit = 10)
+ds[, c("id", "name", "n_subjects")]
+```
+
+    #> # A tibble: 10 x 3
+    #>    id        name                              n_subjects
+    #>    <chr>     <chr>                                  <int>
+    #>  1 ds000001  Balloon Analog Risk-taking Task           16
+    #>  2 ds000002  Classification Learning                   17
+    #>  3 ds000003  Rhyme Judgment                            13
+    #>    ...
+
+You can filter by modality:
+
+``` r
+mri <- on_search(modality = "MRI", limit = 25)
+head(mri$id)
+```
+
+    #> [1] "ds000001" "ds000002" "ds000003" "ds000005" "ds000006" "ds000007"
+
+Inspect a single dataset:
+
+``` r
+meta <- on_dataset("ds000001")
+meta
+```
+
+## Inspect versions and files
+
+Each dataset has one or more snapshots (versioned releases):
+
+``` r
+snaps <- on_snapshots("ds000001")
+snaps
+```
+
+    #> # A tibble: 3 x 3
+    #>   tag    created                    size
+    #>   <chr>  <chr>                      <chr>
+    #> 1 1.0.0  2018-02-02T00:00:00.000Z   2.1 GB
+    #>   ...
+
+List files from the latest snapshot:
+
+``` r
+files <- on_files("ds000001")
+head(files)
+```
+
+    #> # A tibble: 6 x 3
+    #>   filename                   size     directory
+    #>   <chr>                      <chr>    <lgl>
+    #> 1 dataset_description.json   1.2 kB   FALSE
+    #> 2 participants.tsv           800 B    FALSE
+    #>   ...
+
+## Download data
+
+Download specific files to your local cache:
+
+``` r
+res <- on_download(
+  id = "ds000001",
+  files = c("dataset_description.json", "participants.tsv"),
+  quiet = FALSE
+)
+res
+```
+
+Download by subject IDs — the package normalises bare numbers and
+`"sub-"` prefixed IDs automatically:
+
+``` r
+res_sub <- on_download(
+  id = "ds000001",
+  subjects = c("01", "02"),
+  include_derivatives = FALSE
+)
+```
+
+Use a regex to select subjects by pattern:
+
+``` r
+res_rx <- on_download(
+  id = "ds000001",
+  subjects = regex("sub-0[1-5]")
+)
+```
+
+### Manage the cache
+
+Inspect and clean up your local cache:
+
+``` r
+on_cache_info()
+on_cache_list()
+
+# Clear one dataset from cache
+on_cache_clear("ds000001", confirm = FALSE)
+```
+
+## Discover derivatives
+
+Many OpenNeuro datasets have community-contributed derivative outputs
+(e.g. fMRIPrep, MRIQC). You can list them:
+
+``` r
+derivs <- on_derivatives("ds000001")
+derivs[, c("dataset_id", "pipeline", "source")]
+```
+
+Inspect available output spaces for a derivative:
+
+``` r
+spaces <- on_spaces(derivs[1, ])
+spaces
+```
+
+Download derivative outputs for specific subjects and spaces:
+
+``` r
+on_download_derivatives(
+  dataset_id = "ds000001",
+  pipeline = "fmriprep",
+  subjects = c("01", "02"),
+  space = "MNI152NLin2009cAsym"
+)
+```
+
+## Next steps
+
+- [`vignette("openneuro-fmriprepper-e2e")`](https://bbuchsbaum.github.io/openneuroR/articles/openneuro-fmriprepper-e2e.md)
+  — a full end-to-end workflow that downloads an OpenNeuro dataset and
+  processes it with fMRIPrep via `fmriprepper`.
+- [`?on_search`](https://bbuchsbaum.github.io/openneuroR/reference/on_search.md),
+  [`?on_download`](https://bbuchsbaum.github.io/openneuroR/reference/on_download.md),
+  [`?on_derivatives`](https://bbuchsbaum.github.io/openneuroR/reference/on_derivatives.md)
+  — detailed function documentation.

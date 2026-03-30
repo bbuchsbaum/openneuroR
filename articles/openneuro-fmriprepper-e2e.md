@@ -1,0 +1,148 @@
+# End-to-End: OpenNeuro Download + fmriprepper Run
+
+This vignette walks through a complete analysis pipeline: downloading a
+BIDS dataset from OpenNeuro and processing it with
+[fMRIPrep](https://fmriprep.org) using the
+[fmriprepper](https://github.com/bbuchsbaum/fmriprepper) package. By the
+end you’ll have preprocessed fMRI data ready for statistical analysis.
+
+## Prerequisites
+
+You’ll need:
+
+- The `openneuro` package (this package).
+- The `fmriprepper` package:
+  `remotes::install_github("bbuchsbaum/fmriprepper")`
+- A working fMRIPrep runtime — either Docker or Apptainer/Singularity
+  with an fMRIPrep container image.
+
+## Reading the fluent `$` syntax
+
+`fmriprepper` uses an R6 “fluent” API. In chains like:
+
+``` r
+plan <- fmriprep()$engine_singularity(...)$bids(...)$out(...)
+```
+
+each `$method(...)` call configures the same plan object and returns it,
+so the next `$...` keeps building that same object.
+
+If you prefer a non-chained style, this is equivalent:
+
+``` r
+plan <- fmriprep()
+plan$engine_singularity(image = "/path/to/fmriprep.sif", runtime = "apptainer")
+plan$bids(dataset_dir)
+plan$out(deriv_dir)
+plan$work(path(work_dir, "sub-{subject}"))
+plan$participant_labels(c("01"))
+plan$nprocs(16)
+plan$omp_nthreads(8)
+plan$mem_mb(32000)
+```
+
+## Step 1: Download an OpenNeuro dataset
+
+First, set up your project directory structure and download the dataset.
+The
+[`on_download()`](https://bbuchsbaum.github.io/openneuroR/reference/on_download.md)
+function supports multiple backends; here we use DataLad for a
+repository-style clone (fall back to `backend = "https"` if DataLad is
+not installed).
+
+``` r
+library(openneuro)
+library(fs)
+
+dataset_id <- "ds000001"
+project_root <- path_expand("~/data/openneuro-fmriprepper")
+dataset_dir  <- path(project_root, dataset_id)
+deriv_dir    <- path(project_root, "derivatives", "fmriprep")
+work_dir     <- path(project_root, "work")
+
+dir_create(project_root, recurse = TRUE)
+
+download_result <- on_download(
+  id       = dataset_id,
+  dest_dir = dataset_dir,
+  use_cache = FALSE,
+  backend  = "datalad",
+  quiet    = FALSE
+)
+
+print(download_result)
+stopifnot(file_exists(path(dataset_dir, "dataset_description.json")))
+```
+
+Adjust `project_root` to wherever you’d like to store data on your
+machine.
+
+## Step 2: Build an fMRIPrep plan
+
+The `fmriprepper` package provides a builder-style interface for
+constructing fMRIPrep commands. You chain methods to configure the
+container engine, input paths, resource limits, and participant
+selection.
+
+**Using Apptainer/Singularity:**
+
+``` r
+library(fmriprepper)
+
+plan <- fmriprep()$
+  engine_singularity(
+    image   = "/path/to/fmriprep.sif",
+    runtime = "apptainer"
+  )$
+  bids(dataset_dir)$
+  out(deriv_dir)$
+  work(path(work_dir, "sub-{subject}"))$
+  participant_labels(c("01"))$
+  nprocs(16)$
+  omp_nthreads(8)$
+  mem_mb(32000)
+```
+
+**Using Docker** (replace the `engine_singularity()` call):
+
+``` r
+plan <- fmriprep()$
+  engine_docker(image = "nipreps/fmriprep:latest")$
+  bids(dataset_dir)$
+  out(deriv_dir)$
+  work(path(work_dir, "sub-{subject}"))
+```
+
+Replace `/path/to/fmriprep.sif` with the actual path to your Singularity
+image.
+
+## Step 3: Validate and run
+
+Before executing, validate that the runtime environment and BIDS
+directory are set up correctly:
+
+``` r
+plan$validate_runtime(strict = TRUE, verbose = TRUE)
+plan$validate_bids_light(strict = TRUE, verbose = TRUE)
+```
+
+Preview the commands that will be generated:
+
+``` r
+cmds <- plan$commands(batch = TRUE, skip_completed = TRUE)
+cat(cmds, sep = "\n")
+```
+
+When you’re satisfied, execute:
+
+``` r
+plan$run(batch = TRUE, skip_completed = TRUE, parallel = 1)
+```
+
+## Tips
+
+- Change `dataset_id` and `participant_labels()` to match your study.
+- For HPC workflows, use `plan$write_manifest()` and
+  `plan$write_slurm_array()` from `fmriprepper`.
+- See `vignette("openneuro")` for more on dataset search and download
+  options.

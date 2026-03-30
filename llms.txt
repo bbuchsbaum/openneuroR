@@ -243,3 +243,11 @@ MIT
 - [`regex()`](https://bbuchsbaum.github.io/openneuroR/reference/regex.md)
   : Mark String as Regex Pattern for Subject Filtering
 
+# Articles
+
+### All vignettes
+
+- [Getting Started with
+  openneuro](https://bbuchsbaum.github.io/openneuroR/articles/getting-started.md):
+- [End-to-End: OpenNeuro Download + fmriprepper
+  Run](https://bbuchsbaum.github.io/openneuroR/articles/openneuro-fmriprepper-e2e.md):
