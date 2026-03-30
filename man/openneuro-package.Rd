@@ -11,6 +11,7 @@ Search, explore, and download datasets from OpenNeuro, the largest open neuroima
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://bbuchsbaum.github.io/openneuroR/}
   \item \url{https://github.com/bbuchsbaum/openneuroR}
   \item Report bugs at \url{https://github.com/bbuchsbaum/openneuroR/issues}
 }

@@ -1,5 +1,10 @@
 # openneuroR
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/bbuchsbaum/openneuroR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bbuchsbaum/openneuroR/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/bbuchsbaum/openneuroR/actions/workflows/pkgdown.yaml/badge.svg)](https://bbuchsbaum.github.io/openneuroR/)
+<!-- badges: end -->
+
 `openneuroR` is the GitHub repository for the R package `openneuro`, a
 tibble-first client for discovering and downloading public
 [OpenNeuro](https://openneuro.org) datasets from R.
@@ -180,8 +185,8 @@ on_cache_clear("ds000001", confirm = FALSE)
 
 ## Learn More
 
-- [Getting started vignette](vignettes/getting-started.Rmd)
-- [End-to-end OpenNeuro + fMRIPrepper workflow](vignettes/openneuro-fmriprepper-e2e.Rmd)
+- [Getting started vignette](https://bbuchsbaum.github.io/openneuroR/articles/getting-started.html)
+- [End-to-end OpenNeuro + fMRIPrepper workflow](https://bbuchsbaum.github.io/openneuroR/articles/openneuro-fmriprepper-e2e.html)
 - [Package news](NEWS.md)
 
 ## License

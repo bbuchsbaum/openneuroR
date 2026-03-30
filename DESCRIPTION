@@ -12,7 +12,8 @@ Description: Search, explore, and download datasets from OpenNeuro, the largest
 License: MIT + file LICENSE
 Depends:
     R (>= 4.1.0)
-URL: https://github.com/bbuchsbaum/openneuroR
+URL: https://bbuchsbaum.github.io/openneuroR/,
+    https://github.com/bbuchsbaum/openneuroR
 BugReports: https://github.com/bbuchsbaum/openneuroR/issues
 Imports:
     cli (>= 3.6.0),
@@ -24,11 +25,16 @@ Imports:
     rlang (>= 1.1.0),
     tibble (>= 3.2.0)
 Suggests:
+    knitr,
+    pkgdown,
+    rmarkdown,
     testthat (>= 3.0.0),
     httptest2,
     withr,
     stringi,
-    bidser
+    bidser,
+    fmriprepper
+VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

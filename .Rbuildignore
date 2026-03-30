@@ -13,4 +13,6 @@
 ^pkgdown$
 ^scripts$
 ^_pkgdown\.yml$
-^vignettes$
+^\.github$
+^doc$
+^Meta$
