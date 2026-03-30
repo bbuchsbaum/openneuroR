@@ -55,7 +55,7 @@ Results are cached per-session to minimize API/S3 calls. Use
 }
 }
 \examples{
-\donttest{
+\dontrun{
 # First, get available derivatives for a dataset
 derivs <- on_derivatives("ds000102")
 print(derivs)

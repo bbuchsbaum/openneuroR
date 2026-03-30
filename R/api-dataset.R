@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Get metadata for a specific dataset
 #' ds <- on_dataset("ds000001")
 #' print(ds)

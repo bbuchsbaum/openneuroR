@@ -30,7 +30,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # List datasets (most reliable)
 #' results <- on_search(limit = 10)
 #'

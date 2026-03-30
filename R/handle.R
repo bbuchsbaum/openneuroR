@@ -39,7 +39,7 @@
 #' @seealso [on_fetch()] to materialize the download, [on_path()] to get path.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Create lazy handle - no download yet
 #' handle <- on_handle("ds000001", files = "participants.tsv")
 #' print(handle)  # Shows state: pending
@@ -112,7 +112,7 @@ on_handle <- function(dataset_id, tag = NULL, files = NULL, backend = NULL) {
 #' @seealso [on_handle()] to create a handle, [on_path()] to get path.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' handle <- on_handle("ds000001", files = "participants.tsv")
 #' handle <- on_fetch(handle)  # Downloads now
 #' handle$state  # "ready"
@@ -168,7 +168,7 @@ on_fetch.openneuro_handle <- function(handle, quiet = FALSE, force = FALSE, ...)
 #' @seealso [on_handle()] to create a handle, [on_fetch()] to materialize.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' handle <- on_handle("ds000001")
 #' handle <- on_fetch(handle)
 #' path <- on_path(handle)

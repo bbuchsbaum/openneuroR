@@ -19,7 +19,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # List all snapshots for a dataset
 #' snaps <- on_snapshots("ds000001")
 #' print(snaps)

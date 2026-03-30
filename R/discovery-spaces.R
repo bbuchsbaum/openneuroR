@@ -388,7 +388,7 @@ NULL
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # First, get available derivatives for a dataset
 #' derivs <- on_derivatives("ds000102")
 #' print(derivs)

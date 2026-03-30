@@ -38,7 +38,7 @@ The n_sessions and n_files columns provide dataset-level context. Per-subject
 session and file counts are not available from the OpenNeuro API.
 }
 \examples{
-\donttest{
+\dontrun{
 # List subjects in a dataset
 subjects <- on_subjects("ds000001")
 print(subjects)

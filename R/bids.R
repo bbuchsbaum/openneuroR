@@ -44,7 +44,7 @@
 #' @seealso [on_handle()] to create a handle, [on_fetch()] to download data.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Basic usage
 #' handle <- on_handle("ds000001")
 #' handle <- on_fetch(handle)

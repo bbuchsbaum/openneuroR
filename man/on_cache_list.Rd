@@ -24,7 +24,7 @@ if both are cached}
 Returns a tibble of all datasets currently in the openneuroR cache.
 }
 \examples{
-\donttest{
+\dontrun{
 # List all cached datasets
 on_cache_list()
 

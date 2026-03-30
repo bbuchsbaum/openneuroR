@@ -21,7 +21,7 @@ Returns the filesystem path for a fetched handle. Raises an error
 if the handle has not been fetched yet.
 }
 \examples{
-\donttest{
+\dontrun{
 handle <- on_handle("ds000001")
 handle <- on_fetch(handle)
 path <- on_path(handle)

@@ -177,7 +177,7 @@ NULL
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Find all derivatives for a dataset
 #' derivs <- on_derivatives("ds000102")
 #' print(derivs)

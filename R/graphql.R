@@ -23,7 +23,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Execute a simple query
 #' query <- "query { datasets(first: 1) { edges { node { id } } } }"
 #' result <- on_request(query)

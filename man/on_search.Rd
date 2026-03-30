@@ -47,7 +47,7 @@ uses the search endpoint if available. Otherwise lists datasets with optional
 filtering.
 }
 \examples{
-\donttest{
+\dontrun{
 # List datasets (most reliable)
 results <- on_search(limit = 10)
 

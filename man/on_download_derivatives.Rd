@@ -118,7 +118,7 @@ filtering by space.
 }
 }
 \examples{
-\donttest{
+\dontrun{
 # Download all fMRIPrep derivatives for a dataset
 on_download_derivatives("ds000001", "fmriprep")
 

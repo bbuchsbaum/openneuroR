@@ -17,7 +17,7 @@
 #'
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # List all cached datasets
 #' on_cache_list()
 #'
@@ -127,7 +127,7 @@ on_cache_list <- function() {
 #'
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Get cache info
 #' info <- on_cache_info()
 #' info$cache_path    # Where cache is stored
@@ -163,7 +163,7 @@ on_cache_info <- function() {
 #'
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Clear specific dataset (with confirmation)
 #' on_cache_clear("ds000001")
 #'

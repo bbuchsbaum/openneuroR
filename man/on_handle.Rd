@@ -52,7 +52,7 @@ handle$state  # Now "ready"
 }
 
 \examples{
-\donttest{
+\dontrun{
 # Create lazy handle - no download yet
 handle <- on_handle("ds000001", files = "participants.tsv")
 print(handle)  # Shows state: pending

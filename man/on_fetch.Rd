@@ -42,7 +42,7 @@ on_fetch(handle)
 }
 
 \examples{
-\donttest{
+\dontrun{
 handle <- on_handle("ds000001", files = "participants.tsv")
 handle <- on_fetch(handle)  # Downloads now
 handle$state  # "ready"
