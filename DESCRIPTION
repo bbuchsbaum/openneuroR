@@ -34,6 +34,8 @@ Suggests:
     stringi,
     bidser,
     fmriprepper
+Remotes:
+    bbuchsbaum/fmriprepper
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
