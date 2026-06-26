@@ -268,16 +268,30 @@ NULL
       size = numeric(),
       directory = logical(),
       annexed = logical(),
+      id = character(),
+      urls = list(),
       key = character()
     ))
   }
+
+  # The OpenNeuro schema identifies each entry (and the token used to recurse
+  # into a directory via `files(tree = ...)`) with `id`. Older API versions
+  # exposed this as `key`; fall back to it so cached fixtures keep working.
+  ids <- vapply(files, function(x) .null_to_na(x$id %||% x$key), character(1))
 
   tibble::tibble(
     filename = vapply(files, function(x) .null_to_na(x$filename), character(1)),
     size = vapply(files, function(x) .null_to_na(x$size, "real"), numeric(1)),
     directory = vapply(files, function(x) .null_to_na(x$directory, "logical"), logical(1)),
     annexed = vapply(files, function(x) .null_to_na(x$annexed, "logical"), logical(1)),
-    key = vapply(files, function(x) .null_to_na(x$key), character(1))
+    id = ids,
+    urls = lapply(files, function(x) {
+      u <- x$urls
+      if (is.null(u)) character(0) else as.character(unlist(u))
+    }),
+    # `key` is retained as a backward-compatible alias of `id` (the directory
+    # tree token) for code and users that referenced the previous column name.
+    key = ids
   )
 }
 

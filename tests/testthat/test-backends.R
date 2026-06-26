@@ -10,9 +10,37 @@ test_that(".backend_available detects missing AWS CLI", {
 
 test_that(".backend_available detects present AWS CLI", {
   local_mocked_bindings(
-    .find_aws_cli = function() "/usr/local/bin/aws"
+    .find_aws_cli = function() "/usr/local/bin/aws",
+    .aws_cli_works = function(aws_path) TRUE
   )
   expect_true(.backend_available("s3"))
+})
+
+test_that(".backend_available rejects a present-but-broken AWS CLI", {
+  # `aws` is on PATH but cannot actually run (e.g. missing awscli module).
+  local_mocked_bindings(
+    .find_aws_cli = function() "/usr/local/bin/aws",
+    .aws_cli_works = function(aws_path) FALSE
+  )
+  expect_false(.backend_available("s3"))
+})
+
+test_that(".aws_cli_works returns FALSE for empty path", {
+  expect_false(.aws_cli_works(""))
+})
+
+test_that(".aws_cli_works reflects the CLI exit status", {
+  local_mocked_bindings(
+    run = function(command, args, ...) list(status = 0L, stdout = "aws-cli/2.15.0\n"),
+    .package = "processx"
+  )
+  expect_true(.aws_cli_works("/usr/local/bin/aws"))
+
+  local_mocked_bindings(
+    run = function(command, args, ...) list(status = 1L, stdout = ""),
+    .package = "processx"
+  )
+  expect_false(.aws_cli_works("/usr/local/bin/aws"))
 })
 
 test_that(".backend_available detects missing DataLad", {

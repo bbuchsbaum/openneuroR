@@ -57,14 +57,19 @@ on_request <- function(query, variables = NULL, client = NULL) {
       max_tries = 3,
       is_transient = function(resp) httr2::resp_status(resp) %in% c(429L, 500L, 502L, 503L)
     ) |>
-    httr2::req_throttle(rate = 10 / 60)  # 10 requests per minute
+    httr2::req_throttle(rate = 10 / 60) |>  # 10 requests per minute
+    # Do not treat 4xx/5xx as connection failures: GraphQL validation errors
+    # arrive as HTTP 400 with the real message in the response `errors` body,
+    # so we inspect the status and body ourselves below.
+    httr2::req_error(is_error = function(resp) FALSE)
 
   # Add auth if available
   if (!is.null(client$token)) {
     req <- httr2::req_auth_bearer_token(req, client$token)
   }
 
-  # Perform request with graceful network error handling
+  # Perform request. A thrown error here is a genuine connection problem
+  # (DNS failure, timeout, TLS, ...), not an HTTP error status.
   resp <- tryCatch(
     httr2::req_perform(req),
     error = function(e) {
@@ -78,9 +83,10 @@ on_request <- function(query, variables = NULL, client = NULL) {
     }
   )
 
-  data <- httr2::resp_body_json(resp)
+  data <- tryCatch(httr2::resp_body_json(resp), error = function(e) NULL)
 
-  # Check for GraphQL errors in response body (may come with HTTP 200)
+  # Check for GraphQL errors in the response body. These may arrive with an
+  # HTTP 200 status or, for schema/validation failures, an HTTP 4xx status.
   if (!is.null(data$errors)) {
     error_messages <- vapply(
       data$errors,
@@ -92,6 +98,21 @@ on_request <- function(query, variables = NULL, client = NULL) {
         "i" = error_messages),
       class = "openneuro_api_error"
     )
+  }
+
+  # No usable data and no GraphQL errors: surface the HTTP status rather than
+  # masquerading an API failure as a connectivity problem.
+  if (is.null(data) || is.null(data$data)) {
+    status <- tryCatch(httr2::resp_status(resp), error = function(e) NA_integer_)
+    if (!is.na(status) && status >= 400L) {
+      desc <- tryCatch(httr2::resp_status_desc(resp), error = function(e) "")
+      rlang::abort(
+        c("OpenNeuro API request failed",
+          "x" = paste0("HTTP ", status, if (nzchar(desc)) paste0(" ", desc) else ""),
+          "i" = "The OpenNeuro API returned an unexpected response."),
+        class = "openneuro_api_error"
+      )
+    }
   }
 
   data$data

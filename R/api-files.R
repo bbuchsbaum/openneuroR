@@ -6,7 +6,7 @@
 #' @param id Dataset identifier (e.g., "ds000001").
 #' @param tag Snapshot version tag (e.g., "1.0.0"). If `NULL` (default),
 #'   uses the most recent snapshot.
-#' @param tree Subdirectory key for listing nested files. Use the `key`
+#' @param tree Subdirectory token for listing nested files. Use the `id`
 #'   column from a previous call to explore subdirectories. Default `NULL`
 #'   lists the root directory.
 #' @param client An `openneuro_client` object. If `NULL`, creates a default client.
@@ -18,8 +18,11 @@
 #'     \item{directory}{TRUE if this entry is a directory (logical)}
 #'     \item{annexed}{TRUE if file is stored in git-annex (logical). Annexed
 #'       files are typically larger and require special download handling.}
-#'     \item{key}{Unique key for this entry. Use with `tree` parameter to
-#'       explore subdirectories.}
+#'     \item{id}{Unique identifier for this entry. Pass it as the `tree`
+#'       argument to explore a subdirectory.}
+#'     \item{urls}{List column of direct HTTPS download URLs for the entry
+#'       (character vector, empty for directories).}
+#'     \item{key}{Backward-compatible alias of `id` (the directory tree token).}
 #'   }
 #'
 #'   Returns an empty tibble with the same column structure if the snapshot
@@ -33,7 +36,7 @@
 #' To explore a directory structure:
 #' 1. Call `on_files()` to get the root listing
 #' 2. Filter for `directory == TRUE` entries
-#' 3. Use the `key` from a directory to call `on_files(tree = key)`
+#' 3. Use the `id` from a directory to call `on_files(tree = id)`
 #'
 #' @export
 #'
@@ -49,7 +52,7 @@
 #' # Explore a subdirectory
 #' dirs <- files[files$directory, ]
 #' if (nrow(dirs) > 0) {
-#'   subfiles <- on_files("ds000001", tree = dirs$key[1])
+#'   subfiles <- on_files("ds000001", tree = dirs$id[1])
 #'   print(subfiles)
 #' }
 #'

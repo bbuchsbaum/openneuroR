@@ -12,7 +12,9 @@ test_that("on_files returns tibble with file information", {
     expect_true("size" %in% names(result))
     expect_true("directory" %in% names(result))
     expect_true("annexed" %in% names(result))
-    expect_true("key" %in% names(result))
+    expect_true("id" %in% names(result))
+    expect_true("urls" %in% names(result))
+    expect_true("key" %in% names(result))  # backward-compatible alias of id
   })
 })
 
@@ -26,6 +28,8 @@ test_that("on_files returns valid data types", {
     expect_type(result$size, "double")
     expect_type(result$directory, "logical")
     expect_type(result$annexed, "logical")
+    expect_type(result$id, "character")
+    expect_type(result$urls, "list")
     expect_type(result$key, "character")
   })
 })
@@ -72,7 +76,8 @@ test_that("on_files uses explicit tag parameter", {
       tag_used <<- variables$tag
       list(snapshot = list(files = list(
         list(filename = "test.txt", size = 100, directory = FALSE,
-             annexed = FALSE, key = "k1")
+             annexed = FALSE, id = "k1",
+             urls = list("https://openneuro.org/crn/datasets/ds000001/objects/?filename=test.txt"))
       )))
     },
     .on_read_gql = function(name) "query { }"
@@ -93,7 +98,8 @@ test_that("on_files explores subdirectory with tree parameter", {
       tree_used <<- variables$tree
       list(snapshot = list(files = list(
         list(filename = "file_in_subdir.txt", size = 50, directory = FALSE,
-             annexed = FALSE, key = "k2")
+             annexed = FALSE, id = "k2",
+             urls = list("https://openneuro.org/crn/datasets/ds000001/objects/?filename=file_in_subdir.txt"))
       )))
     },
     .on_read_gql = function(name) "query { }"
