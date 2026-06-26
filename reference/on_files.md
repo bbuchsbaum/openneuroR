@@ -22,9 +22,9 @@ on_files(id, tag = NULL, tree = NULL, client = NULL)
 
 - tree:
 
-  Subdirectory key for listing nested files. Use the `key` column from a
-  previous call to explore subdirectories. Default `NULL` lists the root
-  directory.
+  Subdirectory token for listing nested files. Use the `id` column from
+  a previous call to explore subdirectories. Default `NULL` lists the
+  root directory.
 
 - client:
 
@@ -51,10 +51,19 @@ A tibble with columns:
   TRUE if file is stored in git-annex (logical). Annexed files are
   typically larger and require special download handling.
 
+- id:
+
+  Unique identifier for this entry. Pass it as the `tree` argument to
+  explore a subdirectory.
+
+- urls:
+
+  List column of direct HTTPS download URLs for the entry (character
+  vector, empty for directories).
+
 - key:
 
-  Unique key for this entry. Use with `tree` parameter to explore
-  subdirectories.
+  Backward-compatible alias of `id` (the directory tree token).
 
 Returns an empty tibble with the same column structure if the snapshot
 has no files.
@@ -71,7 +80,7 @@ To explore a directory structure:
 
 2.  Filter for `directory == TRUE` entries
 
-3.  Use the `key` from a directory to call `on_files(tree = key)`
+3.  Use the `id` from a directory to call `on_files(tree = id)`
 
 ## See also
 
@@ -92,7 +101,7 @@ files <- on_files("ds000001", tag = "1.0.0")
 # Explore a subdirectory
 dirs <- files[files$directory, ]
 if (nrow(dirs) > 0) {
-  subfiles <- on_files("ds000001", tree = dirs$key[1])
+  subfiles <- on_files("ds000001", tree = dirs$id[1])
   print(subfiles)
 }
 

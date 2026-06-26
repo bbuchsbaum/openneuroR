@@ -56,6 +56,7 @@ early but data should only be downloaded when needed.
 S3 objects have copy semantics. You must capture the return value of
 [`on_fetch()`](https://bbuchsbaum.github.io/openneuroR/reference/on_fetch.md):
 
+
     # WRONG - handle not updated
     on_fetch(handle)
     handle$state  # Still "pending"!

@@ -36,7 +36,7 @@ on_doctor()
 #> ✔ HTTPS (always available)
 #> 
 #> Optional:
-#> ✔ AWS CLI "2.34.15"
+#> ✔ AWS CLI "2.35.10"
 #> ✖ DataLad not installed
 #> Install: `pip install datalad`
 ```

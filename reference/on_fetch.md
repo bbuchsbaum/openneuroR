@@ -42,6 +42,7 @@ handle with `state = "ready"`, `path` set to the download location, and
 
 You must capture the return value! S3 objects have copy semantics:
 
+
     # CORRECT
     handle <- on_fetch(handle)
 

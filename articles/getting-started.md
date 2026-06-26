@@ -16,6 +16,7 @@ inspect dataset contents, and download exactly the files you need.
 ## Load the package
 
 ``` r
+
 library(openneuro)
 ```
 
@@ -24,6 +25,7 @@ library(openneuro)
 Search the OpenNeuro catalogue. Results come back as a tibble:
 
 ``` r
+
 ds <- on_search(limit = 10)
 ds[, c("id", "name", "n_subjects")]
 ```
@@ -39,6 +41,7 @@ ds[, c("id", "name", "n_subjects")]
 You can filter by modality:
 
 ``` r
+
 mri <- on_search(modality = "MRI", limit = 25)
 head(mri$id)
 ```
@@ -48,6 +51,7 @@ head(mri$id)
 Inspect a single dataset:
 
 ``` r
+
 meta <- on_dataset("ds000001")
 meta
 ```
@@ -57,6 +61,7 @@ meta
 Each dataset has one or more snapshots (versioned releases):
 
 ``` r
+
 snaps <- on_snapshots("ds000001")
 snaps
 ```
@@ -70,6 +75,7 @@ snaps
 List files from the latest snapshot:
 
 ``` r
+
 files <- on_files("ds000001")
 head(files)
 ```
@@ -86,6 +92,7 @@ head(files)
 Download specific files to your local cache:
 
 ``` r
+
 res <- on_download(
   id = "ds000001",
   files = c("dataset_description.json", "participants.tsv"),
@@ -98,6 +105,7 @@ Download by subject IDs — the package normalises bare numbers and
 `"sub-"` prefixed IDs automatically:
 
 ``` r
+
 res_sub <- on_download(
   id = "ds000001",
   subjects = c("01", "02"),
@@ -108,6 +116,7 @@ res_sub <- on_download(
 Use a regex to select subjects by pattern:
 
 ``` r
+
 res_rx <- on_download(
   id = "ds000001",
   subjects = regex("sub-0[1-5]")
@@ -119,6 +128,7 @@ res_rx <- on_download(
 Inspect and clean up your local cache:
 
 ``` r
+
 on_cache_info()
 on_cache_list()
 
@@ -132,6 +142,7 @@ Many OpenNeuro datasets have community-contributed derivative outputs
 (e.g. fMRIPrep, MRIQC). You can list them:
 
 ``` r
+
 derivs <- on_derivatives("ds000001")
 derivs[, c("dataset_id", "pipeline", "source")]
 ```
@@ -139,6 +150,7 @@ derivs[, c("dataset_id", "pipeline", "source")]
 Inspect available output spaces for a derivative:
 
 ``` r
+
 spaces <- on_spaces(derivs[1, ])
 spaces
 ```
@@ -146,6 +158,7 @@ spaces
 Download derivative outputs for specific subjects and spaces:
 
 ``` r
+
 on_download_derivatives(
   dataset_id = "ds000001",
   pipeline = "fmriprep",

@@ -21,6 +21,7 @@ You’ll need:
 `fmriprepper` uses an R6 “fluent” API. In chains like:
 
 ``` r
+
 plan <- fmriprep()$engine_singularity(...)$bids(...)$out(...)
 ```
 
@@ -30,6 +31,7 @@ so the next `$...` keeps building that same object.
 If you prefer a non-chained style, this is equivalent:
 
 ``` r
+
 plan <- fmriprep()
 plan$engine_singularity(image = "/path/to/fmriprep.sif", runtime = "apptainer")
 plan$bids(dataset_dir)
@@ -51,6 +53,7 @@ repository-style clone (fall back to `backend = "https"` if DataLad is
 not installed).
 
 ``` r
+
 library(openneuro)
 library(fs)
 
@@ -87,6 +90,7 @@ selection.
 **Using Apptainer/Singularity:**
 
 ``` r
+
 library(fmriprepper)
 
 plan <- fmriprep()$
@@ -106,6 +110,7 @@ plan <- fmriprep()$
 **Using Docker** (replace the `engine_singularity()` call):
 
 ``` r
+
 plan <- fmriprep()$
   engine_docker(image = "nipreps/fmriprep:latest")$
   bids(dataset_dir)$
@@ -122,6 +127,7 @@ Before executing, validate that the runtime environment and BIDS
 directory are set up correctly:
 
 ``` r
+
 plan$validate_runtime(strict = TRUE, verbose = TRUE)
 plan$validate_bids_light(strict = TRUE, verbose = TRUE)
 ```
@@ -129,6 +135,7 @@ plan$validate_bids_light(strict = TRUE, verbose = TRUE)
 Preview the commands that will be generated:
 
 ``` r
+
 cmds <- plan$commands(batch = TRUE, skip_completed = TRUE)
 cat(cmds, sep = "\n")
 ```
@@ -136,6 +143,7 @@ cat(cmds, sep = "\n")
 When you’re satisfied, execute:
 
 ``` r
+
 plan$run(batch = TRUE, skip_completed = TRUE, parallel = 1)
 ```
 

@@ -30,4 +30,5 @@ Platform-appropriate paths:
 The cache root can be overridden by setting the `openneuro.cache_root`
 option:
 
+
     options(openneuro.cache_root = "/custom/path")
