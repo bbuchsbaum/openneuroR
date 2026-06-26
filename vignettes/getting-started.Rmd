@@ -26,7 +26,7 @@ contents, and download exactly the files you need.
 ## Load the package
 
 ```{r load-package}
-library(openneuro)
+library(openneuroR)
 ```
 
 ## Find datasets

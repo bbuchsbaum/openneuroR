@@ -14,7 +14,7 @@ test_that(".list_openneuro_derivatives_repos paginates and caches results", {
       requested_pages <<- c(requested_pages, as.integer(page))
       list(page = as.integer(page))
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   local_mocked_bindings(
@@ -67,7 +67,7 @@ test_that(".list_openneuro_derivatives_repos converts 403 to openneuro_rate_limi
 
   local_mocked_bindings(
     .github_request = function(endpoint, ...) list(),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   local_mocked_bindings(

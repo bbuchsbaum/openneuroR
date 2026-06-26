@@ -42,7 +42,7 @@ test_that("on_spaces discovers spaces for embedded derivatives with sessions", {
         key = vapply(entries, function(x) x$key %||% NA_character_, character(1))
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   derivative <- tibble::tibble(
@@ -58,7 +58,7 @@ test_that("on_spaces discovers spaces for embedded derivatives with sessions", {
 test_that("on_spaces uses --max-items when sampling S3 listings", {
   args_used <- NULL
 
-  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuro")
+  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuroR")
   local_mocked_bindings(
     run = function(command, args, timeout, error_on_status) {
       args_used <<- args
@@ -110,7 +110,7 @@ test_that("on_spaces warns for unknown derivative source and returns empty", {
 test_that("on_spaces warns when no spaces are detected", {
   local_mocked_bindings(
     .list_derivative_files_embedded = function(...) character(0),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   derivative <- tibble::tibble(
@@ -131,29 +131,29 @@ test_that("on_spaces warns when no spaces are detected", {
 test_that(".extract_space_from_filename extracts space correctly", {
   # Standard case
   expect_equal(
-    openneuro:::.extract_space_from_filename("sub-01_space-MNI152NLin2009cAsym_bold.nii.gz"),
+    openneuroR:::.extract_space_from_filename("sub-01_space-MNI152NLin2009cAsym_bold.nii.gz"),
     "MNI152NLin2009cAsym"
   )
 
   # Surface space
   expect_equal(
-    openneuro:::.extract_space_from_filename("sub-01_space-fsaverage_hemi-L_bold.func.gii"),
+    openneuroR:::.extract_space_from_filename("sub-01_space-fsaverage_hemi-L_bold.func.gii"),
     "fsaverage"
   )
 
   # No space entity
   expect_true(is.na(
-    openneuro:::.extract_space_from_filename("sub-01_desc-preproc_bold.nii.gz")
+    openneuroR:::.extract_space_from_filename("sub-01_desc-preproc_bold.nii.gz")
   ))
 
   # Empty string
   expect_true(is.na(
-    openneuro:::.extract_space_from_filename("")
+    openneuroR:::.extract_space_from_filename("")
   ))
 
   # Space at end of filename (before extension)
   expect_equal(
-    openneuro:::.extract_space_from_filename("sub-01_space-T1w.nii.gz"),
+    openneuroR:::.extract_space_from_filename("sub-01_space-T1w.nii.gz"),
     "T1w"
   )
 })
@@ -166,21 +166,21 @@ test_that(".extract_spaces_from_files returns unique sorted spaces", {
     "sub-01_desc-preproc_bold.nii.gz"  # No space
   )
 
-  result <- openneuro:::.extract_spaces_from_files(filenames)
+  result <- openneuroR:::.extract_spaces_from_files(filenames)
 
   expect_equal(length(result), 2L)
   expect_equal(result, c("MNI152NLin2009cAsym", "fsaverage"))  # Sorted alphabetically
 })
 
 test_that(".extract_spaces_from_files handles empty input", {
-  result <- openneuro:::.extract_spaces_from_files(character(0))
+  result <- openneuroR:::.extract_spaces_from_files(character(0))
   expect_equal(result, character(0))
 })
 
 test_that(".extract_spaces_from_files handles all NA input", {
   filenames <- c("file1.txt", "file2.json", "README.md")
 
-  result <- openneuro:::.extract_spaces_from_files(filenames)
+  result <- openneuroR:::.extract_spaces_from_files(filenames)
   expect_equal(result, character(0))
 })
 
@@ -222,7 +222,7 @@ test_that("on_spaces validates required columns exist", {
 # --- S3 listing edge cases ---
 
 test_that(".list_derivative_files_s3 handles malformed AWS output", {
-  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuro")
+  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuroR")
   local_mocked_bindings(
     run = function(command, args, timeout, error_on_status) {
       list(
@@ -234,13 +234,13 @@ test_that(".list_derivative_files_s3 handles malformed AWS output", {
     .package = "processx"
   )
 
-  result <- openneuro:::.list_derivative_files_s3("ds000001", "fmriprep")
+  result <- openneuroR:::.list_derivative_files_s3("ds000001", "fmriprep")
   expect_type(result, "character")
   # Should handle gracefully, returning empty or partial results
 })
 
 test_that(".list_derivative_files_s3 warns on access denied", {
-  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuro")
+  local_mocked_bindings(.find_aws_cli = function() "aws", .package = "openneuroR")
   local_mocked_bindings(
     run = function(command, args, timeout, error_on_status) {
       list(
@@ -253,7 +253,7 @@ test_that(".list_derivative_files_s3 warns on access denied", {
   )
 
   expect_warning(
-    result <- openneuro:::.list_derivative_files_s3("ds000001", "fmriprep"),
+    result <- openneuroR:::.list_derivative_files_s3("ds000001", "fmriprep"),
     class = "openneuro_s3_access_warning"
   )
   expect_equal(result, character(0))

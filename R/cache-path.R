@@ -85,7 +85,7 @@
 #' @keywords internal
 .on_cache_root <- function() {
   cache_root <- getOption("openneuro.cache_root",
-                          default = tools::R_user_dir("openneuro", "cache"))
+                          default = tools::R_user_dir("openneuroR", "cache"))
   fs::dir_create(cache_root, recurse = TRUE)
   cache_root
 }

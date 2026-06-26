@@ -9,7 +9,7 @@ test_that(".detect_embedded_derivatives returns empty when no derivatives dir", 
       annexed = c(FALSE),
       key = c(NA_character_)
     ),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   out <- .detect_embedded_derivatives("ds000001", tag = NULL, client = NULL)
@@ -48,7 +48,7 @@ test_that(".detect_embedded_derivatives lists pipeline directories", {
         key = character()
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   out <- .detect_embedded_derivatives("ds000001", tag = NULL, client = NULL)
@@ -77,7 +77,7 @@ test_that(".find_derivatives_in_github filters by dataset_id and formats results
         )
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   out <- .find_derivatives_in_github("ds000001", refresh = FALSE)
@@ -125,7 +125,7 @@ test_that("on_derivatives prefers embedded over openneuro-derivatives for duplic
                    "s3://openneuro-derivatives/mriqc/ds000001-mriqc/")
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   out1 <- on_derivatives("ds000001", refresh = FALSE)
@@ -146,7 +146,7 @@ test_that("on_derivatives errors cleanly for not found datasets (embedded)", {
     .detect_embedded_derivatives = function(...) {
       rlang::abort("nope", class = "openneuro_not_found_error")
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   expect_error(
@@ -161,7 +161,7 @@ test_that("on_derivatives warns and returns empty when GitHub lookup fails", {
   local_mocked_bindings(
     .detect_embedded_derivatives = function(...) .empty_derivatives_tibble(),
     .find_derivatives_in_github = function(...) stop("GitHub down"),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   expect_warning(
@@ -174,7 +174,7 @@ test_that("on_derivatives warns and returns empty when GitHub lookup fails", {
 
 test_that(".transform_timestamps_posix converts numeric last_modified", {
   df <- tibble::tibble(last_modified = as.numeric(Sys.time()))
-  out <- openneuro:::.transform_timestamps_posix(df)
+  out <- openneuroR:::.transform_timestamps_posix(df)
   expect_true(inherits(out$last_modified, "POSIXct"))
 })
 

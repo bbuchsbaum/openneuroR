@@ -98,7 +98,7 @@ NULL
 .github_request <- function(endpoint, ...) {
   # Get package version for User-Agent
   pkg_version <- tryCatch(
-    as.character(utils::packageVersion("openneuro")),
+    as.character(utils::packageVersion("openneuroR")),
     error = function(e) "dev"
   )
 

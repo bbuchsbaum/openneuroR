@@ -698,7 +698,7 @@ test_that("on_download_derivatives uses download_with_progress for embedded sour
         dest_dir = dest_dir
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   result <- on_download_derivatives("ds000001", "fmriprep", quiet = TRUE)
@@ -747,7 +747,7 @@ test_that("on_download_derivatives embedded source honors non-cache destination"
         dest_dir = dest_dir
       )
     },
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   result <- on_download_derivatives(
@@ -765,7 +765,7 @@ test_that("on_download_derivatives embedded source honors non-cache destination"
 test_that(".list_derivative_files_s3_full parses aws s3 ls output", {
   local_mocked_bindings(
     .find_aws_cli = function() "aws",
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   local_mocked_bindings(
@@ -1256,7 +1256,7 @@ test_that(".filter_derivative_files_by_subjects includes root files", {
     size = c(100, 1000, 1000)
   )
 
-  result <- openneuro:::.filter_derivative_files_by_subjects(files_df, "sub-01")
+  result <- openneuroR:::.filter_derivative_files_by_subjects(files_df, "sub-01")
 
   # Root file (no subject in path) should be included
   expect_true("dataset_description.json" %in% result$full_path)
@@ -1273,7 +1273,7 @@ test_that(".filter_derivative_files_by_subjects_regex includes root files", {
     size = c(100, 1000, 1000)
   )
 
-  result <- openneuro:::.filter_derivative_files_by_subjects_regex(files_df, "sub-01")
+  result <- openneuroR:::.filter_derivative_files_by_subjects_regex(files_df, "sub-01")
 
   # Root file (no subject in path) should be included
   expect_true("dataset_description.json" %in% result$full_path)
@@ -1295,7 +1295,7 @@ test_that(".list_directory_recursive handles empty directories", {
     )
   )
 
-  result <- openneuro:::.list_directory_recursive(
+  result <- openneuroR:::.list_directory_recursive(
     dataset_id = "ds000001",
     tag = NULL,
     key = "empty_dir_key",
@@ -1314,7 +1314,7 @@ test_that(".list_directory_recursive handles API errors gracefully", {
     }
   )
 
-  result <- openneuro:::.list_directory_recursive(
+  result <- openneuroR:::.list_directory_recursive(
     dataset_id = "ds000001",
     tag = NULL,
     key = "error_key",

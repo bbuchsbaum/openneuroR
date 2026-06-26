@@ -81,13 +81,13 @@ test_that("on_subjects returns empty tibble for non-BIDS dataset", {
 test_that(".sort_subjects_natural sorts numerically", {
   # Test the natural sorting function
   unsorted <- c("sub-01", "sub-10", "sub-02", "sub-9")
-  sorted <- openneuro:::.sort_subjects_natural(unsorted)
+  sorted <- openneuroR:::.sort_subjects_natural(unsorted)
   expected <- c("sub-01", "sub-02", "sub-9", "sub-10")
   expect_equal(sorted, expected)
 })
 
 test_that(".sort_subjects_natural handles empty input", {
-  expect_equal(openneuro:::.sort_subjects_natural(character()), character())
+  expect_equal(openneuroR:::.sort_subjects_natural(character()), character())
 })
 
 # --- Mocked tests for edge cases ---

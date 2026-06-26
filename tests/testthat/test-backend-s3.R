@@ -262,7 +262,7 @@ test_that(".probe_s3_bucket returns FALSE and caches result if AWS CLI missing",
 
   local_mocked_bindings(
     .find_aws_cli = function() "",
-    .package = "openneuro"
+    .package = "openneuroR"
   )
   local_mocked_bindings(
     run = function(...) {
@@ -284,7 +284,7 @@ test_that(".probe_s3_bucket caches successful probe results", {
 
   local_mocked_bindings(
     .find_aws_cli = function() "/usr/local/bin/aws",
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   local_mocked_bindings(
@@ -303,12 +303,12 @@ test_that(".probe_s3_bucket caches successful probe results", {
 # --- backend-detect.R tests ---
 
 test_that(".backend_available returns TRUE for https (always available)", {
-  result <- openneuro:::.backend_available("https")
+  result <- openneuroR:::.backend_available("https")
   expect_true(result)
 })
 
 test_that(".backend_available returns FALSE for unknown backend", {
-  result <- openneuro:::.backend_available("unknown_backend")
+  result <- openneuroR:::.backend_available("unknown_backend")
   expect_false(result)
 })
 
@@ -318,16 +318,17 @@ test_that(".backend_available checks for s3 correctly", {
     .find_aws_cli = function() ""
   )
 
-  result <- openneuro:::.backend_available("s3")
+  result <- openneuroR:::.backend_available("s3")
   expect_false(result)
 })
 
 test_that(".backend_available checks for s3 with AWS CLI present", {
   local_mocked_bindings(
-    .find_aws_cli = function() "/usr/local/bin/aws"
+    .find_aws_cli = function() "/usr/local/bin/aws",
+    .aws_cli_works = function(aws_path) TRUE
   )
 
-  result <- openneuro:::.backend_available("s3")
+  result <- openneuroR:::.backend_available("s3")
   expect_true(result)
 })
 
@@ -339,7 +340,7 @@ test_that(".backend_available checks for datalad correctly", {
     }
   )
 
-  result <- openneuro:::.backend_available("datalad")
+  result <- openneuroR:::.backend_available("datalad")
   expect_false(result)
 })
 
@@ -353,7 +354,7 @@ test_that(".backend_available checks for datalad with tools present", {
     }
   )
 
-  result <- openneuro:::.backend_available("datalad")
+  result <- openneuroR:::.backend_available("datalad")
   expect_true(result)
 })
 
@@ -368,9 +369,9 @@ test_that(".backend_status caches results", {
   )
 
   # First call should check
-  result1 <- openneuro:::.backend_status("test_backend")
+  result1 <- openneuroR:::.backend_status("test_backend")
   # Second call should use cache
-  result2 <- openneuro:::.backend_status("test_backend")
+  result2 <- openneuroR:::.backend_status("test_backend")
 
   expect_true(result1)
   expect_true(result2)
@@ -388,9 +389,9 @@ test_that(".backend_status refresh=TRUE bypasses cache", {
   )
 
   # First call
-  result1 <- openneuro:::.backend_status("refresh_test", refresh = TRUE)
+  result1 <- openneuroR:::.backend_status("refresh_test", refresh = TRUE)
   # Second call with refresh=TRUE should re-check
-  result2 <- openneuro:::.backend_status("refresh_test", refresh = TRUE)
+  result2 <- openneuroR:::.backend_status("refresh_test", refresh = TRUE)
 
   expect_true(result1)
   expect_true(result2)
@@ -408,21 +409,21 @@ test_that(".find_aws_cli returns empty string when AWS CLI not in PATH", {
     .package = "base"
   )
 
-  result <- openneuro:::.find_aws_cli()
+  result <- openneuroR:::.find_aws_cli()
   expect_equal(result, "")
 })
 
 test_that(".find_aws_cli finds AWS CLI in PATH", {
   # Just test that the function can find the real AWS CLI if installed
   # This test will be skipped if AWS CLI is not installed
-  result <- openneuro:::.find_aws_cli()
+  result <- openneuroR:::.find_aws_cli()
   # Result should be either a path or empty string
 
   expect_type(result, "character")
 })
 
 test_that(".sys_which wraps Sys.which correctly", {
-  result <- openneuro:::.sys_which("ls")
+  result <- openneuroR:::.sys_which("ls")
   expect_type(result, "character")
   expect_named(result)
 })

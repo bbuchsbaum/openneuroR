@@ -1,3 +1,18 @@
 /doc/
 /Meta/
 docs/
+
+# R build artifacts
+*.Rcheck/
+*.tar.gz
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rlib/
+
+# Tooling / session state
+.omc/
+
+# httptest2 recording output (committed fixtures live in tests/testthat/openneuro.org/)
+tests/testthat/test-recording/

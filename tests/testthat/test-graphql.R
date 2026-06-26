@@ -154,7 +154,7 @@ test_that("on_request handles multiple GraphQL errors", {
 
 test_that(".on_read_gql errors on missing query file", {
   expect_error(
-    openneuro:::.on_read_gql("nonexistent_query_that_does_not_exist"),
+    openneuroR:::.on_read_gql("nonexistent_query_that_does_not_exist"),
     class = "openneuro_query_error"
   )
 })
@@ -165,7 +165,7 @@ test_that(".on_read_gql reads valid query files", {
   skip_if_not_installed("openneuro")
 
   result <- tryCatch(
-    openneuro:::.on_read_gql("get_dataset"),
+    openneuroR:::.on_read_gql("get_dataset"),
     error = function(e) NULL
   )
 

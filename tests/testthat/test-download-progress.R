@@ -193,7 +193,7 @@ test_that(".download_with_progress updates manifest with provided type", {
       invisible(NULL)
     },
     .print_completion_summary = function(...) invisible(NULL),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   result <- .download_with_progress(
@@ -237,7 +237,7 @@ test_that(".download_with_progress skips cached files when manifest + file match
     .update_manifest = function(...) stop("should not update"),
     .print_completion_summary = function(...) invisible(NULL),
     .construct_download_url = function(...) stop("should not download"),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   result <- .download_with_progress(
@@ -271,7 +271,7 @@ test_that(".download_with_progress records failures when download errors", {
     .download_atomic = function(...) stop("network fail"),
     .update_manifest = function(...) stop("should not update"),
     .print_completion_summary = function(...) invisible(NULL),
-    .package = "openneuro"
+    .package = "openneuroR"
   )
 
   result <- .download_with_progress(

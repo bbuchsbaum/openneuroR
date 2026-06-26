@@ -10,7 +10,7 @@
 ^\.Rlib$
 ^openneuro\.Rcheck$
 ^openneuroR\.Rcheck$
-^openneuro_.*\.tar\.gz$
+^openneuro.*\.tar\.gz$
 ^docs$
 ^pkgdown$
 ^scripts$

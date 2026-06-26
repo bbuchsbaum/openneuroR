@@ -60,7 +60,7 @@ repository-style clone (fall back to `backend = "https"` if DataLad is not
 installed).
 
 ```{r download-dataset, eval=FALSE}
-library(openneuro)
+library(openneuroR)
 library(fs)
 
 dataset_id <- "ds000001"

@@ -40,7 +40,7 @@ on_request <- function(query, variables = NULL, client = NULL) {
 
   # Get package version for User-Agent
   pkg_version <- tryCatch(
-    as.character(utils::packageVersion("openneuro")),
+    as.character(utils::packageVersion("openneuroR")),
     error = function(e) "0.1.0"
   )
 
@@ -129,7 +129,7 @@ on_request <- function(query, variables = NULL, client = NULL) {
 #'
 #' @keywords internal
 .on_read_gql <- function(name) {
-  path <- system.file("graphql", paste0(name, ".gql"), package = "openneuro")
+  path <- system.file("graphql", paste0(name, ".gql"), package = "openneuroR")
   if (path == "") {
     rlang::abort(
       c("Query file not found",

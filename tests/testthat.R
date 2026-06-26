@@ -1,6 +1,6 @@
 # This file is part of the standard testthat infrastructure
 # See https://testthat.r-lib.org/ for details
 library(testthat)
-library(openneuro)
+library(openneuroR)
 
-test_check("openneuro")
+test_check("openneuroR")

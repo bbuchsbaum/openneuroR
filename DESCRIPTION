@@ -1,4 +1,4 @@
-Package: openneuro
+Package: openneuroR
 Title: Programmatic Access to OpenNeuro Datasets
 Version: 0.1.0
 Authors@R: c(

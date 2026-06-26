@@ -5,8 +5,7 @@
 [![pkgdown](https://github.com/bbuchsbaum/openneuroR/actions/workflows/pkgdown.yaml/badge.svg)](https://bbuchsbaum.github.io/openneuroR/)
 <!-- badges: end -->
 
-`openneuroR` is the GitHub repository for the R package `openneuro`, a
-tibble-first client for discovering and downloading public
+`openneuroR` is a tibble-first client for discovering and downloading public
 [OpenNeuro](https://openneuro.org) datasets from R.
 
 The package is built for practical data access workflows:
@@ -34,13 +33,13 @@ remotes::install_github("bbuchsbaum/openneuroR")
 Then load the package:
 
 ```r
-library(openneuro)
+library(openneuroR)
 ```
 
 ## Optional system tools
 
 Basic usage works with the built-in HTTPS backend. For faster or more robust
-downloads, `openneuro` can also use external tools when they are available:
+downloads, `openneuroR` can also use external tools when they are available:
 
 - `aws` CLI for fast S3-based downloads
 - `datalad` plus `git-annex` for verified, resumable dataset fetches
@@ -62,7 +61,7 @@ Backend selection is automatic by default:
 ### Search and inspect datasets
 
 ```r
-library(openneuro)
+library(openneuroR)
 
 results <- on_search(modality = "MRI", limit = 10)
 results[, c("id", "name", "n_subjects")]

@@ -171,7 +171,7 @@ test_that("on_cache_clear returns 0 when all cleared from empty cache", {
 
 test_that(".confirm_action returns TRUE in non-interactive sessions", {
   # In test context, interactive() returns FALSE
-  result <- openneuro:::.confirm_action("Test message")
+  result <- openneuroR:::.confirm_action("Test message")
   expect_true(result)
 })
 
@@ -206,7 +206,7 @@ test_that("on_cache_list handles manifest with NULL file entries", {
 })
 
 test_that(".empty_cache_tibble returns correct structure", {
-  result <- openneuro:::.empty_cache_tibble()
+  result <- openneuroR:::.empty_cache_tibble()
 
   expect_s3_class(result, "tbl_df")
   expect_equal(nrow(result), 0)

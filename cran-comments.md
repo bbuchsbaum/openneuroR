@@ -14,7 +14,7 @@ that can run offline without side effects.
 
 ## Package purpose
 
-'openneuro' provides programmatic access to the OpenNeuro neuroimaging
+'openneuroR' provides programmatic access to the OpenNeuro neuroimaging
 data repository (<https://openneuro.org>) from R. It queries the
 OpenNeuro GraphQL API to search datasets, inspect metadata, and download
 full datasets or selected subsets via HTTPS, S3, or DataLad backends.
