@@ -33,10 +33,45 @@ NULL
 #' @keywords internal
 .backend_available <- function(backend) {
   switch(backend,
-    "s3" = nzchar(.find_aws_cli()),
+    "s3" = {
+      aws_path <- .find_aws_cli()
+      nzchar(aws_path) && .aws_cli_works(aws_path)
+    },
     "datalad" = nzchar(.sys_which("datalad")) && nzchar(.sys_which("git-annex")),
     "https" = TRUE,  # Always available
     FALSE  # Unknown backend
+  )
+}
+
+
+#' Check that the AWS CLI Actually Runs
+#'
+#' A binary named `aws` on the PATH is not sufficient: broken installations
+#' (for example a Python entry point whose `awscli` module is missing) are
+#' present but non-functional. This invokes `aws --version` and reports
+#' success only when the command exits cleanly, so backend auto-selection
+#' never picks an S3 backend that cannot run.
+#'
+#' @param aws_path Path to the AWS CLI executable.
+#'
+#' @return Logical: TRUE if `aws --version` exits with status 0, else FALSE.
+#'
+#' @keywords internal
+.aws_cli_works <- function(aws_path) {
+  if (!nzchar(aws_path)) {
+    return(FALSE)
+  }
+  tryCatch(
+    {
+      result <- processx::run(
+        aws_path,
+        args = "--version",
+        timeout = 5,
+        error_on_status = FALSE
+      )
+      isTRUE(result$status == 0)
+    },
+    error = function(e) FALSE
   )
 }
 

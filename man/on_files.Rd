@@ -12,7 +12,7 @@ on_files(id, tag = NULL, tree = NULL, client = NULL)
 \item{tag}{Snapshot version tag (e.g., "1.0.0"). If \code{NULL} (default),
 uses the most recent snapshot.}
 
-\item{tree}{Subdirectory key for listing nested files. Use the \code{key}
+\item{tree}{Subdirectory token for listing nested files. Use the \code{id}
 column from a previous call to explore subdirectories. Default \code{NULL}
 lists the root directory.}
 
@@ -26,8 +26,11 @@ A tibble with columns:
 \item{directory}{TRUE if this entry is a directory (logical)}
 \item{annexed}{TRUE if file is stored in git-annex (logical). Annexed
 files are typically larger and require special download handling.}
-\item{key}{Unique key for this entry. Use with \code{tree} parameter to
-explore subdirectories.}
+\item{id}{Unique identifier for this entry. Pass it as the \code{tree}
+argument to explore a subdirectory.}
+\item{urls}{List column of direct HTTPS download URLs for the entry
+(character vector, empty for directories).}
+\item{key}{Backward-compatible alias of \code{id} (the directory tree token).}
 }
 
 Returns an empty tibble with the same column structure if the snapshot
@@ -46,7 +49,7 @@ To explore a directory structure:
 \enumerate{
 \item Call \code{on_files()} to get the root listing
 \item Filter for \code{directory == TRUE} entries
-\item Use the \code{key} from a directory to call \code{on_files(tree = key)}
+\item Use the \code{id} from a directory to call \code{on_files(tree = id)}
 }
 }
 \examples{
@@ -61,7 +64,7 @@ files <- on_files("ds000001", tag = "1.0.0")
 # Explore a subdirectory
 dirs <- files[files$directory, ]
 if (nrow(dirs) > 0) {
-  subfiles <- on_files("ds000001", tree = dirs$key[1])
+  subfiles <- on_files("ds000001", tree = dirs$id[1])
   print(subfiles)
 }
 
