@@ -17,7 +17,7 @@ inspect dataset contents, and download exactly the files you need.
 
 ``` r
 
-library(openneuro)
+library(openneuroR)
 ```
 
 ## Find datasets

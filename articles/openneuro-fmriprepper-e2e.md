@@ -54,7 +54,7 @@ not installed).
 
 ``` r
 
-library(openneuro)
+library(openneuroR)
 library(fs)
 
 dataset_id <- "ds000001"

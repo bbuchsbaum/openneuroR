@@ -1,8 +1,7 @@
 # openneuroR
 
-`openneuroR` is the GitHub repository for the R package `openneuro`, a
-tibble-first client for discovering and downloading public
-[OpenNeuro](https://openneuro.org) datasets from R.
+`openneuroR` is a tibble-first client for discovering and downloading
+public [OpenNeuro](https://openneuro.org) datasets from R.
 
 The package is built for practical data access workflows:
 
@@ -31,13 +30,13 @@ Then load the package:
 
 ``` r
 
-library(openneuro)
+library(openneuroR)
 ```
 
 ## Optional system tools
 
 Basic usage works with the built-in HTTPS backend. For faster or more
-robust downloads, `openneuro` can also use external tools when they are
+robust downloads, `openneuroR` can also use external tools when they are
 available:
 
 - `aws` CLI for fast S3-based downloads
@@ -62,7 +61,7 @@ Backend selection is automatic by default:
 
 ``` r
 
-library(openneuro)
+library(openneuroR)
 
 results <- on_search(modality = "MRI", limit = 10)
 results[, c("id", "name", "n_subjects")]
